@@ -1,6 +1,6 @@
 # Semana 01 — App de Tarjetas: Teatro
 
-Autor: [COMPLETAR: tu nombre]
+Autor: Hernán Eduardo Robledo Montaña
 
 App móvil de pantalla única hecha con React Native y Expo que muestra la cartelera de un teatro como una lista de tarjetas.
 
