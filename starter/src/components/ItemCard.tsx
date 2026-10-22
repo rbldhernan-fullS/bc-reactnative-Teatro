@@ -75,3 +75,6 @@ const styles = StyleSheet.create({
     color: '#d4a24c',
   },
 });
+
+
+// Revisado Semana 1
