@@ -1,6 +1,6 @@
 // ============================================
-// MOCK DATA — Semana 02: Dominio Teatro
-// 12 obras en cartelera con datos detallados del teatro
+// MOCK DATA — Semana 03: Dominio Teatro
+// 12 obras en cartelera con datos detallados y lista de favoritos
 // ============================================
 
 import { Item } from '../types';
@@ -19,6 +19,8 @@ export const ITEMS: Item[] = [
     duration: '150 min',
     availableSeats: 32,
     rating: 4.9,
+    synopsis:
+      'El príncipe de Dinamarca se enfrenta al dilema moral de vengar el asesinato de su padre a manos de su tío Claudio. Una tragedia cumbre sobre la traición, la locura fingida y el peso ineludible del destino.',
   },
   {
     id: '2',
@@ -33,6 +35,8 @@ export const ITEMS: Item[] = [
     duration: '105 min',
     availableSeats: 18,
     rating: 4.8,
+    synopsis:
+      'Tras enviudar por segunda vez, Bernarda somete a sus cinco hijas a un luto riguroso y claustrofóbico de ocho años. El deseo reprimido y la llegada de Pepe el Romano desatarán pasiones incontrolables.',
   },
   {
     id: '3',
@@ -47,6 +51,8 @@ export const ITEMS: Item[] = [
     duration: '160 min',
     availableSeats: 8,
     rating: 5.0,
+    synopsis:
+      'En las catacumbas de la Ópera de París habita un genio musical desfigurado que aterroriza a los directores para elevar al estrellato a la joven soprano Christine Daaé, desencadenando un romance oscuro y sublime.',
   },
   {
     id: '4',
@@ -61,6 +67,8 @@ export const ITEMS: Item[] = [
     duration: '110 min',
     availableSeats: 45,
     rating: 4.7,
+    synopsis:
+      'Viola naufraga en las costas de Iliria y se disfraza de paje bajo el nombre de Cesario. Los malentendidos amorosos, las cartas falsas y las confusiones cómicas marcan esta deslumbrante comedia de enredos.',
   },
   {
     id: '5',
@@ -75,6 +83,8 @@ export const ITEMS: Item[] = [
     duration: '100 min',
     availableSeats: 26,
     rating: 4.8,
+    synopsis:
+      'El día de su boda, la novia huye a caballo con su antiguo amante Leonardo. La persecución por el bosque bajo la luz de la luna culmina en un trágico duelo dictado por el honor campesino.',
   },
   {
     id: '6',
@@ -89,6 +99,8 @@ export const ITEMS: Item[] = [
     duration: '170 min',
     availableSeats: 12,
     rating: 4.9,
+    synopsis:
+      'La epopeya de redención de Jean Valjean en la convulsa Francia del siglo XIX, perseguido implacablemente por el inspector Javert en medio de los levantamientos revolucionarios estudiantiles.',
   },
   {
     id: '7',
@@ -103,6 +115,8 @@ export const ITEMS: Item[] = [
     duration: '130 min',
     availableSeats: 50,
     rating: 4.6,
+    synopsis:
+      'Segismundo vive encadenado en una torre solitaria por temor a una profecía astrológica. Al ser llevado a palacio, deberá descubrir el valor del libre albedrío frente a la ilusión de la existencia.',
   },
   {
     id: '8',
@@ -117,6 +131,8 @@ export const ITEMS: Item[] = [
     duration: '140 min',
     availableSeats: 20,
     rating: 4.9,
+    synopsis:
+      'Dos jóvenes amantes desafían el odio visceral entre las familias Montesco y Capuleto en las calles de Verona, pagando el precio definitivo por su amor eterno e incondicional.',
   },
   {
     id: '9',
@@ -131,6 +147,8 @@ export const ITEMS: Item[] = [
     duration: '115 min',
     availableSeats: 30,
     rating: 4.5,
+    synopsis:
+      'Vladimir y Estragón aguardan junto a un camino solitario a alguien llamado Godot, entablando diálogos filosóficos y situaciones tragicómicas en una alegoría sobre la incertidumbre de la vida humana.',
   },
   {
     id: '10',
@@ -145,6 +163,8 @@ export const ITEMS: Item[] = [
     duration: '125 min',
     availableSeats: 22,
     rating: 4.7,
+    synopsis:
+      'El legendario seductor Don Juan apuesta a conquistar a la novicia Doña Inés. Su desenfreno desafiará el orden terrenal hasta enfrentarse con las sombras espectrales de su pasado en el cementerio.',
   },
   {
     id: '11',
@@ -159,6 +179,8 @@ export const ITEMS: Item[] = [
     duration: '135 min',
     availableSeats: 35,
     rating: 4.8,
+    synopsis:
+      'Cyrano, espadachín brillante y poeta de nariz descomunal, ama en secreto a su prima Roxane, y presta su elocuencia y sus versos al apuesto pero torpe Christian para que ella sea feliz.',
   },
   {
     id: '12',
@@ -173,8 +195,18 @@ export const ITEMS: Item[] = [
     duration: '75 min',
     availableSeats: 60,
     rating: 4.9,
+    synopsis:
+      'Una hermosa adaptación teatral para toda la familia del clásico de Saint-Exupéry, con títeres gigantes, música en vivo y una profunda reflexión sobre lo esencial que es invisible a los ojos.',
   },
 ];
 
-// Alias para compatibilidad con implementaciones previas
+// Obras favoritas guardadas por el usuario (mínimo 3 según la rúbrica)
+export const FAVORITES: Item[] = [
+  ITEMS[2], // El Fantasma de la Ópera (5.0)
+  ITEMS[0], // Hamlet (4.9)
+  ITEMS[5], // Los Miserables (4.9)
+  ITEMS[7], // Romeo y Julieta (4.9)
+];
+
+// Alias para compatibilidad con código anterior
 export const MOCK_ITEMS = ITEMS;

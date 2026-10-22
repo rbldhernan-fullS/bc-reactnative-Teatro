@@ -1,5 +1,5 @@
 // ============================================
-// TYPES — Semana 02: Dominio Teatro
+// TYPES — Semana 03: Dominio Teatro
 // Interfaz y tipos de datos de obras teatrales
 // ============================================
 
@@ -49,4 +49,7 @@ export interface Item {
 
   /** Calificación de la crítica/público (ej. 4.8) */
   rating: number;
+
+  /** Sinopsis y argumento dramático de la obra */
+  synopsis: string;
 }
