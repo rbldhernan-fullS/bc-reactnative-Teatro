@@ -3,7 +3,7 @@
 // Pantalla principal con búsqueda en tiempo real y FlatList
 // ============================================================
 
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useRef } from 'react';
 import {
   View,
   Text,
@@ -28,6 +28,9 @@ export function HomeScreen(): React.JSX.Element {
   const DOMAIN_TITLE = 'Teatro Colón';
   const DOMAIN_SUBTITLE = 'Cartelera oficial de la temporada';
 
+  // Referencia para enfocar el input al hacer click en cualquier parte de la barra
+  const searchInputRef = useRef<TextInput>(null);
+
   // 1. Estado de búsqueda
   const [query, setQuery] = useState<string>('');
 
@@ -40,7 +43,7 @@ export function HomeScreen(): React.JSX.Element {
   }, []);
 
   // 3. Filtrado en tiempo real con useMemo
-  // Busca por título, director/compañía y género (insensible a mayúsculas y acentos)
+  // Busca por título, director/compañía, género o sala (insensible a mayúsculas y acentos)
   const filteredItems = useMemo(() => {
     const cleanQuery = query.trim().toLowerCase();
     if (!cleanQuery) {
@@ -92,7 +95,10 @@ export function HomeScreen(): React.JSX.Element {
               styles.clearFilterButton,
               pressed && styles.clearFilterButtonPressed,
             ]}
-            onPress={() => setQuery('')}
+            onPress={() => {
+              setQuery('');
+              searchInputRef.current?.focus();
+            }}
           >
             <Text style={styles.clearFilterButtonText}>Limpiar búsqueda</Text>
           </Pressable>
@@ -109,69 +115,85 @@ export function HomeScreen(): React.JSX.Element {
         style={styles.keyboardContainer}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-          <View style={styles.container}>
-            {/* Header del Dominio Teatro */}
-            <View style={styles.header}>
-              <View style={styles.headerTitleRow}>
-                <Text style={styles.theaterIcon}>🎭</Text>
-                <Text style={styles.headerTitle}>{DOMAIN_TITLE}</Text>
-              </View>
-              <Text style={styles.headerSubtitle}>{DOMAIN_SUBTITLE}</Text>
+        <View style={styles.container}>
+          {/* Header del Dominio Teatro */}
+          <View style={styles.header}>
+            <View style={styles.headerTitleRow}>
+              <Text style={styles.theaterIcon}>🎭</Text>
+              <Text style={styles.headerTitle}>{DOMAIN_TITLE}</Text>
             </View>
-
-            {/* Barra de búsqueda */}
-            <View style={styles.searchSection}>
-              <View style={styles.searchInputWrapper}>
-                <Text style={styles.searchIcon}>🔍</Text>
-                <TextInput
-                  style={styles.searchInput}
-                  placeholder="Buscar por obra, director o género..."
-                  placeholderTextColor={COLORS.textMuted}
-                  value={query}
-                  onChangeText={setQuery}
-                  autoCorrect={false}
-                  autoCapitalize="none"
-                  returnKeyType="search"
-                  clearButtonMode="while-editing"
-                />
-                {query.length > 0 && Platform.OS !== 'ios' && (
-                  <Pressable
-                    onPress={() => setQuery('')}
-                    style={styles.clearIconWrapper}
-                  >
-                    <Text style={styles.clearIconText}>✕</Text>
-                  </Pressable>
-                )}
-              </View>
-
-              {/* Contador de resultados */}
-              <View style={styles.resultsBar}>
-                <Text style={styles.resultsCount}>
-                  {filteredItems.length}{' '}
-                  {filteredItems.length === 1 ? 'obra disponible' : 'obras disponibles'}
-                </Text>
-                {query.length > 0 && (
-                  <Text style={styles.activeFilterBadge}>Filtro activo</Text>
-                )}
-              </View>
-            </View>
-
-            {/* Lista Principal Virtualizada (FlatList) */}
-            <FlatList
-              data={filteredItems}
-              keyExtractor={(item) => item.id}
-              renderItem={renderItem}
-              ItemSeparatorComponent={renderSeparator}
-              ListEmptyComponent={renderEmpty}
-              contentContainerStyle={styles.listContent}
-              keyboardShouldPersistTaps="handled"
-              showsVerticalScrollIndicator={false}
-              refreshing={refreshing}
-              onRefresh={onRefresh}
-            />
+            <Text style={styles.headerSubtitle}>{DOMAIN_SUBTITLE}</Text>
           </View>
-        </TouchableWithoutFeedback>
+
+          {/* Barra de búsqueda (NO envuelta en TouchableWithoutFeedback para no matar el foco) */}
+          <View style={styles.searchSection}>
+            <Pressable
+              style={styles.searchInputWrapper}
+              onPress={() => searchInputRef.current?.focus()}
+            >
+              <Text style={styles.searchIcon}>🔍</Text>
+              <TextInput
+                ref={searchInputRef}
+                style={styles.searchInput}
+                placeholder="Buscar por obra, director o género..."
+                placeholderTextColor={COLORS.textMuted}
+                value={query}
+                onChangeText={setQuery}
+                autoCorrect={false}
+                autoCapitalize="none"
+                returnKeyType="search"
+                clearButtonMode="while-editing"
+              />
+              {query.length > 0 && (
+                <Pressable
+                  onPress={() => {
+                    setQuery('');
+                    searchInputRef.current?.focus();
+                  }}
+                  style={styles.clearIconWrapper}
+                  hitSlop={8}
+                  accessibilityRole="button"
+                  accessibilityLabel="Borrar búsqueda"
+                >
+                  <Text style={styles.clearIconText}>✕</Text>
+                </Pressable>
+              )}
+            </Pressable>
+
+            {/* Contador de resultados */}
+            <View style={styles.resultsBar}>
+              <Text style={styles.resultsCount}>
+                {filteredItems.length}{' '}
+                {filteredItems.length === 1 ? 'obra disponible' : 'obras disponibles'}
+              </Text>
+              {query.length > 0 && (
+                <Text style={styles.activeFilterBadge}>Filtro activo</Text>
+              )}
+            </View>
+          </View>
+
+          {/* Área de Lista: el tap fuera cierra el teclado sin interferir con el input */}
+          <TouchableWithoutFeedback
+            onPress={Keyboard.dismiss}
+            accessible={false}
+          >
+            <View style={styles.listWrapper}>
+              <FlatList
+                data={filteredItems}
+                keyExtractor={(item) => item.id}
+                renderItem={renderItem}
+                ItemSeparatorComponent={renderSeparator}
+                ListEmptyComponent={renderEmpty}
+                contentContainerStyle={styles.listContent}
+                keyboardShouldPersistTaps="handled"
+                keyboardDismissMode="on-drag"
+                showsVerticalScrollIndicator={false}
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+              />
+            </View>
+          </TouchableWithoutFeedback>
+        </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -242,6 +264,7 @@ const styles = StyleSheet.create({
     paddingVertical: Platform.OS === 'ios' ? 12 : 10,
     fontSize: TYPOGRAPHY.size.base,
     color: COLORS.textPrimary,
+    ...(Platform.OS === 'web' ? ({ outlineStyle: 'none' } as any) : {}),
   },
   clearIconWrapper: {
     padding: SPACING.xs,
@@ -270,6 +293,9 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
     borderRadius: RADIUS.full,
     fontWeight: TYPOGRAPHY.weight.semibold,
+  },
+  listWrapper: {
+    flex: 1,
   },
   listContent: {
     paddingVertical: SPACING.md,
