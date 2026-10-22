@@ -5,3 +5,5 @@ import { HomeScreen } from './src/screens/HomeScreen';
 export default function App(): React.JSX.Element {
   return <HomeScreen />;
 }
+git add App.tsx src/types/index.ts
+// Revisado Semana 1
