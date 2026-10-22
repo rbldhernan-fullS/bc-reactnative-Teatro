@@ -1,11 +1,12 @@
 {
-  "name": "semana-01-proyecto",
+  "name": "semana-02-proyecto",
   "version": "1.0.0",
   "main": "expo/AppEntry",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
-    "ios": "expo start --ios"
+    "ios": "expo start --ios",
+    "web": "expo start --web"
   },
   "dependencies": {
     "expo": "57.0.4",

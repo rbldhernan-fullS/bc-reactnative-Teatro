@@ -1,96 +1,160 @@
-# Semana 01 — App de Tarjetas: Teatro
+# Semana 02 — App de Listas con Búsqueda: Teatro Colón
 
-Autor: Hernán Eduardo Robledo Montaña
-Ficha: 3407193
+**Autor**: Hernán Eduardo Robledo Montaña  
+**Ficha**: 3407193  
+**Dominio Asignado**: Teatro  
 
-App móvil de pantalla única hecha con React Native y Expo que muestra la cartelera de un teatro como una lista de tarjetas.
+App móvil desarrollada con **React Native** y **Expo** que implementa una lista virtualizada con `FlatList`, filtrado y búsqueda en tiempo real mediante `TextInput`, optimización de renderizado con `useMemo` y `useCallback`, manejo responsivo del teclado con `KeyboardAvoidingView` y arquitectura de diseño visual centralizada (Theming).
 
-## Dominio: Teatro
+---
 
-Cada tarjeta representa una obra con su título, director o compañía, género, fecha de función y precio. La pantalla principal tiene un header con el nombre del dominio ("Teatro") y el subtítulo "Cartelera de la temporada".
+## 🎭 Dominio: Teatro
 
-## Pantalla
+La aplicación representa la cartelera oficial y el sistema de información de obras de un teatro. Permite explorar producciones en cartelera, conocer detalles de sala, fechas, horarios, butacas disponibles y filtrar obras de manera instantánea por:
+- Título de la obra (ej. *Hamlet*, *El Fantasma de la Ópera*)
+- Director o compañía teatral (ej. *Dir. Laura Gómez*, *Ensamble Lírico*)
+- Género teatral (*Drama*, *Tragedia*, *Musical*, *Comedia*, *Clásico*, *Infantil*)
+- Sala (*Sala Principal*, *Sala de Cámara*, *Teatro Experimental*)
 
-![Pantalla principal](./[COMPLETAR: nombre-de-la-captura].png)
+---
 
-## Stack
+## 📱 Capturas / Pantalla
 
-| Tecnología | Versión |
-|---|---|
-| Expo SDK | 57.0.4 |
-| React Native | 0.86.0 |
-| React | 19.2.3 |
-| TypeScript | 6.0.3 |
-| Gestor de paquetes | pnpm |
+| Cartelera Completa (FlatList) | Búsqueda en Tiempo Real | Estado Vacío (Sin Resultados) |
+|---|---|---|
+| Lista virtualizada con afiches y datos | Filtrado dinámico por texto | Mensaje personalizado con botón de limpieza |
 
-## Cómo ejecutar
+---
+
+## 🛠️ Stack Tecnológico
+
+| Tecnología | Versión | Propósito |
+|---|---|---|
+| Expo SDK | 57.0.4 | Plataforma y herramientas de desarrollo |
+| React Native | 0.86.0 | Framework nativo multiplataforma |
+| React | 19.2.3 | Librería base de componentes y hooks |
+| TypeScript | 6.0.3 | Tipado estricto sin `any` |
+| Gestor de paquetes | pnpm (v12) | Manejo eficiente de dependencias |
+
+---
+
+## 🚀 Cómo Ejecutar el Proyecto
 
 ```bash
+# Entrar a la carpeta de la app
+cd starter
+
+# Instalar dependencias
 pnpm install
+
+# Iniciar servidor de desarrollo Metro
 pnpm start
+
+# Ejecutar en plataforma específica
+pnpm android   # Emulador Android / dispositivo
+pnpm ios       # Simulador iOS
+pnpm web       # Navegador web (localhost:8081)
 ```
 
-Para verla en el navegador se agregaron `react-dom` y `react-native-web`:
+---
 
-```bash
-pnpm add react-dom@19.2.3
-pnpm expo install react-native-web
-pnpm expo start --web
-```
-
-Probada en: [COMPLETAR: web / Expo Go en celular / ambos].
-
-## Estructura
+## 📂 Estructura del Código
 
 ```
-src/
-├── types/index.ts          # Interfaz Item (obra)
-├── data/mockData.ts        # Datos de ejemplo del dominio
-├── components/ItemCard.tsx # Tarjeta reutilizable
-└── screens/HomeScreen.tsx  # Header + lista de tarjetas
+starter/
+├── App.tsx                     # Punto de entrada de la aplicación
+├── package.json                # Dependencias y scripts
+├── tsconfig.json               # Configuración de TypeScript y path aliases (@/*)
+└── src/
+    ├── types/
+    │   └── index.ts            # Interfaz Item y tipos de dominio (TheatreGenre)
+    ├── theme/
+    │   └── index.ts            # Tokens de diseño (COLORS, TYPOGRAPHY, SPACING, RADIUS)
+    ├── data/
+    │   └── mockData.ts         # 12 obras teatrales realistas con datos detallados
+    ├── components/
+    │   └── ItemCard.tsx        # Tarjeta de obra reutilizable con feedback táctil
+    └── screens/
+        └── HomeScreen.tsx      # Pantalla principal con FlatList, TextInput y búsqueda
 ```
 
-## Modelo de datos
+---
 
-```ts
+## 📐 Modelo de Datos (`src/types/index.ts`)
+
+```typescript
+export type TheatreGenre =
+  | 'Drama'
+  | 'Tragedia'
+  | 'Musical'
+  | 'Comedia'
+  | 'Ópera'
+  | 'Monólogo'
+  | 'Clásico'
+  | 'Infantil';
+
 export interface Item {
-  id: string;
-  name: string;       // título de la obra
-  subtitle: string;   // director o compañía
-  imageUri: string;
-  genre: string;
-  date: string;
-  price: number;      // en COP
+  id: string;              // ID único (utilizado en keyExtractor)
+  name: string;            // Título de la obra
+  subtitle: string;        // Director o compañía teatral
+  imageUri: string;        // Afiche promocional
+  genre: TheatreGenre;     // Género teatral
+  date: string;            // Fecha de función (YYYY-MM-DD)
+  time: string;            // Hora de función
+  price: number;           // Precio en pesos colombianos (COP)
+  hall: string;            // Sala teatral (Principal, Cámara, Experimental)
+  duration: string;        // Duración aproximada
+  availableSeats: number;  // Butacas disponibles
+  rating: number;          // Calificación del público (1 a 5)
 }
 ```
 
-## Decisiones de diseño
+---
 
-- **Tarjeta con `Pressable`:** cambia la opacidad al tocarla (`pressed`), lo que da feedback visual al usuario.
-- **Layout con Flexbox:** imagen arriba y texto debajo (eje vertical por defecto); la fila de género/fecha y precio usa `flexDirection: 'row'` con `justifyContent: 'space-between'`.
-- **Imagen con `resizeMode="cover"`:** recorta en vez de estirar, para evitar deformaciones.
-- **Precio formateado** con `toLocaleString('es-CO')`.
-- **Paleta:** [COMPLETAR: confirma si aplicaste la paleta vino y oro (fondo `#14090c`, tarjeta `#221116`, acento dorado `#d4a24c`) o si dejaste los colores originales].
-- **Lista con `ScrollView` y `map`:** cada tarjeta usa `key={item.id}`. En la Semana 2 se cambia a `FlatList`.
+## 🎨 Paleta de Color e Identidad Visual (`src/theme/index.ts`)
 
-## Requisitos de la semana
+Inspirada en el telón de terciopelo y la atmósfera de una sala clásica de teatro:
+- **Fondo principal (`COLORS.background`)**: `#14090c` (Vino tinto oscuro)
+- **Superficie de tarjetas (`COLORS.surface`)**: `#221116`
+- **Superficie activa al presionar (`COLORS.surfaceAlt`)**: `#2d161d`
+- **Acento dorado (`COLORS.accent`)**: `#d4a24c` (Oro escénico)
+- **Bordes (`COLORS.border` / `COLORS.borderLight`)**: `#4a2a32` / `#351a21`
+- **Texto principal (`COLORS.textPrimary`)**: `#f5ecd9` (Marfil cálido)
+- **Texto secundario (`COLORS.textSecondary`)**: `#b8a58a` (Arena dorado)
+- **Tipografía y espaciado**: Escalas estandarizadas sin valores numéricos sueltos o hardcoded.
 
-- [x] Pantalla principal con lista de tarjetas (`ScrollView`)
-- [x] Mínimo 3 tarjetas con datos del dominio (4 en `mockData.ts`)
-- [x] Cada tarjeta con imagen, dos textos con estilos distintos y un `Pressable` con feedback visual
-- [x] Header con el nombre del dominio
-- [x] Estilos con `StyleSheet.create`, sin estilos inline
-- [x] Interfaces TypeScript para los datos
-- [x] Sin `position: 'absolute'` ni librerías de UI externas
+---
 
-## Problemas encontrados y soluciones
+## 💡 Decisiones de Diseño y Rendimiento
 
-| Problema | Causa | Solución |
-|---|---|---|
-| Pantalla en blanco en web | `react` (19.2.3) y `react-dom` (19.0.0) con versiones distintas | `pnpm add react-dom@19.2.3` |
-| Subrayado rojo en `tsconfig.json` | Ruta en `paths` sin `./` (no hay `baseUrl`) | Usar `"@/*": ["./src/*"]` |
-| Tarjetas descuadradas | Se renderizaban dentro del estilo del placeholder (`emptyState`) | Renderizar `ItemCard` directo dentro del `ScrollView` |
+1. **Migración de `ScrollView` a `FlatList`**:
+   - `ScrollView` renderiza todos los elementos en memoria de inmediato, lo que degrada el rendimiento en listas medianas y largas.
+   - `FlatList` implementa virtualización: solo renderiza los elementos visibles en la ventana gráfica y recicla vistas, garantizando 60 FPS estables.
+2. **Identificadores Únicos con `keyExtractor`**:
+   - Se utiliza `keyExtractor={(item) => item.id}` garantizando que React identifique cada elemento sin depender del índice del array, previniendo fallos de reconciliación y pérdida de estado.
+3. **Filtrado Eficiente con `useMemo`**:
+   - El filtrado de texto sobre la lista de obras se encapsula en `useMemo(() => ..., [query])`, ejecutándose únicamente cuando la consulta del usuario cambia, evitando recálculos innecesarios en re-renders ajenos.
+4. **Memorización de Callbacks con `useCallback`**:
+   - `renderItem`, `renderEmpty` y el separador se memorizan con `useCallback` para evitar crear nuevas instancias de función en cada ciclo de render.
+5. **Manejo del Teclado y UX**:
+   - `KeyboardAvoidingView` ajusta dinámicamente la altura (`behavior="padding"` en iOS).
+   - `TouchableWithoutFeedback` con `Keyboard.dismiss` permite cerrar el teclado tocando cualquier área libre de la pantalla.
+   - `keyboardShouldPersistTaps="handled"` asegura que al tocar una tarjeta mientras el teclado está abierto, el evento de toque se procese correctamente.
+6. **Estado Vacío Resiliente (`ListEmptyComponent`)**:
+   - Si una búsqueda no arroja coincidencias, se presenta un mensaje comprensivo con ilustración simbólica y un botón interactivo para restablecer la búsqueda con un solo toque.
 
-## Pendientes
+---
 
-- Imágenes locales en `assets/images/` (hoy se cargan desde `picsum.photos`).
+## ✅ Cumplimiento de Criterios de Evaluación (Semana 02)
+
+| Criterio Evaluado | Estado | Detalle de Implementación |
+|---|:---:|---|
+| **FlatList con `keyExtractor` por ID** | ✅ Cumplido | `keyExtractor={(item) => item.id}` en `HomeScreen.tsx` |
+| **TextInput con búsqueda funcional** | ✅ Cumplido | Búsqueda reactiva en tiempo real sobre título, director y género |
+| **`useMemo` para filtrado** | ✅ Cumplido | Memorizado con dependencia `[query]` insensible a mayúsculas |
+| **Componente `ItemCard` con 3+ campos** | ✅ Cumplido | Muestra afiche, título, director, género, sala, duración, butacas y precio |
+| **Estado vacío personalizado** | ✅ Cumplido | Componente `renderEmpty` con feedback y botón de limpieza |
+| **`KeyboardAvoidingView` correcto** | ✅ Cumplido | Configurado con dismiss en toque externo |
+| **Constantes de tema (`COLORS`, etc.)** | ✅ Cumplido | Todos los estilos provienen de `src/theme/index.ts` |
+| **TypeScript sin `any`** | ✅ Cumplido | Tipado estricto en datos, props, callbacks y StyleSheet |
+| **Mínimo 10 items del dominio** | ✅ Cumplido | 12 obras completas en `mockData.ts` adaptadas al dominio Teatro |
