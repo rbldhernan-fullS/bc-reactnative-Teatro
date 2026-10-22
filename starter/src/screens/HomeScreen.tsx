@@ -1,6 +1,6 @@
 // ============================================================
 // SCREEN: HomeScreen — Dominio Teatro
-// Pantalla principal con búsqueda en tiempo real y FlatList
+// Pantalla principal con búsqueda en tiempo real, FlatList y navegación
 // ============================================================
 
 import React, { useState, useMemo, useCallback, useRef } from 'react';
@@ -18,15 +18,23 @@ import {
   ListRenderItem,
   SafeAreaView,
   StatusBar,
+  TextStyle,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Item } from '../types';
 import { ITEMS } from '../data/mockData';
 import { ItemCard } from '../components/ItemCard';
 import { COLORS, TYPOGRAPHY, SPACING, RADIUS } from '../theme';
+import { HomeStackParamList } from '../navigation/types';
+
+type HomeScreenNavProp = NativeStackNavigationProp<HomeStackParamList, 'HomeList'>;
 
 export function HomeScreen(): React.JSX.Element {
   const DOMAIN_TITLE = 'Teatro Colón';
   const DOMAIN_SUBTITLE = 'Cartelera oficial de la temporada';
+
+  const navigation = useNavigation<HomeScreenNavProp>();
 
   // Referencia para enfocar el input al hacer click en cualquier parte de la barra
   const searchInputRef = useRef<TextInput>(null);
@@ -37,10 +45,27 @@ export function HomeScreen(): React.JSX.Element {
   // 2. Estado de refresco (Pull-to-refresh)
   const [refreshing, setRefreshing] = useState<boolean>(false);
 
-  // Manejador de selección de obra
-  const handleItemPress = useCallback((item: Item): void => {
-    console.log('Obra seleccionada:', item.name);
-  }, []);
+  // Manejador de selección de obra con navegación al detalle tipada
+  const handleItemPress = useCallback(
+    (item: Item): void => {
+      navigation.navigate('HomeDetail', {
+        id: item.id,
+        name: item.name,
+        subtitle: item.subtitle,
+        imageUri: item.imageUri,
+        genre: item.genre,
+        date: item.date,
+        time: item.time,
+        price: item.price,
+        hall: item.hall,
+        duration: item.duration,
+        availableSeats: item.availableSeats,
+        rating: item.rating,
+        synopsis: item.synopsis,
+      });
+    },
+    [navigation]
+  );
 
   // 3. Filtrado en tiempo real con useMemo
   // Busca por título, director/compañía, género o sala (insensible a mayúsculas y acentos)
@@ -125,7 +150,7 @@ export function HomeScreen(): React.JSX.Element {
             <Text style={styles.headerSubtitle}>{DOMAIN_SUBTITLE}</Text>
           </View>
 
-          {/* Barra de búsqueda (NO envuelta en TouchableWithoutFeedback para no matar el foco) */}
+          {/* Barra de búsqueda */}
           <View style={styles.searchSection}>
             <Pressable
               style={styles.searchInputWrapper}
@@ -172,7 +197,7 @@ export function HomeScreen(): React.JSX.Element {
             </View>
           </View>
 
-          {/* Área de Lista: el tap fuera cierra el teclado sin interferir con el input */}
+          {/* Área de Lista con dismiss de teclado al tocar fuera */}
           <TouchableWithoutFeedback
             onPress={Keyboard.dismiss}
             accessible={false}
@@ -264,7 +289,7 @@ const styles = StyleSheet.create({
     paddingVertical: Platform.OS === 'ios' ? 12 : 10,
     fontSize: TYPOGRAPHY.size.base,
     color: COLORS.textPrimary,
-    ...(Platform.OS === 'web' ? ({ outlineStyle: 'none' } as any) : {}),
+    ...(Platform.OS === 'web' ? ({ outlineStyle: 'none' } as unknown as TextStyle) : {}),
   },
   clearIconWrapper: {
     padding: SPACING.xs,
