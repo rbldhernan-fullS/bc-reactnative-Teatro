@@ -1,6 +1,12 @@
+// ============================================
+// COMPONENT: ItemCard — Dominio Teatro
+// Tarjeta de obra teatral optimizada para listas
+// ============================================
+
 import React from 'react';
 import { View, Text, Image, Pressable, StyleSheet } from 'react-native';
 import { Item } from '../types';
+import { COLORS, TYPOGRAPHY, SPACING, RADIUS } from '../theme';
 
 interface ItemCardProps {
   item: Item;
@@ -10,20 +16,74 @@ interface ItemCardProps {
 export function ItemCard({ item, onPress }: ItemCardProps): React.JSX.Element {
   return (
     <Pressable
-      style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
+      style={({ pressed }) => [
+        styles.card,
+        pressed && styles.cardPressed,
+      ]}
       onPress={() => onPress(item)}
+      accessibilityRole="button"
+      accessibilityLabel={`Obra ${item.name}, género ${item.genre}, precio ${item.price} pesos`}
     >
-      <Image
-        source={{ uri: item.imageUri }}
-        style={styles.cardImage}
-        resizeMode="cover"
-      />
+      {/* Afiche / Portada de la obra */}
+      <View style={styles.imageWrapper}>
+        <Image
+          source={{ uri: item.imageUri }}
+          style={styles.cardImage}
+          resizeMode="cover"
+        />
+        {/* Chip flotante de género */}
+        <View style={styles.genreBadge}>
+          <Text style={styles.genreBadgeText}>{item.genre}</Text>
+        </View>
+
+        {/* Chip flotante de calificación */}
+        <View style={styles.ratingBadge}>
+          <Text style={styles.ratingBadgeText}>★ {item.rating.toFixed(1)}</Text>
+        </View>
+      </View>
+
+      {/* Cuerpo informativo de la obra */}
       <View style={styles.cardBody}>
-        <Text style={styles.cardName}>{item.name}</Text>
-        <Text style={styles.cardSubtitle}>{item.subtitle}</Text>
+        {/* Título de la obra */}
+        <Text style={styles.cardTitle} numberOfLines={1}>
+          {item.name}
+        </Text>
+
+        {/* Director o compañía */}
+        <Text style={styles.cardSubtitle} numberOfLines={1}>
+          {item.subtitle}
+        </Text>
+
+        {/* Sala y duración */}
+        <View style={styles.metaRow}>
+          <Text style={styles.metaText}>🏛 {item.hall}</Text>
+          <Text style={styles.metaDot}>•</Text>
+          <Text style={styles.metaText}>⏳ {item.duration}</Text>
+        </View>
+
+        {/* Fecha y hora de función */}
+        <View style={styles.metaRow}>
+          <Text style={styles.metaText}>📅 {item.date}</Text>
+          <Text style={styles.metaDot}>•</Text>
+          <Text style={styles.metaText}>🕒 {item.time}</Text>
+        </View>
+
+        {/* Separador sutil */}
+        <View style={styles.divider} />
+
+        {/* Pie de tarjeta: Butacas y Precio */}
         <View style={styles.cardFooter}>
-          <Text style={styles.cardGenre}>{item.genre} · {item.date}</Text>
-          <Text style={styles.cardPrice}>${item.price.toLocaleString('es-CO')}</Text>
+          <View style={styles.seatsContainer}>
+            <Text style={styles.seatsLabel}>Disponibles</Text>
+            <Text style={styles.seatsValue}>{item.availableSeats} butacas</Text>
+          </View>
+
+          <View style={styles.priceContainer}>
+            <Text style={styles.priceLabel}>Entrada general</Text>
+            <Text style={styles.priceValue}>
+              ${item.price.toLocaleString('es-CO')} COP
+            </Text>
+          </View>
         </View>
       </View>
     </Pressable>
@@ -32,49 +92,121 @@ export function ItemCard({ item, onPress }: ItemCardProps): React.JSX.Element {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#221116',
-    borderRadius: 12,
-    marginBottom: 12,
-    overflow: 'hidden',
+    backgroundColor: COLORS.surface,
+    borderRadius: RADIUS.lg,
+    marginHorizontal: SPACING.base,
+    marginVertical: SPACING.xs,
     borderWidth: 1,
-    borderColor: '#4a2a32',
+    borderColor: COLORS.border,
+    overflow: 'hidden',
   },
   cardPressed: {
-    opacity: 0.7,
+    backgroundColor: COLORS.surfaceAlt,
+    opacity: 0.9,
+    transform: [{ scale: 0.995 }],
+  },
+  imageWrapper: {
+    position: 'relative',
+    width: '100%',
+    height: 160,
+    backgroundColor: COLORS.borderLight,
   },
   cardImage: {
     width: '100%',
-    height: 160,
+    height: '100%',
+  },
+  genreBadge: {
+    position: 'absolute',
+    top: SPACING.sm,
+    left: SPACING.sm,
+    backgroundColor: COLORS.surface,
+    paddingHorizontal: SPACING.sm,
+    paddingVertical: 4,
+    borderRadius: RADIUS.full,
+    borderWidth: 1,
+    borderColor: COLORS.accent,
+  },
+  genreBadgeText: {
+    fontSize: TYPOGRAPHY.size.xs,
+    fontWeight: TYPOGRAPHY.weight.bold,
+    color: COLORS.accent,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  ratingBadge: {
+    position: 'absolute',
+    top: SPACING.sm,
+    right: SPACING.sm,
+    backgroundColor: COLORS.overlay,
+    paddingHorizontal: SPACING.sm,
+    paddingVertical: 4,
+    borderRadius: RADIUS.full,
+  },
+  ratingBadgeText: {
+    fontSize: TYPOGRAPHY.size.xs,
+    fontWeight: TYPOGRAPHY.weight.bold,
+    color: COLORS.accent,
   },
   cardBody: {
-    padding: 16,
-    gap: 4,
+    padding: SPACING.base,
+    gap: SPACING.xs,
   },
-  cardName: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#f5ecd9',
+  cardTitle: {
+    fontSize: TYPOGRAPHY.size.lg,
+    fontWeight: TYPOGRAPHY.weight.bold,
+    color: COLORS.textPrimary,
   },
   cardSubtitle: {
-    fontSize: 14,
-    color: '#b8a58a',
+    fontSize: TYPOGRAPHY.size.sm,
+    color: COLORS.textSecondary,
+    marginBottom: SPACING.xs,
+  },
+  metaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.xs,
+  },
+  metaText: {
+    fontSize: TYPOGRAPHY.size.sm,
+    color: COLORS.textMuted,
+  },
+  metaDot: {
+    fontSize: TYPOGRAPHY.size.sm,
+    color: COLORS.textMuted,
+    marginHorizontal: 2,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: COLORS.borderLight,
+    marginVertical: SPACING.sm,
   },
   cardFooter: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 8,
   },
-  cardGenre: {
-    fontSize: 13,
-    color: '#b8a58a',
+  seatsContainer: {
+    flexDirection: 'column',
   },
-  cardPrice: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#d4a24c',
+  seatsLabel: {
+    fontSize: TYPOGRAPHY.size.xs,
+    color: COLORS.textMuted,
+  },
+  seatsValue: {
+    fontSize: TYPOGRAPHY.size.sm,
+    fontWeight: TYPOGRAPHY.weight.semibold,
+    color: COLORS.textSecondary,
+  },
+  priceContainer: {
+    alignItems: 'flex-end',
+  },
+  priceLabel: {
+    fontSize: TYPOGRAPHY.size.xs,
+    color: COLORS.textMuted,
+  },
+  priceValue: {
+    fontSize: TYPOGRAPHY.size.md,
+    fontWeight: TYPOGRAPHY.weight.bold,
+    color: COLORS.accent,
   },
 });
-
-
-// Revisado Semana 1
