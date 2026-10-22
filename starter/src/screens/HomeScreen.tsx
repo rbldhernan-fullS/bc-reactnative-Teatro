@@ -105,3 +105,5 @@ const styles = StyleSheet.create({
     gap: 8,
   },
 });
+
+// Revisado Semana 1
