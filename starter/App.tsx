@@ -1,10 +1,10 @@
 import React from 'react';
 import { HomeScreen } from './src/screens/HomeScreen';
 
-// Entry point of the app — renders the HomeScreen
+/**
+ * Punto de entrada de la aplicación móvil Teatro
+ * Semana 02: Listas, Inputs y Estilos
+ */
 export default function App(): React.JSX.Element {
   return <HomeScreen />;
 }
-
-
-// Revisado Semana 1
