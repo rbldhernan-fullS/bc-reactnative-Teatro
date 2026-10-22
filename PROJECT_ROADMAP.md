@@ -46,8 +46,8 @@ Para garantizar consistencia y continuidad en cualquier día de trabajo:
 |:---:|:---|:---:|:---:|:---|
 | **01** | Core Components y Flexbox | ✅ Completada | `Week-01` | Cartelera básica con ScrollView, ItemCard y paleta vino/oro |
 | **02** | Listas, Inputs y Estilos | ✅ Completada | `Week-02` | FlatList virtualizada, búsqueda en tiempo real, KeyboardAvoidingView, theming centralizado |
-| **03** | React Navigation | 🚀 En Curso | `Week-03` | Stack anidado en Tabs (Cartelera, Detalle de Obra con parámetros tipados, Favoritos) |
-| **04** | Estado Global con Zustand | ⏳ Pendiente | `Week-04` | Carrito de boletos, butacas seleccionadas, favoritos |
+| **03** | React Navigation | ✅ Completada | `Week-03` | Stack anidado en Tabs (Cartelera, Detalle de Obra con parámetros tipados, Favoritos) |
+| **04** | Estado Global con Zustand | 🚀 Siguiente | `Week-04` | Carrito de boletos, butacas seleccionadas, favoritos |
 | **05** | Networking & TanStack Query | ⏳ Pendiente | `Week-05` | Consumo de API de cartelera, cache y refresco de funciones |
 | **06** | Formularios y Validación | ⏳ Pendiente | `Week-06` | Formulario de reserva, datos del asistente, validación Zod |
 | **07** | Persistencia Local | ⏳ Pendiente | `Week-07` | Historial de reservas y boletos guardados offline (MMKV / AsyncStorage) |
@@ -68,10 +68,10 @@ Para garantizar consistencia y continuidad en cualquier día de trabajo:
 ## 🎯 Control de Calidad: Semana 03 (React Navigation 7)
 
 ### Rúbrica Oficial (100 pts)
-- [ ] **Tab Navigator**: 2 pestañas principales (`Cartelera` y `Favoritos`) con iconos de `@expo/vector-icons` (Ionicons) y estilos activos/inactivos en la paleta vino/oro.
-- [ ] **Stack Navigator Anidado**: Stack dentro del Tab `Cartelera` que permite navegar de `HomeList` (Cartelera) a `HomeDetail` (Detalle de la Obra).
-- [ ] **Parámetros Tipados en TypeScript**: Navegación con tipos explícitos (`HomeStackParamList` y `RootTabParamList`) pasando el `item` completo o `id`, sin ningún tipo `any`.
-- [ ] **Pantalla de Detalle (`DetailScreen`)**: Ficha técnica completa de la obra teatral con sinopsis, sala, duración, butacas, precio y botón de reserva/adquisición de boletos.
-- [ ] **Pantalla de Favoritos (`FavoritesScreen`)**: Segunda pestaña que lista las obras destacadas/guardadas por el usuario.
-- [ ] **Headers Personalizados**: Títulos de pantalla descriptivos con estilo teatral en el header (`headerStyle`, `headerTintColor`).
-- [ ] **NavigationContainer**: Configuración correcta del contenedor de navegación en `App.tsx`.
+- [x] **Tab Navigator**: 2 pestañas principales (`Cartelera` y `Favoritos`) con iconos de `@expo/vector-icons` (Ionicons) y estilos activos/inactivos en la paleta vino/oro.
+- [x] **Stack Navigator Anidado**: Stack dentro del Tab `Cartelera` que permite navegar de `HomeList` (Cartelera) a `HomeDetail` (Detalle de la Obra).
+- [x] **Parámetros Tipados en TypeScript**: Navegación con tipos explícitos (`HomeStackParamList` y `RootTabParamList`) pasando el `item` completo o `id`, sin ningún tipo `any`.
+- [x] **Pantalla de Detalle (`DetailScreen`)**: Ficha técnica completa de la obra teatral con sinopsis, sala, duración, butacas, precio y botón de reserva/adquisición de boletos.
+- [x] **Pantalla de Favoritos (`FavoritesScreen`)**: Segunda pestaña que lista las obras destacadas/guardadas por el usuario.
+- [x] **Headers Personalizados**: Títulos de pantalla descriptivos con estilo teatral en el header (`headerStyle`, `headerTintColor`).
+- [x] **NavigationContainer**: Configuración correcta del contenedor de navegación en `App.tsx`.
