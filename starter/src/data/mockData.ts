@@ -38,3 +38,5 @@ export const MOCK_ITEMS: Item[] = [
     price: 35000,
   },
 ];
+
+// Revisado Semana 1
