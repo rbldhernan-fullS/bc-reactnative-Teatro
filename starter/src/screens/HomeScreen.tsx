@@ -15,19 +15,28 @@ import {
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
   Pressable,
-  ListRenderItem,
-  SafeAreaView,
-  StatusBar,
 } from 'react-native';
-import { Item } from '../types';
+import type { ListRenderItem } from 'react-native';
+import type { Item } from '../types';
 import { ITEMS } from '../data/mockData';
 import { ItemCard } from '../components/ItemCard';
 import { COLORS, TYPOGRAPHY, SPACING, RADIUS } from '../theme';
 
-export function HomeScreen(): React.JSX.Element {
-  const DOMAIN_TITLE = 'Teatro Colón';
-  const DOMAIN_SUBTITLE = 'Cartelera oficial de la temporada';
+const DOMAIN_TITLE = 'Teatro Colón';
+const DOMAIN_SUBTITLE = 'Cartelera oficial de la temporada';
 
+/**
+ * Normaliza un texto para búsquedas insensibles a mayúsculas y acentos.
+ * Ej.: "Ópera" -> "opera".
+ */
+function normalizeText(value: string): string {
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase();
+}
+
+export function HomeScreen(): React.JSX.Element {
   // Referencia para enfocar el input al hacer click en cualquier parte de la barra
   const searchInputRef = useRef<TextInput>(null);
 
@@ -45,18 +54,16 @@ export function HomeScreen(): React.JSX.Element {
   // 3. Filtrado en tiempo real con useMemo
   // Busca por título, director/compañía, género o sala (insensible a mayúsculas y acentos)
   const filteredItems = useMemo(() => {
-    const cleanQuery = query.trim().toLowerCase();
+    const cleanQuery = normalizeText(query.trim());
     if (!cleanQuery) {
       return ITEMS;
     }
 
-    return ITEMS.filter((item) => {
-      const matchName = item.name.toLowerCase().includes(cleanQuery);
-      const matchSubtitle = item.subtitle.toLowerCase().includes(cleanQuery);
-      const matchGenre = item.genre.toLowerCase().includes(cleanQuery);
-      const matchHall = item.hall.toLowerCase().includes(cleanQuery);
-      return matchName || matchSubtitle || matchGenre || matchHall;
-    });
+    return ITEMS.filter((item) =>
+      [item.name, item.subtitle, item.genre, item.hall].some((field) =>
+        normalizeText(field).includes(cleanQuery),
+      ),
+    );
   }, [query]);
 
   // Manejador de refresco simulado
@@ -70,13 +77,13 @@ export function HomeScreen(): React.JSX.Element {
   // 4. Render Item memorizado con useCallback
   const renderItem: ListRenderItem<Item> = useCallback(
     ({ item }) => <ItemCard item={item} onPress={handleItemPress} />,
-    [handleItemPress]
+    [handleItemPress],
   );
 
   // 5. Separador entre elementos con useCallback
   const renderSeparator = useCallback(
     () => <View style={styles.separator} />,
-    []
+    [],
   );
 
   // 6. Estado vacío memorizado con useCallback
@@ -108,102 +115,94 @@ export function HomeScreen(): React.JSX.Element {
   }, [query]);
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="light-content" backgroundColor={COLORS.background} />
-
-      <KeyboardAvoidingView
-        style={styles.keyboardContainer}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      >
-        <View style={styles.container}>
-          {/* Header del Dominio Teatro */}
-          <View style={styles.header}>
-            <View style={styles.headerTitleRow}>
-              <Text style={styles.theaterIcon}>🎭</Text>
-              <Text style={styles.headerTitle}>{DOMAIN_TITLE}</Text>
-            </View>
-            <Text style={styles.headerSubtitle}>{DOMAIN_SUBTITLE}</Text>
+    <KeyboardAvoidingView
+      style={styles.keyboardContainer}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
+      <View style={styles.container}>
+        {/* Header del Dominio Teatro */}
+        <View style={styles.header}>
+          <View style={styles.headerTitleRow}>
+            <Text style={styles.theaterIcon}>🎭</Text>
+            <Text style={styles.headerTitle}>{DOMAIN_TITLE}</Text>
           </View>
-
-          {/* Barra de búsqueda (NO envuelta en TouchableWithoutFeedback para no matar el foco) */}
-          <View style={styles.searchSection}>
-            <Pressable
-              style={styles.searchInputWrapper}
-              onPress={() => searchInputRef.current?.focus()}
-            >
-              <Text style={styles.searchIcon}>🔍</Text>
-              <TextInput
-                ref={searchInputRef}
-                style={styles.searchInput}
-                placeholder="Buscar por obra, director o género..."
-                placeholderTextColor={COLORS.textMuted}
-                value={query}
-                onChangeText={setQuery}
-                autoCorrect={false}
-                autoCapitalize="none"
-                returnKeyType="search"
-                clearButtonMode="while-editing"
-              />
-              {query.length > 0 && (
-                <Pressable
-                  onPress={() => {
-                    setQuery('');
-                    searchInputRef.current?.focus();
-                  }}
-                  style={styles.clearIconWrapper}
-                  hitSlop={8}
-                  accessibilityRole="button"
-                  accessibilityLabel="Borrar búsqueda"
-                >
-                  <Text style={styles.clearIconText}>✕</Text>
-                </Pressable>
-              )}
-            </Pressable>
-
-            {/* Contador de resultados */}
-            <View style={styles.resultsBar}>
-              <Text style={styles.resultsCount}>
-                {filteredItems.length}{' '}
-                {filteredItems.length === 1 ? 'obra disponible' : 'obras disponibles'}
-              </Text>
-              {query.length > 0 && (
-                <Text style={styles.activeFilterBadge}>Filtro activo</Text>
-              )}
-            </View>
-          </View>
-
-          {/* Área de Lista: el tap fuera cierra el teclado sin interferir con el input */}
-          <TouchableWithoutFeedback
-            onPress={Keyboard.dismiss}
-            accessible={false}
-          >
-            <View style={styles.listWrapper}>
-              <FlatList
-                data={filteredItems}
-                keyExtractor={(item) => item.id}
-                renderItem={renderItem}
-                ItemSeparatorComponent={renderSeparator}
-                ListEmptyComponent={renderEmpty}
-                contentContainerStyle={styles.listContent}
-                keyboardShouldPersistTaps="handled"
-                keyboardDismissMode="on-drag"
-                showsVerticalScrollIndicator={false}
-                refreshing={refreshing}
-                onRefresh={onRefresh}
-              />
-            </View>
-          </TouchableWithoutFeedback>
+          <Text style={styles.headerSubtitle}>{DOMAIN_SUBTITLE}</Text>
         </View>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+
+        {/* Barra de búsqueda (NO envuelta en TouchableWithoutFeedback para no matar el foco) */}
+        <View style={styles.searchSection}>
+          <Pressable
+            style={styles.searchInputWrapper}
+            onPress={() => searchInputRef.current?.focus()}
+          >
+            <Text style={styles.searchIcon}>🔍</Text>
+            <TextInput
+              ref={searchInputRef}
+              style={styles.searchInput}
+              placeholder="Buscar por obra, director o género..."
+              placeholderTextColor={COLORS.textMuted}
+              value={query}
+              onChangeText={setQuery}
+              autoCorrect={false}
+              autoCapitalize="none"
+              returnKeyType="search"
+              clearButtonMode="while-editing"
+            />
+            {Platform.OS !== 'ios' && query.length > 0 && (
+              <Pressable
+                onPress={() => {
+                  setQuery('');
+                  searchInputRef.current?.focus();
+                }}
+                style={styles.clearIconWrapper}
+                hitSlop={8}
+                accessibilityRole="button"
+                accessibilityLabel="Borrar búsqueda"
+              >
+                <Text style={styles.clearIconText}>✕</Text>
+              </Pressable>
+            )}
+          </Pressable>
+
+          {/* Contador de resultados */}
+          <View style={styles.resultsBar}>
+            <Text style={styles.resultsCount}>
+              {filteredItems.length}{' '}
+              {filteredItems.length === 1 ? 'obra disponible' : 'obras disponibles'}
+            </Text>
+            {query.length > 0 && (
+              <Text style={styles.activeFilterBadge}>Filtro activo</Text>
+            )}
+          </View>
+        </View>
+
+        {/* Área de Lista: el tap fuera cierra el teclado sin interferir con el input */}
+        <TouchableWithoutFeedback
+          onPress={Keyboard.dismiss}
+          accessible={false}
+        >
+          <View style={styles.listWrapper}>
+            <FlatList
+              data={filteredItems}
+              keyExtractor={(item) => item.id}
+              renderItem={renderItem}
+              ItemSeparatorComponent={renderSeparator}
+              ListEmptyComponent={renderEmpty}
+              contentContainerStyle={styles.listContent}
+              keyboardShouldPersistTaps="handled"
+              keyboardDismissMode="on-drag"
+              showsVerticalScrollIndicator={false}
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+            />
+          </View>
+        </TouchableWithoutFeedback>
+      </View>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-  },
   keyboardContainer: {
     flex: 1,
   },
@@ -231,12 +230,12 @@ const styles = StyleSheet.create({
     fontSize: TYPOGRAPHY.size.xxl,
     fontWeight: TYPOGRAPHY.weight.bold,
     color: COLORS.accent,
-    letterSpacing: 0.5,
+    letterSpacing: TYPOGRAPHY.letterSpacing.wide,
   },
   headerSubtitle: {
     fontSize: TYPOGRAPHY.size.sm,
     color: COLORS.textSecondary,
-    marginTop: 2,
+    marginTop: SPACING.xxs,
   },
   searchSection: {
     paddingHorizontal: SPACING.base,
@@ -261,10 +260,10 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    paddingVertical: Platform.OS === 'ios' ? 12 : 10,
+    paddingVertical: Platform.OS === 'ios' ? SPACING.md : SPACING.sm + SPACING.xxs,
     fontSize: TYPOGRAPHY.size.base,
     color: COLORS.textPrimary,
-    ...(Platform.OS === 'web' ? ({ outlineStyle: 'none' } as any) : {}),
+    ...(Platform.OS === 'web' ? { outlineWidth: 0 } : {}),
   },
   clearIconWrapper: {
     padding: SPACING.xs,
@@ -290,7 +289,7 @@ const styles = StyleSheet.create({
     color: COLORS.accent,
     backgroundColor: COLORS.accentDim,
     paddingHorizontal: SPACING.sm,
-    paddingVertical: 2,
+    paddingVertical: SPACING.xxs,
     borderRadius: RADIUS.full,
     fontWeight: TYPOGRAPHY.weight.semibold,
   },
@@ -308,11 +307,11 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 60,
+    paddingVertical: SPACING.xxxl,
     paddingHorizontal: SPACING.xl,
   },
   emptyIcon: {
-    fontSize: 48,
+    fontSize: TYPOGRAPHY.size.display,
     marginBottom: SPACING.md,
   },
   emptyTitle: {
@@ -326,7 +325,7 @@ const styles = StyleSheet.create({
     fontSize: TYPOGRAPHY.size.sm,
     color: COLORS.textMuted,
     textAlign: 'center',
-    lineHeight: 20,
+    lineHeight: TYPOGRAPHY.lineHeight.base,
     marginBottom: SPACING.lg,
   },
   clearFilterButton: {
