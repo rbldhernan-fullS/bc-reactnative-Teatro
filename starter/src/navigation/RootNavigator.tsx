@@ -1,6 +1,6 @@
 // ============================================
-// NAVIGATION: RootNavigator — Dominio Teatro
-// Tab Navigator raíz con Stack Navigator anidado
+// NAVIGATION: RootNavigator — Semana 04: Estado Global
+// Tab Navigator raíz con Stack anidado y badge conectado a Zustand
 // ============================================
 
 import React from 'react';
@@ -10,9 +10,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 
 import { DetailScreen } from '../screens/DetailScreen';
-import { FavoritesScreen } from '../screens/FavoritesScreen';
+import { SavedScreen } from '../screens/SavedScreen';
 import { HomeScreen } from '../screens/HomeScreen';
 import { COLORS, TYPOGRAPHY, SIZES } from '../theme';
+import { selectSavedCount, useSavedStore } from '../stores/savedStore';
 import type { HomeStackParamList, RootTabParamList } from './types';
 
 // ============================================
@@ -67,6 +68,9 @@ const Tab = createBottomTabNavigator<RootTabParamList>();
 export function RootNavigator(): React.JSX.Element {
   const insets = useSafeAreaInsets();
 
+  // Selector: el navigator solo se vuelve a renderizar si cambia el conteo.
+  const savedCount = useSavedStore(selectSavedCount);
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -76,7 +80,7 @@ export function RootNavigator(): React.JSX.Element {
           if (route.name === 'Home') {
             iconName = focused ? 'ticket' : 'ticket-outline';
           } else {
-            iconName = focused ? 'heart' : 'heart-outline';
+            iconName = focused ? 'bookmark' : 'bookmark-outline';
           }
 
           return <Ionicons name={iconName} size={size} color={color} />;
@@ -107,12 +111,19 @@ export function RootNavigator(): React.JSX.Element {
         }}
       />
 
-      {/* Pestaña 2: Obras Favoritas */}
+      {/* Pestaña 2: Obras Guardadas (conteo en vivo desde Zustand) */}
       <Tab.Screen
-        name="Favorites"
-        component={FavoritesScreen}
+        name="Saved"
+        component={SavedScreen}
         options={{
-          tabBarLabel: 'Favoritos',
+          tabBarLabel: 'Guardados',
+          tabBarBadge: savedCount > 0 ? savedCount : undefined,
+          tabBarBadgeStyle: {
+            backgroundColor: COLORS.tabActive,
+            color: COLORS.background,
+            fontSize: TYPOGRAPHY.size.xs,
+            fontWeight: TYPOGRAPHY.weight.bold,
+          },
         }}
       />
     </Tab.Navigator>

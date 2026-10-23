@@ -1,6 +1,6 @@
 // ============================================
-// SCREEN: FavoritesScreen — Dominio Teatro
-// Segunda pestaña: Obras teatrales destacadas y favoritas
+// SCREEN: SavedScreen — Semana 04: Estado Global
+// Segunda pestaña: obras guardadas leídas desde el store de Zustand
 // ============================================
 
 import React, { useCallback } from 'react';
@@ -12,18 +12,24 @@ import {
   Pressable,
   StyleSheet,
 } from 'react-native';
-import type { ListRenderItem } from 'react-native';
+import type { GestureResponderEvent, ListRenderItem } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
-import { FAVORITES } from '../data/mockData';
+import { Ionicons } from '@expo/vector-icons';
 import type { Item } from '../types';
 import { COLORS, TYPOGRAPHY, SPACING, RADIUS, SIZES } from '../theme';
-import type { FavoritesScreenNavigationProp } from '../navigation/types';
+import type { SavedScreenNavigationProp } from '../navigation/types';
+import { useSavedStore } from '../stores/savedStore';
 
-export function FavoritesScreen(): React.JSX.Element {
-  const navigation = useNavigation<FavoritesScreenNavigationProp>();
+export function SavedScreen(): React.JSX.Element {
+  const navigation = useNavigation<SavedScreenNavigationProp>();
 
-  const handleFavoritePress = useCallback(
+  // Selectores específicos: el componente solo reacciona a lo que usa.
+  const savedItems = useSavedStore((state) => state.savedItems);
+  const removeItem = useSavedStore((state) => state.removeItem);
+  const clearSaved = useSavedStore((state) => state.clearSaved);
+
+  const handleItemPress = useCallback(
     (item: Item): void => {
       navigation.navigate('Home', {
         screen: 'HomeDetail',
@@ -36,11 +42,20 @@ export function FavoritesScreen(): React.JSX.Element {
     [navigation]
   );
 
-  const renderFavorite: ListRenderItem<Item> = useCallback(
+  const handleRemovePress = useCallback(
+    (event: GestureResponderEvent, id: string): void => {
+      // Evita que el toque del bookmark abra el detalle de la obra.
+      event.stopPropagation();
+      removeItem(id);
+    },
+    [removeItem]
+  );
+
+  const renderSavedItem: ListRenderItem<Item> = useCallback(
     ({ item }) => (
       <Pressable
         style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
-        onPress={() => handleFavoritePress(item)}
+        onPress={() => handleItemPress(item)}
         accessibilityRole="button"
         accessibilityLabel={`Ver detalles de ${item.name}`}
       >
@@ -55,7 +70,23 @@ export function FavoritesScreen(): React.JSX.Element {
             <View style={styles.genreBadge}>
               <Text style={styles.genreBadgeText}>{item.genre}</Text>
             </View>
-            <Text style={styles.heartIcon}>♥</Text>
+
+            <Pressable
+              onPress={(event) => handleRemovePress(event, item.id)}
+              style={({ pressed }) => [
+                styles.removeButton,
+                pressed && styles.removeButtonPressed,
+              ]}
+              hitSlop={8}
+              accessibilityRole="button"
+              accessibilityLabel={`Quitar ${item.name} de guardados`}
+            >
+              <Ionicons
+                name="bookmark"
+                size={SIZES.iconMd}
+                color={COLORS.tabActive}
+              />
+            </Pressable>
           </View>
 
           <Text style={styles.itemName} numberOfLines={1}>
@@ -80,7 +111,7 @@ export function FavoritesScreen(): React.JSX.Element {
         </View>
       </Pressable>
     ),
-    [handleFavoritePress]
+    [handleItemPress, handleRemovePress]
   );
 
   const renderSeparator = useCallback(
@@ -91,11 +122,15 @@ export function FavoritesScreen(): React.JSX.Element {
   const renderEmpty = useCallback(
     () => (
       <View style={styles.emptyContainer}>
-        <Text style={styles.emptyHeartIcon}>♡</Text>
-        <Text style={styles.emptyTitle}>Sin obras favoritas</Text>
+        <Ionicons
+          name="bookmark-outline"
+          size={SIZES.iconXl}
+          color={COLORS.textMuted}
+        />
+        <Text style={styles.emptyTitle}>Sin obras guardadas</Text>
         <Text style={styles.emptySubtitle}>
-          Guarda tus obras favoritas desde la cartelera para encontrarlas y
-          reservar rápidamente.
+          Usa el bookmark de la cartelera o del detalle para guardar una obra y
+          encontrarla aquí.
         </Text>
       </View>
     ),
@@ -105,19 +140,40 @@ export function FavoritesScreen(): React.JSX.Element {
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <View style={styles.container}>
-        {/* Header de la pestaña Favoritos */}
+        {/* Header de la pestaña Guardados */}
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>Obras Favoritas</Text>
-          <Text style={styles.headerSubtitle}>
-            {FAVORITES.length} obras guardadas en tu lista personal
-          </Text>
+          <View style={styles.headerRow}>
+            <View style={styles.headerTextBlock}>
+              <Text style={styles.headerTitle}>Obras Guardadas</Text>
+              <Text style={styles.headerSubtitle}>
+                {savedItems.length}{' '}
+                {savedItems.length === 1
+                  ? 'obra guardada en tu lista'
+                  : 'obras guardadas en tu lista'}
+              </Text>
+            </View>
+
+            {savedItems.length > 0 && (
+              <Pressable
+                style={({ pressed }) => [
+                  styles.clearButton,
+                  pressed && styles.clearButtonPressed,
+                ]}
+                onPress={clearSaved}
+                accessibilityRole="button"
+                accessibilityLabel="Vaciar la lista de obras guardadas"
+              >
+                <Text style={styles.clearButtonText}>Vaciar</Text>
+              </Pressable>
+            )}
+          </View>
         </View>
 
-        {/* Lista de Favoritos */}
+        {/* Lista de Guardados desde Zustand */}
         <FlatList
-          data={FAVORITES}
+          data={savedItems}
           keyExtractor={(item) => item.id}
-          renderItem={renderFavorite}
+          renderItem={renderSavedItem}
           ListEmptyComponent={renderEmpty}
           ItemSeparatorComponent={renderSeparator}
           contentContainerStyle={styles.listContent}
@@ -145,6 +201,15 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: COLORS.border,
   },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: SPACING.md,
+  },
+  headerTextBlock: {
+    flex: 1,
+  },
   headerTitle: {
     fontSize: TYPOGRAPHY.size.xxl,
     fontWeight: TYPOGRAPHY.weight.bold,
@@ -154,6 +219,22 @@ const styles = StyleSheet.create({
     fontSize: TYPOGRAPHY.size.sm,
     color: COLORS.textSecondary,
     marginTop: SPACING.xxs,
+  },
+  clearButton: {
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.xs,
+    borderRadius: RADIUS.full,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    backgroundColor: COLORS.surfaceAlt,
+  },
+  clearButtonPressed: {
+    opacity: 0.7,
+  },
+  clearButtonText: {
+    fontSize: TYPOGRAPHY.size.xs,
+    fontWeight: TYPOGRAPHY.weight.semibold,
+    color: COLORS.textSecondary,
   },
   listContent: {
     padding: SPACING.base,
@@ -201,9 +282,13 @@ const styles = StyleSheet.create({
     fontSize: TYPOGRAPHY.size.xs,
     fontWeight: TYPOGRAPHY.weight.semibold,
   },
-  heartIcon: {
-    color: COLORS.error,
-    fontSize: SIZES.iconSm,
+  removeButton: {
+    padding: SPACING.xxs,
+    borderRadius: RADIUS.full,
+  },
+  removeButtonPressed: {
+    backgroundColor: COLORS.surfaceAlt,
+    opacity: 0.7,
   },
   itemName: {
     fontSize: TYPOGRAPHY.size.md,
@@ -252,15 +337,11 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.xxxl,
     paddingHorizontal: SPACING.xl,
   },
-  emptyHeartIcon: {
-    fontSize: SIZES.iconXl,
-    color: COLORS.textMuted,
-    marginBottom: SPACING.md,
-  },
   emptyTitle: {
     fontSize: TYPOGRAPHY.size.lg,
     fontWeight: TYPOGRAPHY.weight.bold,
     color: COLORS.textPrimary,
+    marginTop: SPACING.md,
     marginBottom: SPACING.xs,
   },
   emptySubtitle: {

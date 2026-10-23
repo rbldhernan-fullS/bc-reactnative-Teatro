@@ -1,6 +1,6 @@
 // ============================================
-// SCREEN: DetailScreen — Dominio Teatro
-// Ficha técnica completa y detalles de la obra teatral
+// SCREEN: DetailScreen — Semana 04: Estado Global
+// Ficha técnica completa y acción de guardar conectada a Zustand
 // ============================================
 
 import React from 'react';
@@ -16,9 +16,11 @@ import {
 } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import type { DetailScreenProps } from '../navigation/types';
 import { ITEMS } from '../data/mockData';
 import { COLORS, TYPOGRAPHY, SPACING, RADIUS, SIZES } from '../theme';
+import { selectIsSaved, useSavedStore } from '../stores/savedStore';
 
 export function DetailScreen(): React.JSX.Element {
   const route = useRoute<DetailScreenProps['route']>();
@@ -27,6 +29,10 @@ export function DetailScreen(): React.JSX.Element {
 
   const { id } = route.params;
   const item = ITEMS.find((play) => play.id === id);
+
+  // Estado global: el botón lee y escribe el mismo store que la cartelera.
+  const isSaved = useSavedStore(selectIsSaved(id));
+  const toggleItem = useSavedStore((state) => state.toggleItem);
 
   if (!item) {
     return (
@@ -108,6 +114,37 @@ export function DetailScreen(): React.JSX.Element {
               <Text style={styles.ratingBadgeText}>★ {rating.toFixed(1)}</Text>
             </View>
           </View>
+
+          {/* Acción Guardar / Quitar conectada al store */}
+          <Pressable
+            style={({ pressed }) => [
+              styles.savePill,
+              isSaved && styles.savePillActive,
+              pressed && styles.savePillPressed,
+            ]}
+            onPress={() => toggleItem(item)}
+            accessibilityRole="button"
+            accessibilityState={{ selected: isSaved }}
+            accessibilityLabel={
+              isSaved
+                ? `Quitar ${name} de guardados`
+                : `Guardar ${name} en guardados`
+            }
+          >
+            <Ionicons
+              name={isSaved ? 'bookmark' : 'bookmark-outline'}
+              size={SIZES.iconSm}
+              color={isSaved ? COLORS.tabActive : COLORS.textPrimary}
+            />
+            <Text
+              style={[
+                styles.savePillText,
+                isSaved && styles.savePillTextActive,
+              ]}
+            >
+              {isSaved ? 'Guardada' : 'Guardar'}
+            </Text>
+          </Pressable>
         </View>
 
         {/* Información Principal */}
@@ -275,6 +312,34 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+  },
+  savePill: {
+    position: 'absolute',
+    right: SPACING.base,
+    bottom: SPACING.base,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.xs,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
+    borderRadius: RADIUS.full,
+    backgroundColor: COLORS.overlay,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
+  savePillActive: {
+    borderColor: COLORS.tabActive,
+  },
+  savePillPressed: {
+    opacity: 0.7,
+  },
+  savePillText: {
+    fontSize: TYPOGRAPHY.size.sm,
+    fontWeight: TYPOGRAPHY.weight.semibold,
+    color: COLORS.textPrimary,
+  },
+  savePillTextActive: {
+    color: COLORS.tabActive,
   },
   genreBadge: {
     backgroundColor: COLORS.surface,

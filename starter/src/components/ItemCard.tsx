@@ -1,22 +1,36 @@
 // ============================================
-// COMPONENT: ItemCard — Dominio Teatro
-// Tarjeta de obra teatral optimizada para listas
+// COMPONENT: ItemCard — Semana 04: Estado Global
+// Tarjeta de obra teatral con acción de guardar/quitar
 // ============================================
 
 import React from 'react';
 import { View, Text, Image, Pressable, StyleSheet } from 'react-native';
+import type { GestureResponderEvent } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import type { Item } from '../types';
 import { COLORS, TYPOGRAPHY, SPACING, RADIUS, SIZES } from '../theme';
 
 interface ItemCardProps {
   item: Item;
   onPress: (item: Item) => void;
+  /** Indica si la obra ya está en el store de guardados */
+  saved: boolean;
+  /** Guarda o quita la obra del store */
+  onToggleSave: (item: Item) => void;
 }
 
 export const ItemCard = React.memo(function ItemCard({
   item,
   onPress,
+  saved,
+  onToggleSave,
 }: ItemCardProps): React.JSX.Element {
+  function handleSavePress(event: GestureResponderEvent): void {
+    // Evita que el toque del bookmark abra el detalle de la obra.
+    event.stopPropagation();
+    onToggleSave(item);
+  }
+
   return (
     <Pressable
       style={({ pressed }) => [
@@ -43,6 +57,29 @@ export const ItemCard = React.memo(function ItemCard({
         <View style={styles.ratingBadge}>
           <Text style={styles.ratingBadgeText}>★ {item.rating.toFixed(1)}</Text>
         </View>
+
+        {/* Acción de guardar/quitar desde la cartelera */}
+        <Pressable
+          onPress={handleSavePress}
+          style={({ pressed }) => [
+            styles.saveButton,
+            saved && styles.saveButtonActive,
+            pressed && styles.saveButtonPressed,
+          ]}
+          hitSlop={8}
+          accessibilityRole="button"
+          accessibilityLabel={
+            saved
+              ? `Quitar ${item.name} de guardados`
+              : `Guardar ${item.name} en guardados`
+          }
+        >
+          <Ionicons
+            name={saved ? 'bookmark' : 'bookmark-outline'}
+            size={SIZES.iconMd}
+            color={saved ? COLORS.tabActive : COLORS.textPrimary}
+          />
+        </Pressable>
       </View>
 
       {/* Cuerpo informativo de la obra */}
@@ -149,6 +186,22 @@ const styles = StyleSheet.create({
     fontSize: TYPOGRAPHY.size.xs,
     fontWeight: TYPOGRAPHY.weight.bold,
     color: COLORS.accent,
+  },
+  saveButton: {
+    position: 'absolute',
+    right: SPACING.sm,
+    bottom: SPACING.sm,
+    padding: SPACING.sm,
+    borderRadius: RADIUS.full,
+    backgroundColor: COLORS.overlay,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
+  saveButtonActive: {
+    borderColor: COLORS.tabActive,
+  },
+  saveButtonPressed: {
+    opacity: 0.7,
   },
   cardBody: {
     padding: SPACING.base,

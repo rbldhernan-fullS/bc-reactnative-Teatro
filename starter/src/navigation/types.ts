@@ -1,6 +1,6 @@
 // ============================================
-// NAVIGATION TYPES — Semana 03: Dominio Teatro
-// Tipado estricto de parámetros para Tab y Stack Navigators (Sin any)
+// NAVIGATION TYPES — Semana 04: Dominio Teatro
+// Tipado estricto de parámetros para Tab y Stack Navigators (Sin tipos dinámicos)
 // ============================================
 
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -27,8 +27,8 @@ export type HomeStackParamList = {
 export type RootTabParamList = {
   /** Pestaña principal con Stack anidado tipado con NavigatorScreenParams */
   Home: NavigatorScreenParams<HomeStackParamList>;
-  /** Pestaña de obras guardadas / favoritas */
-  Favorites: undefined;
+  /** Pestaña de obras guardadas (su estado vive en Zustand) */
+  Saved: undefined;
 };
 
 // ============================================
@@ -41,8 +41,8 @@ export type DetailScreenProps = NativeStackScreenProps<
   'HomeDetail'
 >;
 
-// Props para FavoritesScreen
-export type FavoritesScreenNavigationProp = BottomTabNavigationProp<
+// Props para SavedScreen
+export type SavedScreenNavigationProp = BottomTabNavigationProp<
   RootTabParamList,
-  'Favorites'
+  'Saved'
 >;

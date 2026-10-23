@@ -1,6 +1,6 @@
 // ============================================================
-// SCREEN: HomeScreen — Dominio Teatro
-// Pantalla principal con búsqueda en tiempo real, FlatList y navegación
+// SCREEN: HomeScreen — Semana 04: Estado Global
+// Cartelera con búsqueda en tiempo real y guardado desde Zustand
 // ============================================================
 
 import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
@@ -23,6 +23,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { Item } from '../types';
 import { ITEMS } from '../data/mockData';
 import { ItemCard } from '../components/ItemCard';
+import { useSavedStore } from '../stores/savedStore';
 import { COLORS, TYPOGRAPHY, SPACING, RADIUS } from '../theme';
 import type { HomeStackParamList } from '../navigation/types';
 
@@ -44,6 +45,16 @@ function normalizeText(value: string): string {
 
 export function HomeScreen(): React.JSX.Element {
   const navigation = useNavigation<HomeScreenNavProp>();
+
+  // Estado global de guardados (Zustand) leído con selectores específicos
+  const savedItems = useSavedStore((state) => state.savedItems);
+  const toggleItem = useSavedStore((state) => state.toggleItem);
+
+  // Set de ids para consultar si una obra está guardada sin recorrer el arreglo por cada tarjeta
+  const savedIds = useMemo(
+    () => new Set(savedItems.map((saved) => saved.id)),
+    [savedItems]
+  );
 
   // Referencia para enfocar el input al hacer click en cualquier parte de la barra
   const searchInputRef = useRef<TextInput>(null);
@@ -101,8 +112,15 @@ export function HomeScreen(): React.JSX.Element {
 
   // 4. Render Item memorizado con useCallback
   const renderItem: ListRenderItem<Item> = useCallback(
-    ({ item }) => <ItemCard item={item} onPress={handleItemPress} />,
-    [handleItemPress]
+    ({ item }) => (
+      <ItemCard
+        item={item}
+        onPress={handleItemPress}
+        saved={savedIds.has(item.id)}
+        onToggleSave={toggleItem}
+      />
+    ),
+    [handleItemPress, savedIds, toggleItem]
   );
 
   // 5. Separador entre elementos con useCallback

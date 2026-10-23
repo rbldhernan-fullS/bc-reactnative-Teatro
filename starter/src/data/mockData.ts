@@ -1,5 +1,5 @@
 // ============================================
-// MOCK DATA — Semana 03: Dominio Teatro
+// MOCK DATA — Semana 04: Dominio Teatro
 // 12 obras en cartelera con datos detallados y lista de favoritos
 // ============================================
 
@@ -200,9 +200,5 @@ export const ITEMS: Item[] = [
   },
 ];
 
-// Obras favoritas guardadas por el usuario (mínimo 3 según la rúbrica)
-const FAVORITE_IDS = ['3', '1', '6', '8'];
-
-export const FAVORITES: Item[] = FAVORITE_IDS.map((id) =>
-  ITEMS.find((item) => item.id === id)
-).filter((item): item is Item => item !== undefined);
+// Las obras guardadas ahora viven en el store global de Zustand
+// (src/stores/savedStore.ts), no en los datos mock.
