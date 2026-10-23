@@ -70,7 +70,7 @@ Para garantizar consistencia y continuidad en cualquier día de trabajo:
 ### Rúbrica Oficial (100 pts)
 - [x] **Tab Navigator**: 2 pestañas principales (`Cartelera` y `Favoritos`) con iconos de `@expo/vector-icons` (Ionicons) y estilos activos/inactivos en la paleta vino/oro.
 - [x] **Stack Navigator Anidado**: Stack dentro del Tab `Cartelera` que permite navegar de `HomeList` (Cartelera) a `HomeDetail` (Detalle de la Obra).
-- [x] **Parámetros Tipados en TypeScript**: Navegación con tipos explícitos (`HomeStackParamList` y `RootTabParamList`) pasando el `item` completo o `id`, sin ningún tipo `any`.
+- [x] **Parámetros Tipados en TypeScript**: Navegación con tipos explícitos (`HomeStackParamList` y `RootTabParamList`) pasando `id` y `name`, sin ningún tipo `any`.
 - [x] **Pantalla de Detalle (`DetailScreen`)**: Ficha técnica completa de la obra teatral con sinopsis, sala, duración, butacas, precio y botón de reserva/adquisición de boletos.
 - [x] **Pantalla de Favoritos (`FavoritesScreen`)**: Segunda pestaña que lista las obras destacadas/guardadas por el usuario.
 - [x] **Headers Personalizados**: Títulos de pantalla descriptivos con estilo teatral en el header (`headerStyle`, `headerTintColor`).
