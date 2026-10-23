@@ -12,7 +12,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { DetailScreen } from '../screens/DetailScreen';
 import { FavoritesScreen } from '../screens/FavoritesScreen';
 import { HomeScreen } from '../screens/HomeScreen';
-import { COLORS, TYPOGRAPHY } from '../theme';
+import { COLORS, TYPOGRAPHY, SIZES } from '../theme';
 import type { HomeStackParamList, RootTabParamList } from './types';
 
 // ============================================
@@ -79,16 +79,22 @@ export function RootNavigator(): React.JSX.Element {
 
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: COLORS.accent,
+        tabBarActiveTintColor: COLORS.tabActive,
         tabBarInactiveTintColor: COLORS.textMuted,
         headerShown: false,
         tabBarStyle: {
           backgroundColor: COLORS.surface,
           borderTopColor: COLORS.border,
           borderTopWidth: 1,
-          height: Platform.OS === 'ios' ? 88 : 64,
-          paddingBottom: Platform.OS === 'ios' ? 26 : 10,
-          paddingTop: 8,
+          height:
+            Platform.OS === 'ios'
+              ? SIZES.tabBarHeight.ios
+              : SIZES.tabBarHeight.android,
+          paddingBottom:
+            Platform.OS === 'ios'
+              ? SIZES.tabBarPaddingBottom.ios
+              : SIZES.tabBarPaddingBottom.android,
+          paddingTop: SIZES.tabBarPaddingTop,
         },
         tabBarLabelStyle: {
           fontSize: TYPOGRAPHY.size.xs,
