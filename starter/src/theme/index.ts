@@ -1,5 +1,5 @@
 // ============================================
-// THEME — Semana 02: Dominio Teatro
+// THEME — Semana 03: Dominio Teatro
 // Constantes de diseño globales (Paleta Vino y Oro)
 // ============================================
 
@@ -22,6 +22,9 @@ export const COLORS = {
   accent: '#d4a24c',
   accentDim: '#d4a24c33',   // 20% de opacidad para fondos de chips/badges
   accentHover: '#e5b565',
+
+  // Acento del Tab Bar (requisito explícito de la Semana 03)
+  tabActive: '#61DAFB',
 
   // Semánticos
   success: '#3fb950',
@@ -46,6 +49,7 @@ export const TYPOGRAPHY = {
   },
   lineHeight: {
     base: 20,
+    md: 22,
     lg: 24,
   },
   letterSpacing: {
@@ -74,6 +78,23 @@ export const SPACING = {
 export const SIZES = {
   cardImageHeight: 160,
   pressedScale: 0.995,
+  detailImageHeight: 240,
+  detailContentBottomPadding: 110,
+  favoriteImageWidth: 110,
+  favoriteImageHeight: 140,
+  iconSm: 18,
+  iconMd: 22,
+  iconLg: 26,
+  iconXl: 50,
+  tabBarHeight: {
+    ios: 88,
+    android: 64,
+  },
+  tabBarPaddingBottom: {
+    ios: 26,
+    android: 10,
+  },
+  tabBarPaddingTop: 8,
 } as const;
 
 export const RADIUS = {
