@@ -86,7 +86,8 @@ export const SIZES = {
   iconMd: 22,
   iconLg: 26,
   iconXl: 50,
-  tabBarContentHeight: 56,
+  // 64 deja espacio para icono (24) + label (17) + paddings sin recortar el texto
+  tabBarContentHeight: 64,
   tabBarPaddingTop: 8,
 } as const;
 
