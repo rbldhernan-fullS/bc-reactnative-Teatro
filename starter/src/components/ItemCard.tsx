@@ -5,15 +5,18 @@
 
 import React from 'react';
 import { View, Text, Image, Pressable, StyleSheet } from 'react-native';
-import { Item } from '../types';
-import { COLORS, TYPOGRAPHY, SPACING, RADIUS } from '../theme';
+import type { Item } from '../types';
+import { COLORS, TYPOGRAPHY, SPACING, RADIUS, SIZES } from '../theme';
 
 interface ItemCardProps {
   item: Item;
   onPress: (item: Item) => void;
 }
 
-export function ItemCard({ item, onPress }: ItemCardProps): React.JSX.Element {
+export const ItemCard = React.memo(function ItemCard({
+  item,
+  onPress,
+}: ItemCardProps): React.JSX.Element {
   return (
     <Pressable
       style={({ pressed }) => [
@@ -88,7 +91,7 @@ export function ItemCard({ item, onPress }: ItemCardProps): React.JSX.Element {
       </View>
     </Pressable>
   );
-}
+});
 
 const styles = StyleSheet.create({
   card: {
@@ -103,12 +106,12 @@ const styles = StyleSheet.create({
   cardPressed: {
     backgroundColor: COLORS.surfaceAlt,
     opacity: 0.9,
-    transform: [{ scale: 0.995 }],
+    transform: [{ scale: SIZES.pressedScale }],
   },
   imageWrapper: {
     position: 'relative',
     width: '100%',
-    height: 160,
+    height: SIZES.cardImageHeight,
     backgroundColor: COLORS.borderLight,
   },
   cardImage: {
@@ -121,7 +124,7 @@ const styles = StyleSheet.create({
     left: SPACING.sm,
     backgroundColor: COLORS.surface,
     paddingHorizontal: SPACING.sm,
-    paddingVertical: 4,
+    paddingVertical: SPACING.xs,
     borderRadius: RADIUS.full,
     borderWidth: 1,
     borderColor: COLORS.accent,
@@ -131,7 +134,7 @@ const styles = StyleSheet.create({
     fontWeight: TYPOGRAPHY.weight.bold,
     color: COLORS.accent,
     textTransform: 'uppercase',
-    letterSpacing: 0.5,
+    letterSpacing: TYPOGRAPHY.letterSpacing.wide,
   },
   ratingBadge: {
     position: 'absolute',
@@ -139,7 +142,7 @@ const styles = StyleSheet.create({
     right: SPACING.sm,
     backgroundColor: COLORS.overlay,
     paddingHorizontal: SPACING.sm,
-    paddingVertical: 4,
+    paddingVertical: SPACING.xs,
     borderRadius: RADIUS.full,
   },
   ratingBadgeText: {
@@ -173,7 +176,7 @@ const styles = StyleSheet.create({
   metaDot: {
     fontSize: TYPOGRAPHY.size.sm,
     color: COLORS.textMuted,
-    marginHorizontal: 2,
+    marginHorizontal: SPACING.xxs,
   },
   divider: {
     height: 1,

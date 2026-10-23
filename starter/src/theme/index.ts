@@ -42,6 +42,14 @@ export const TYPOGRAPHY = {
     lg: 20,
     xl: 24,
     xxl: 30,
+    display: 48,
+  },
+  lineHeight: {
+    base: 20,
+    lg: 24,
+  },
+  letterSpacing: {
+    wide: 0.5,
   },
   weight: {
     regular: '400' as const,
@@ -52,6 +60,7 @@ export const TYPOGRAPHY = {
 } as const;
 
 export const SPACING = {
+  xxs: 2,
   xs: 4,
   sm: 8,
   md: 12,
@@ -59,6 +68,12 @@ export const SPACING = {
   lg: 20,
   xl: 24,
   xxl: 32,
+  xxxl: 60,
+} as const;
+
+export const SIZES = {
+  cardImageHeight: 160,
+  pressedScale: 0.995,
 } as const;
 
 export const RADIUS = {
