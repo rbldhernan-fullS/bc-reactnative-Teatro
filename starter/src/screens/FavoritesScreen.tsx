@@ -11,15 +11,14 @@ import {
   Image,
   Pressable,
   StyleSheet,
-  SafeAreaView,
-  StatusBar,
-  ListRenderItem,
 } from 'react-native';
+import type { ListRenderItem } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { FAVORITES } from '../data/mockData';
-import { Item } from '../types';
-import { COLORS, TYPOGRAPHY, SPACING, RADIUS } from '../theme';
-import { FavoritesScreenNavigationProp } from '../navigation/types';
+import type { Item } from '../types';
+import { COLORS, TYPOGRAPHY, SPACING, RADIUS, SIZES } from '../theme';
+import type { FavoritesScreenNavigationProp } from '../navigation/types';
 
 export function FavoritesScreen(): React.JSX.Element {
   const navigation = useNavigation<FavoritesScreenNavigationProp>();
@@ -31,17 +30,6 @@ export function FavoritesScreen(): React.JSX.Element {
         params: {
           id: item.id,
           name: item.name,
-          subtitle: item.subtitle,
-          imageUri: item.imageUri,
-          genre: item.genre,
-          date: item.date,
-          time: item.time,
-          price: item.price,
-          hall: item.hall,
-          duration: item.duration,
-          availableSeats: item.availableSeats,
-          rating: item.rating,
-          synopsis: item.synopsis,
         },
       });
     },
@@ -95,6 +83,11 @@ export function FavoritesScreen(): React.JSX.Element {
     [handleFavoritePress]
   );
 
+  const renderSeparator = useCallback(
+    () => <View style={styles.separator} />,
+    []
+  );
+
   const renderEmpty = useCallback(
     () => (
       <View style={styles.emptyContainer}>
@@ -110,8 +103,7 @@ export function FavoritesScreen(): React.JSX.Element {
   );
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="light-content" backgroundColor={COLORS.background} />
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
       <View style={styles.container}>
         {/* Header de la pestaña Favoritos */}
         <View style={styles.header}>
@@ -127,9 +119,9 @@ export function FavoritesScreen(): React.JSX.Element {
           keyExtractor={(item) => item.id}
           renderItem={renderFavorite}
           ListEmptyComponent={renderEmpty}
+          ItemSeparatorComponent={renderSeparator}
           contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
-          ItemSeparatorComponent={() => <View style={styles.separator} />}
         />
       </View>
     </SafeAreaView>
@@ -161,7 +153,7 @@ const styles = StyleSheet.create({
   headerSubtitle: {
     fontSize: TYPOGRAPHY.size.sm,
     color: COLORS.textSecondary,
-    marginTop: 2,
+    marginTop: SPACING.xxs,
   },
   listContent: {
     padding: SPACING.base,
@@ -183,8 +175,8 @@ const styles = StyleSheet.create({
     opacity: 0.9,
   },
   cardImage: {
-    width: 110,
-    height: 140,
+    width: SIZES.favoriteImageWidth,
+    height: SIZES.favoriteImageHeight,
     backgroundColor: COLORS.borderLight,
   },
   cardContent: {
@@ -196,12 +188,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 4,
+    marginBottom: SPACING.xs,
   },
   genreBadge: {
     backgroundColor: COLORS.accentDim,
     paddingHorizontal: SPACING.sm,
-    paddingVertical: 2,
+    paddingVertical: SPACING.xxs,
     borderRadius: RADIUS.full,
   },
   genreBadgeText: {
@@ -211,7 +203,7 @@ const styles = StyleSheet.create({
   },
   heartIcon: {
     color: COLORS.error,
-    fontSize: 18,
+    fontSize: SIZES.iconSm,
   },
   itemName: {
     fontSize: TYPOGRAPHY.size.md,
@@ -221,13 +213,13 @@ const styles = StyleSheet.create({
   itemSubtitle: {
     fontSize: TYPOGRAPHY.size.xs,
     color: COLORS.textSecondary,
-    marginTop: 2,
+    marginTop: SPACING.xxs,
   },
   metaRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
-    marginVertical: 4,
+    gap: SPACING.xs,
+    marginVertical: SPACING.xs,
   },
   metaText: {
     fontSize: TYPOGRAPHY.size.xs,
@@ -241,7 +233,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 4,
+    marginTop: SPACING.xs,
   },
   ratingText: {
     color: COLORS.accent,
@@ -257,11 +249,11 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 80,
+    paddingVertical: SPACING.xxxl,
     paddingHorizontal: SPACING.xl,
   },
   emptyHeartIcon: {
-    fontSize: 50,
+    fontSize: SIZES.iconXl,
     color: COLORS.textMuted,
     marginBottom: SPACING.md,
   },
@@ -275,6 +267,6 @@ const styles = StyleSheet.create({
     fontSize: TYPOGRAPHY.size.sm,
     color: COLORS.textMuted,
     textAlign: 'center',
-    lineHeight: 20,
+    lineHeight: TYPOGRAPHY.lineHeight.base,
   },
 });

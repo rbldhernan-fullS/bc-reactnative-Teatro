@@ -71,17 +71,6 @@ export function HomeScreen(): React.JSX.Element {
       navigation.navigate('HomeDetail', {
         id: item.id,
         name: item.name,
-        subtitle: item.subtitle,
-        imageUri: item.imageUri,
-        genre: item.genre,
-        date: item.date,
-        time: item.time,
-        price: item.price,
-        hall: item.hall,
-        duration: item.duration,
-        availableSeats: item.availableSeats,
-        rating: item.rating,
-        synopsis: item.synopsis,
       });
     },
     [navigation]

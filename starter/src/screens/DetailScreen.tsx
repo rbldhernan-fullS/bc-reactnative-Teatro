@@ -15,15 +15,39 @@ import {
   Platform,
 } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
-import { DetailScreenProps } from '../navigation/types';
-import { COLORS, TYPOGRAPHY, SPACING, RADIUS } from '../theme';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import type { DetailScreenProps } from '../navigation/types';
+import { ITEMS } from '../data/mockData';
+import { COLORS, TYPOGRAPHY, SPACING, RADIUS, SIZES } from '../theme';
 
 export function DetailScreen(): React.JSX.Element {
   const route = useRoute<DetailScreenProps['route']>();
   const navigation = useNavigation<DetailScreenProps['navigation']>();
+  const insets = useSafeAreaInsets();
+
+  const { id } = route.params;
+  const item = ITEMS.find((play) => play.id === id);
+
+  if (!item) {
+    return (
+      <View style={[styles.screenWrapper, styles.notFoundContainer]}>
+        <Text style={styles.notFoundTitle}>Obra no encontrada</Text>
+        <Text style={styles.notFoundSubtitle}>
+          La obra que buscas ya no está en cartelera.
+        </Text>
+        <Pressable
+          style={styles.bookButton}
+          onPress={() => navigation.goBack()}
+          accessibilityRole="button"
+          accessibilityLabel="Volver a la cartelera"
+        >
+          <Text style={styles.bookButtonText}>Volver a la cartelera</Text>
+        </Pressable>
+      </View>
+    );
+  }
 
   const {
-    id,
     name,
     subtitle,
     imageUri,
@@ -36,24 +60,23 @@ export function DetailScreen(): React.JSX.Element {
     availableSeats,
     rating,
     synopsis,
-  } = route.params;
+  } = item;
 
   function handleBookingPress(): void {
     const message = `¿Deseas iniciar la selección de butacas para "${name}" en la ${hall} (${date} · ${time})?`;
     if (Platform.OS === 'web') {
-      window.alert(`Reserva iniciada:\n${message}\nValor: $${price.toLocaleString('es-CO')} COP`);
-    } else {
-      Alert.alert(
-        'Reservar Butacas',
-        message,
-        [
-          { text: 'Cancelar', style: 'cancel' },
-          {
-            text: 'Continuar',
-            onPress: () => console.log(`Iniciando reserva para obra ID: ${id}`),
-          },
-        ]
+      window.alert(
+        `Reserva iniciada:\n${message}\nValor: $${price.toLocaleString('es-CO')} COP`
       );
+    } else {
+      Alert.alert('Reservar Butacas', message, [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Continuar',
+          onPress: () =>
+            Alert.alert('Reserva iniciada', `Obra: ${name}\nID: ${id}`),
+        },
+      ]);
     }
   }
 
@@ -61,7 +84,10 @@ export function DetailScreen(): React.JSX.Element {
     <View style={styles.screenWrapper}>
       <ScrollView
         style={styles.container}
-        contentContainerStyle={styles.contentContainer}
+        contentContainerStyle={[
+          styles.contentContainer,
+          { paddingBottom: SIZES.detailContentBottomPadding + insets.bottom },
+        ]}
         showsVerticalScrollIndicator={false}
       >
         {/* Banner principal / Afiche */}
@@ -165,11 +191,17 @@ export function DetailScreen(): React.JSX.Element {
       </ScrollView>
 
       {/* Barra de acción inferior fija */}
-      <View style={styles.bottomBar}>
+      <View
+        style={[
+          styles.bottomBar,
+          { paddingBottom: SPACING.md + insets.bottom },
+        ]}
+      >
         <View style={styles.priceColumn}>
           <Text style={styles.priceCaption}>Entrada General</Text>
           <Text style={styles.priceNumber}>
-            ${price.toLocaleString('es-CO')} <Text style={styles.priceCurrency}>COP</Text>
+            ${price.toLocaleString('es-CO')}{' '}
+            <Text style={styles.priceCurrency}>COP</Text>
           </Text>
         </View>
 
@@ -194,16 +226,33 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.background,
   },
+  notFoundContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: SPACING.xl,
+    gap: SPACING.md,
+  },
+  notFoundTitle: {
+    fontSize: TYPOGRAPHY.size.xxl,
+    fontWeight: TYPOGRAPHY.weight.bold,
+    color: COLORS.accent,
+    textAlign: 'center',
+  },
+  notFoundSubtitle: {
+    fontSize: TYPOGRAPHY.size.base,
+    color: COLORS.textSecondary,
+    textAlign: 'center',
+  },
   container: {
     flex: 1,
   },
   contentContainer: {
-    paddingBottom: 110,
+    paddingBottom: SIZES.detailContentBottomPadding,
   },
   imageContainer: {
     position: 'relative',
     width: '100%',
-    height: 240,
+    height: SIZES.detailImageHeight,
     backgroundColor: COLORS.border,
   },
   image: {
@@ -230,7 +279,7 @@ const styles = StyleSheet.create({
   genreBadge: {
     backgroundColor: COLORS.surface,
     paddingHorizontal: SPACING.md,
-    paddingVertical: 5,
+    paddingVertical: SPACING.xs,
     borderRadius: RADIUS.full,
     borderWidth: 1,
     borderColor: COLORS.accent,
@@ -240,12 +289,12 @@ const styles = StyleSheet.create({
     fontSize: TYPOGRAPHY.size.xs,
     fontWeight: TYPOGRAPHY.weight.bold,
     textTransform: 'uppercase',
-    letterSpacing: 0.5,
+    letterSpacing: TYPOGRAPHY.letterSpacing.wide,
   },
   ratingBadge: {
     backgroundColor: COLORS.surface,
     paddingHorizontal: SPACING.md,
-    paddingVertical: 5,
+    paddingVertical: SPACING.xs,
     borderRadius: RADIUS.full,
   },
   ratingBadgeText: {
@@ -284,13 +333,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   metaIcon: {
-    fontSize: 22,
-    marginBottom: 4,
+    fontSize: SIZES.iconMd,
+    marginBottom: SPACING.xs,
   },
   metaLabel: {
     fontSize: TYPOGRAPHY.size.xs,
     color: COLORS.textMuted,
-    marginBottom: 2,
+    marginBottom: SPACING.xxs,
   },
   metaValue: {
     fontSize: TYPOGRAPHY.size.sm,
@@ -308,7 +357,7 @@ const styles = StyleSheet.create({
     gap: SPACING.md,
   },
   availabilityIcon: {
-    fontSize: 26,
+    fontSize: SIZES.iconLg,
   },
   availabilityTextWrapper: {
     flex: 1,
@@ -321,7 +370,7 @@ const styles = StyleSheet.create({
   availabilitySubtitle: {
     fontSize: TYPOGRAPHY.size.xs,
     color: COLORS.textSecondary,
-    marginTop: 2,
+    marginTop: SPACING.xxs,
   },
   section: {
     backgroundColor: COLORS.surface,
@@ -339,7 +388,7 @@ const styles = StyleSheet.create({
   synopsisText: {
     fontSize: TYPOGRAPHY.size.base,
     color: COLORS.textPrimary,
-    lineHeight: 22,
+    lineHeight: TYPOGRAPHY.lineHeight.md,
   },
   specRow: {
     flexDirection: 'row',
@@ -366,7 +415,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: COLORS.border,
     paddingHorizontal: SPACING.base,
-    paddingVertical: SPACING.md,
+    paddingTop: SPACING.md,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
