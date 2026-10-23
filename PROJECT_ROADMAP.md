@@ -47,7 +47,7 @@ Para garantizar consistencia y continuidad en cualquier día de trabajo:
 | **01** | Core Components y Flexbox | ✅ Completada | `Week-01` | Cartelera básica con ScrollView, ItemCard y paleta vino/oro |
 | **02** | Listas, Inputs y Estilos | ✅ Completada | `Week-02` | FlatList virtualizada, búsqueda en tiempo real, KeyboardAvoidingView, theming centralizado |
 | **03** | React Navigation | ✅ Completada | `Week-03` | Stack anidado en Tabs (Cartelera, Detalle de Obra con parámetros tipados, Favoritos) |
-| **04** | Estado Global con Zustand | 🚀 Siguiente | `Week-04` | Carrito de boletos, butacas seleccionadas, favoritos |
+| **04** | Estado Global con Zustand | ✅ Completada | `Week-04` | Store global de obras guardadas, badge en vivo y acción Guardar/Quitar en cartelera y detalle |
 | **05** | Networking & TanStack Query | ⏳ Pendiente | `Week-05` | Consumo de API de cartelera, cache y refresco de funciones |
 | **06** | Formularios y Validación | ⏳ Pendiente | `Week-06` | Formulario de reserva, datos del asistente, validación Zod |
 | **07** | Persistencia Local | ⏳ Pendiente | `Week-07` | Historial de reservas y boletos guardados offline (MMKV / AsyncStorage) |
@@ -75,3 +75,25 @@ Para garantizar consistencia y continuidad en cualquier día de trabajo:
 - [x] **Pantalla de Favoritos (`FavoritesScreen`)**: Segunda pestaña que lista las obras destacadas/guardadas por el usuario.
 - [x] **Headers Personalizados**: Títulos de pantalla descriptivos con estilo teatral en el header (`headerStyle`, `headerTintColor`).
 - [x] **NavigationContainer**: Configuración correcta del contenedor de navegación en `App.tsx`.
+
+---
+
+## 🎯 Control de Calidad: Semana 04 (Zustand)
+
+### Rúbrica Oficial (Producto — 30 pts)
+- [x] **Tab Navigator funcional**: pestañas `Cartelera` y `Guardados` con iconos de Ionicons.
+- [x] **Store del dominio**: `useSavedStore` creado con `create<SavedStore>()` y tipos estrictos, sin `any`.
+- [x] **Acciones del store**: `saveItem`, `removeItem`, `toggleItem` y `clearSaved`.
+- [x] **Selectores específicos**: cada pantalla se suscribe solo a `savedItems`, al conteo o a las acciones que necesita.
+- [x] **Badge en tiempo real**: la pestaña `Guardados` muestra el conteo desde Zustand y se oculta cuando la lista está vacía.
+- [x] **Detalle conectado**: botón `Guardar` / `Guardada` que lee y escribe el mismo store que la cartelera.
+- [x] **Cartelera conectada**: bookmark en cada tarjeta para guardar o quitar sin abrir el detalle.
+- [x] **Pantalla Guardados**: lista desde el store, quitar una obra y vaciar la lista completa.
+- [x] **TypeScript**: `npx tsc --noEmit` sin errores.
+
+### Verificación funcional
+- [x] Badge inicial `4` (obras destacadas de la Semana 03).
+- [x] Guardar desde la tarjeta: badge pasa a `5` y la tarjeta cambia a "Quitar".
+- [x] Detalle: el botón alterna `Guardar` / `Guardada`.
+- [x] Guardados: quitar una obra actualiza el badge a `4`.
+- [x] Vaciar: lista vacía, estado vacío visible y badge oculto.
