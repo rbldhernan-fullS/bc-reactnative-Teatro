@@ -18,11 +18,13 @@ La aplicación representa la cartelera oficial y el sistema de información de o
 
 ---
 
-## 📱 Capturas / Pantalla
+## 📱 Pantallas implementadas
 
-| Cartelera Completa (FlatList) | Búsqueda en Tiempo Real | Estado Vacío (Sin Resultados) |
-|---|---|---|
-| Lista virtualizada con afiches y datos | Filtrado dinámico por texto | Mensaje personalizado con botón de limpieza |
+| Pantalla | Descripción |
+|---|---|
+| Cartelera completa (`FlatList`) | Lista virtualizada con afiche, título, director, género, sala, duración, fecha, hora, butacas y precio. |
+| Búsqueda en tiempo real | Filtrado por título, director/compañía, género o sala, insensible a mayúsculas y acentos. |
+| Estado vacío | Mensaje personalizado con botón para limpiar la búsqueda. |
 
 ---
 
@@ -31,6 +33,7 @@ La aplicación representa la cartelera oficial y el sistema de información de o
 | Tecnología | Versión | Propósito |
 |---|---|---|
 | Expo SDK | 57.0.4 | Plataforma y herramientas de desarrollo |
+| Expo Status Bar | 57.0.0 | Barra de estado del sistema |
 | React Native | 0.86.0 | Framework nativo multiplataforma |
 | React | 19.2.3 | Librería base de componentes y hooks |
 | TypeScript | 6.0.3 | Tipado estricto sin `any` |
@@ -129,7 +132,7 @@ Inspirada en el telón de terciopelo y la atmósfera de una sala clásica de tea
 
 1. **Migración de `ScrollView` a `FlatList`**:
    - `ScrollView` renderiza todos los elementos en memoria de inmediato, lo que degrada el rendimiento en listas medianas y largas.
-   - `FlatList` implementa virtualización: solo renderiza los elementos visibles en la ventana gráfica y recicla vistas, garantizando 60 FPS estables.
+   - `FlatList` implementa virtualización: solo renderiza los elementos visibles en la ventana gráfica y recicla vistas, reduciendo el uso de memoria y mejorando el rendimiento en listas largas.
 2. **Identificadores Únicos con `keyExtractor`**:
    - Se utiliza `keyExtractor={(item) => item.id}` garantizando que React identifique cada elemento sin depender del índice del array, previniendo fallos de reconciliación y pérdida de estado.
 3. **Filtrado Eficiente con `useMemo`**:
@@ -137,9 +140,10 @@ Inspirada en el telón de terciopelo y la atmósfera de una sala clásica de tea
 4. **Memorización de Callbacks con `useCallback`**:
    - `renderItem`, `renderEmpty` y el separador se memorizan con `useCallback` para evitar crear nuevas instancias de función en cada ciclo de render.
 5. **Manejo del Teclado y UX**:
-   - `KeyboardAvoidingView` ajusta dinámicamente la altura (`behavior="padding"` en iOS).
+   - `KeyboardAvoidingView` ajusta dinámicamente el contenido (`behavior="padding"` en iOS y `behavior="height"` en Android).
    - `TouchableWithoutFeedback` con `Keyboard.dismiss` permite cerrar el teclado tocando cualquier área libre de la pantalla.
    - `keyboardShouldPersistTaps="handled"` asegura que al tocar una tarjeta mientras el teclado está abierto, el evento de toque se procese correctamente.
+   - En iOS se usa el botón nativo de limpieza (`clearButtonMode`) y en Android/web se muestra el botón personalizado, evitando duplicados.
 6. **Estado Vacío Resiliente (`ListEmptyComponent`)**:
    - Si una búsqueda no arroja coincidencias, se presenta un mensaje comprensivo con ilustración simbólica y un botón interactivo para restablecer la búsqueda con un solo toque.
 
@@ -150,11 +154,20 @@ Inspirada en el telón de terciopelo y la atmósfera de una sala clásica de tea
 | Criterio Evaluado | Estado | Detalle de Implementación |
 |---|:---:|---|
 | **FlatList con `keyExtractor` por ID** | ✅ Cumplido | `keyExtractor={(item) => item.id}` en `HomeScreen.tsx` |
-| **TextInput con búsqueda funcional** | ✅ Cumplido | Búsqueda reactiva en tiempo real sobre título, director y género |
-| **`useMemo` para filtrado** | ✅ Cumplido | Memorizado con dependencia `[query]` insensible a mayúsculas |
+| **TextInput con búsqueda funcional** | ✅ Cumplido | Búsqueda reactiva en tiempo real sobre título, director, género y sala |
+| **`useMemo` para filtrado** | ✅ Cumplido | Memorizado con dependencia `[query]` e insensible a mayúsculas y acentos |
+| **Búsqueda insensible a acentos** | ✅ Cumplido | `normalizeText` aplica `normalize('NFD')` y elimina diacríticos antes de comparar |
 | **Componente `ItemCard` con 3+ campos** | ✅ Cumplido | Muestra afiche, título, director, género, sala, duración, butacas y precio |
 | **Estado vacío personalizado** | ✅ Cumplido | Componente `renderEmpty` con feedback y botón de limpieza |
-| **`KeyboardAvoidingView` correcto** | ✅ Cumplido | Configurado con dismiss en toque externo |
+| **`KeyboardAvoidingView` correcto** | ✅ Cumplido | `padding` en iOS, `height` en Android y dismiss en toque externo |
 | **Constantes de tema (`COLORS`, etc.)** | ✅ Cumplido | Todos los estilos provienen de `src/theme/index.ts` |
-| **TypeScript sin `any`** | ✅ Cumplido | Tipado estricto en datos, props, callbacks y StyleSheet |
+| **TypeScript sin `any`** | ✅ Cumplido | Tipado estricto en datos, props, callbacks y StyleSheet; `outlineWidth` tipado para web |
 | **Mínimo 10 items del dominio** | ✅ Cumplido | 12 obras completas en `mockData.ts` adaptadas al dominio Teatro |
+
+---
+
+## 📝 Notas de la entrega
+
+- **Iconos y splash**: se dejó la configuración por defecto de Expo para evitar referencias a archivos inexistentes. Si se requiere branding, agregar `starter/assets/icon.png`, `starter/assets/splash.png` y `starter/assets/adaptive-icon.png` y volver a declararlos en `app.json`.
+- **Ejercicios de la semana**: los ejercicios `01-flatlist-basica` y `02-busqueda-input` se trabajan en sus propios starters del bootcamp y no forman parte de este repositorio.
+- **Siguiente semana**: Week-03 incorpora React Navigation 7 (Tab + Stack, detalle de obra y favoritos).
