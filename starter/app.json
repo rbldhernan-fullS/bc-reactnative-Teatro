@@ -16,6 +16,9 @@
     },
     "android": {
       "package": "com.hernan.teatro"
-    }
+    },
+    "plugins": [
+      "expo-status-bar"
+    ]
   }
 }
