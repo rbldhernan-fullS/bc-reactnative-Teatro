@@ -1,5 +1,5 @@
 // ============================================
-// THEME — Semana 03: Dominio Teatro
+// THEME — Semanas 03 y 04: Dominio Teatro
 // Constantes de diseño globales (Paleta Vino y Oro)
 // ============================================
 

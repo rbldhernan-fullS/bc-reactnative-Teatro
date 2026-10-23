@@ -1,5 +1,5 @@
 // ============================================
-// APP ENTRY POINT — Semana 03: Dominio Teatro
+// APP ENTRY POINT — Semana 04: Dominio Teatro
 // Contenedor principal con SafeAreaProvider y NavigationContainer
 // ============================================
 

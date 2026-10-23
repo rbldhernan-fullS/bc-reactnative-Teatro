@@ -1,6 +1,6 @@
 // ============================================
 // MOCK DATA — Semana 04: Dominio Teatro
-// 12 obras en cartelera con datos detallados y lista de favoritos
+// 12 obras en cartelera con datos detallados del dominio teatro
 // ============================================
 
 import type { Item } from '../types';

@@ -1,5 +1,5 @@
 // ============================================
-// TYPES — Semana 03: Dominio Teatro
+// TYPES — Semanas 03 y 04: Dominio Teatro
 // Interfaz y tipos de datos de obras teatrales
 // ============================================
 
