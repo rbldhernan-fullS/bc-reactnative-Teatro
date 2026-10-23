@@ -3,7 +3,7 @@
 // 12 obras en cartelera con datos detallados del teatro
 // ============================================
 
-import { Item } from '../types';
+import type { Item } from '../types';
 
 export const ITEMS: Item[] = [
   {
