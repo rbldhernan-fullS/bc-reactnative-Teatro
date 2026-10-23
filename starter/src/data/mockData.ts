@@ -201,12 +201,8 @@ export const ITEMS: Item[] = [
 ];
 
 // Obras favoritas guardadas por el usuario (mínimo 3 según la rúbrica)
-export const FAVORITES: Item[] = [
-  ITEMS[2], // El Fantasma de la Ópera (5.0)
-  ITEMS[0], // Hamlet (4.9)
-  ITEMS[5], // Los Miserables (4.9)
-  ITEMS[7], // Romeo y Julieta (4.9)
-];
+const FAVORITE_IDS = ['3', '1', '6', '8'];
 
-// Alias para compatibilidad con código anterior
-export const MOCK_ITEMS = ITEMS;
+export const FAVORITES: Item[] = FAVORITE_IDS.map((id) =>
+  ITEMS.find((item) => item.id === id)
+).filter((item): item is Item => item !== undefined);
