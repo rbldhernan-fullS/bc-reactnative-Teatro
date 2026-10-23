@@ -4,9 +4,9 @@
 // ============================================
 
 import React from 'react';
-import { Platform } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 
 import { DetailScreen } from '../screens/DetailScreen';
@@ -65,6 +65,8 @@ function HomeStackNavigator(): React.JSX.Element {
 const Tab = createBottomTabNavigator<RootTabParamList>();
 
 export function RootNavigator(): React.JSX.Element {
+  const insets = useSafeAreaInsets();
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -86,18 +88,12 @@ export function RootNavigator(): React.JSX.Element {
           backgroundColor: COLORS.surface,
           borderTopColor: COLORS.border,
           borderTopWidth: 1,
-          height:
-            Platform.OS === 'ios'
-              ? SIZES.tabBarHeight.ios
-              : SIZES.tabBarHeight.android,
-          paddingBottom:
-            Platform.OS === 'ios'
-              ? SIZES.tabBarPaddingBottom.ios
-              : SIZES.tabBarPaddingBottom.android,
+          height: SIZES.tabBarContentHeight + insets.bottom,
+          paddingBottom: insets.bottom,
           paddingTop: SIZES.tabBarPaddingTop,
         },
         tabBarLabelStyle: {
-          fontSize: TYPOGRAPHY.size.xs,
+          fontSize: TYPOGRAPHY.size.sm,
           fontWeight: TYPOGRAPHY.weight.semibold,
         },
       })}

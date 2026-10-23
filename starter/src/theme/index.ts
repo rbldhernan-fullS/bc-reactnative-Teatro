@@ -86,14 +86,7 @@ export const SIZES = {
   iconMd: 22,
   iconLg: 26,
   iconXl: 50,
-  tabBarHeight: {
-    ios: 88,
-    android: 64,
-  },
-  tabBarPaddingBottom: {
-    ios: 26,
-    android: 10,
-  },
+  tabBarContentHeight: 56,
   tabBarPaddingTop: 8,
 } as const;
 
