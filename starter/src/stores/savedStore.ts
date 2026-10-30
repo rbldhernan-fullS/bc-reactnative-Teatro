@@ -1,76 +1,68 @@
 // ============================================
-// STORE: savedStore — Semana 04: Estado Global con Zustand
-// Obras guardadas compartidas entre Cartelera, Detalle y Guardados
+// STORE: savedStore — Semana 05
+// Solo guarda IDs (estado de UI). Los datos de las obras viven en TanStack Query.
 // ============================================
 
 import { create } from 'zustand';
-import { ITEMS } from '../data/mockData';
-import type { Item } from '../types';
 
 export interface SavedStore {
-  /** Obras que el usuario guardó para consultarlas después */
-  savedItems: Item[];
+  /** Identificadores de las obras que el usuario guardó */
+  savedIds: string[];
 
-  /** Agrega una obra si todavía no está guardada */
-  saveItem: (item: Item) => void;
+  /** Agrega un id si todavía no está guardado */
+  saveId: (id: string) => void;
 
-  /** Quita una obra por su identificador */
-  removeItem: (id: string) => void;
+  /** Quita un id de la lista */
+  removeId: (id: string) => void;
 
   /** Guarda o quita la obra según su estado actual */
-  toggleItem: (item: Item) => void;
+  toggleSaved: (id: string) => void;
 
   /** Vacía por completo la lista de guardados */
   clearSaved: () => void;
 }
 
-// Estado inicial: las obras destacadas que ya traía la app en la Semana 03.
-// Así la pestaña Guardados y el badge tienen contenido desde el primer arranque.
+// Estado inicial: las obras destacadas que ya traía la app.
 const INITIAL_SAVED_IDS = ['3', '1', '6', '8'];
 
-const initialSavedItems: Item[] = ITEMS.filter((item) =>
-  INITIAL_SAVED_IDS.includes(item.id)
-);
-
 export const useSavedStore = create<SavedStore>()((set, get) => ({
-  savedItems: initialSavedItems,
+  savedIds: INITIAL_SAVED_IDS,
 
-  saveItem: (item) => {
-    const { savedItems } = get();
-    if (savedItems.some((saved) => saved.id === item.id)) {
+  saveId: (id) => {
+    const { savedIds } = get();
+    if (savedIds.includes(id)) {
       return;
     }
 
-    set((state) => ({ savedItems: [...state.savedItems, item] }));
+    set((state) => ({ savedIds: [...state.savedIds, id] }));
   },
 
-  removeItem: (id) =>
+  removeId: (id) =>
     set((state) => ({
-      savedItems: state.savedItems.filter((item) => item.id !== id),
+      savedIds: state.savedIds.filter((savedId) => savedId !== id),
     })),
 
-  toggleItem: (item) => {
-    const { savedItems } = get();
-    const isSaved = savedItems.some((saved) => saved.id === item.id);
+  toggleSaved: (id) => {
+    const { savedIds } = get();
 
-    if (isSaved) {
+    if (savedIds.includes(id)) {
       set((state) => ({
-        savedItems: state.savedItems.filter((saved) => saved.id !== item.id),
+        savedIds: state.savedIds.filter((savedId) => savedId !== id),
       }));
       return;
     }
 
-    set((state) => ({ savedItems: [...state.savedItems, item] }));
+    set((state) => ({ savedIds: [...state.savedIds, id] }));
   },
 
-  clearSaved: () => set({ savedItems: [] }),
+  clearSaved: () => set({ savedIds: [] }),
 }));
 
 // Selectores reutilizables: cada componente se suscribe solo a lo que necesita.
 export const selectSavedCount = (state: SavedStore): number =>
-  state.savedItems.length;
+  state.savedIds.length;
 
 export const selectIsSaved =
   (id: string) =>
   (state: SavedStore): boolean =>
-    state.savedItems.some((item) => item.id === id);
+    state.savedIds.includes(id);

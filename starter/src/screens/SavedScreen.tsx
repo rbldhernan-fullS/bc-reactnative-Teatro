@@ -1,9 +1,9 @@
 // ============================================
-// SCREEN: SavedScreen — Semana 04: Estado Global
-// Segunda pestaña: obras guardadas leídas desde el store de Zustand
+// SCREEN: SavedScreen — Semana 05: Networking
+// Segunda pestaña: obras guardadas por id, resueltas desde TanStack Query
 // ============================================
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -17,6 +17,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import type { Item } from '../types';
+import { ScreenState } from '../components/ScreenState';
+import { usePlays } from '../hooks/usePlays';
+import { getApiErrorMessage } from '../services/api';
 import { COLORS, TYPOGRAPHY, SPACING, RADIUS, SIZES } from '../theme';
 import type { SavedScreenNavigationProp } from '../navigation/types';
 import { useSavedStore } from '../stores/savedStore';
@@ -24,10 +27,24 @@ import { useSavedStore } from '../stores/savedStore';
 export function SavedScreen(): React.JSX.Element {
   const navigation = useNavigation<SavedScreenNavigationProp>();
 
-  // Selectores específicos: el componente solo reacciona a lo que usa.
-  const savedItems = useSavedStore((state) => state.savedItems);
-  const removeItem = useSavedStore((state) => state.removeItem);
+  // Estado de UI: solo ids en Zustand.
+  const savedIds = useSavedStore((state) => state.savedIds);
+  const removeId = useSavedStore((state) => state.removeId);
   const clearSaved = useSavedStore((state) => state.clearSaved);
+
+  // Estado del servidor: la cartelera completa vive en TanStack Query.
+  const { data, isLoading, isError, error, refetch, isFetching } = usePlays();
+
+  const savedIdSet = useMemo(() => new Set(savedIds), [savedIds]);
+
+  const savedItems = useMemo(
+    () => (data ?? []).filter((item) => savedIdSet.has(item.id)),
+    [data, savedIdSet]
+  );
+
+  const handleRefresh = useCallback((): void => {
+    void refetch();
+  }, [refetch]);
 
   const handleItemPress = useCallback(
     (item: Item): void => {
@@ -46,9 +63,9 @@ export function SavedScreen(): React.JSX.Element {
     (event: GestureResponderEvent, id: string): void => {
       // Evita que el toque del bookmark abra el detalle de la obra.
       event.stopPropagation();
-      removeItem(id);
+      removeId(id);
     },
-    [removeItem]
+    [removeId]
   );
 
   const renderSavedItem: ListRenderItem<Item> = useCallback(
@@ -137,6 +154,32 @@ export function SavedScreen(): React.JSX.Element {
     []
   );
 
+  if (savedIds.length > 0 && isLoading) {
+    return (
+      <SafeAreaView style={styles.safeArea} edges={['top']}>
+        <ScreenState
+          loading
+          title="Cargando tus obras"
+          message="Recuperando las obras guardadas desde la cartelera."
+        />
+      </SafeAreaView>
+    );
+  }
+
+  if (savedIds.length > 0 && isError) {
+    return (
+      <SafeAreaView style={styles.safeArea} edges={['top']}>
+        <ScreenState
+          icon="cloud-offline-outline"
+          title="No se pudieron cargar tus obras"
+          message={getApiErrorMessage(error)}
+          actionLabel="Reintentar"
+          onAction={handleRefresh}
+        />
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <View style={styles.container}>
@@ -146,14 +189,14 @@ export function SavedScreen(): React.JSX.Element {
             <View style={styles.headerTextBlock}>
               <Text style={styles.headerTitle}>Obras Guardadas</Text>
               <Text style={styles.headerSubtitle}>
-                {savedItems.length}{' '}
-                {savedItems.length === 1
+                {savedIds.length}{' '}
+                {savedIds.length === 1
                   ? 'obra guardada en tu lista'
                   : 'obras guardadas en tu lista'}
               </Text>
             </View>
 
-            {savedItems.length > 0 && (
+            {savedIds.length > 0 && (
               <Pressable
                 style={({ pressed }) => [
                   styles.clearButton,
@@ -169,7 +212,7 @@ export function SavedScreen(): React.JSX.Element {
           </View>
         </View>
 
-        {/* Lista de Guardados desde Zustand */}
+        {/* Lista de Guardados resuelta desde TanStack Query */}
         <FlatList
           data={savedItems}
           keyExtractor={(item) => item.id}
@@ -178,6 +221,8 @@ export function SavedScreen(): React.JSX.Element {
           ItemSeparatorComponent={renderSeparator}
           contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
+          refreshing={isFetching && !isLoading}
+          onRefresh={handleRefresh}
         />
       </View>
     </SafeAreaView>

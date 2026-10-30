@@ -1,6 +1,6 @@
 // ============================================
-// SCREEN: DetailScreen — Semana 04: Estado Global
-// Ficha técnica completa y acción de guardar conectada a Zustand
+// SCREEN: DetailScreen — Semana 05: Networking
+// Ficha técnica consultada a la API y acción de guardar por identificador
 // ============================================
 
 import React from 'react';
@@ -18,7 +18,9 @@ import { useRoute, useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import type { DetailScreenProps } from '../navigation/types';
-import { ITEMS } from '../data/mockData';
+import { ScreenState } from '../components/ScreenState';
+import { usePlayById } from '../hooks/usePlays';
+import { getApiErrorMessage } from '../services/api';
 import { COLORS, TYPOGRAPHY, SPACING, RADIUS, SIZES } from '../theme';
 import { selectIsSaved, useSavedStore } from '../stores/savedStore';
 
@@ -28,11 +30,41 @@ export function DetailScreen(): React.JSX.Element {
   const insets = useSafeAreaInsets();
 
   const { id } = route.params;
-  const item = ITEMS.find((play) => play.id === id);
 
-  // Estado global: el botón lee y escribe el mismo store que la cartelera.
+  // Estado del servidor: la ficha viene de la caché de TanStack Query.
+  const { data: item, isLoading, isError, error, refetch } = usePlayById(id);
+
+  // Estado de UI: el botón lee y escribe solo el id en el store.
   const isSaved = useSavedStore(selectIsSaved(id));
-  const toggleItem = useSavedStore((state) => state.toggleItem);
+  const toggleSaved = useSavedStore((state) => state.toggleSaved);
+
+  if (isLoading) {
+    return (
+      <View style={styles.screenWrapper}>
+        <ScreenState
+          loading
+          title="Cargando la obra"
+          message="Consultando la ficha artística de la función."
+        />
+      </View>
+    );
+  }
+
+  if (isError) {
+    return (
+      <View style={styles.screenWrapper}>
+        <ScreenState
+          icon="cloud-offline-outline"
+          title="No se pudo cargar la obra"
+          message={getApiErrorMessage(error)}
+          actionLabel="Reintentar"
+          onAction={() => {
+            void refetch();
+          }}
+        />
+      </View>
+    );
+  }
 
   if (!item) {
     return (
@@ -122,7 +154,7 @@ export function DetailScreen(): React.JSX.Element {
               isSaved && styles.savePillActive,
               pressed && styles.savePillPressed,
             ]}
-            onPress={() => toggleItem(item)}
+            onPress={() => toggleSaved(id)}
             accessibilityRole="button"
             accessibilityState={{ selected: isSaved }}
             accessibilityLabel={

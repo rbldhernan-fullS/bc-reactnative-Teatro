@@ -1,6 +1,6 @@
 // ============================================
-// COMPONENT: ItemCard — Semana 04: Estado Global
-// Tarjeta de obra teatral con acción de guardar/quitar
+// COMPONENT: ItemCard — Semanas 04 y 05
+// Tarjeta de obra teatral con acción de guardar/quitar por id
 // ============================================
 
 import React from 'react';

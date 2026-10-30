@@ -1,9 +1,9 @@
 // ============================================================
-// SCREEN: HomeScreen — Semana 04: Estado Global
-// Cartelera con búsqueda en tiempo real y guardado desde Zustand
+// SCREEN: HomeScreen — Semana 05: Networking
+// Cartelera cargada desde la API con estados de red y refresco
 // ============================================================
 
-import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
+import React, { useState, useMemo, useCallback, useRef } from 'react';
 import {
   View,
   Text,
@@ -20,11 +20,14 @@ import type { ListRenderItem } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { Ionicons } from '@expo/vector-icons';
 import type { Item } from '../types';
-import { ITEMS } from '../data/mockData';
 import { ItemCard } from '../components/ItemCard';
+import { ScreenState } from '../components/ScreenState';
+import { usePlays } from '../hooks/usePlays';
+import { getApiErrorMessage } from '../services/api';
 import { useSavedStore } from '../stores/savedStore';
-import { COLORS, TYPOGRAPHY, SPACING, RADIUS } from '../theme';
+import { COLORS, TYPOGRAPHY, SPACING, RADIUS, SIZES } from '../theme';
 import type { HomeStackParamList } from '../navigation/types';
 
 type HomeScreenNavProp = NativeStackNavigationProp<HomeStackParamList, 'HomeList'>;
@@ -46,35 +49,22 @@ function normalizeText(value: string): string {
 export function HomeScreen(): React.JSX.Element {
   const navigation = useNavigation<HomeScreenNavProp>();
 
-  // Estado global de guardados (Zustand) leído con selectores específicos
-  const savedItems = useSavedStore((state) => state.savedItems);
-  const toggleItem = useSavedStore((state) => state.toggleItem);
+  // Estado del servidor: TanStack Query es la única fuente de las obras.
+  const { data, isLoading, isError, error, refetch, isFetching } = usePlays();
 
-  // Set de ids para consultar si una obra está guardada sin recorrer el arreglo por cada tarjeta
-  const savedIds = useMemo(
-    () => new Set(savedItems.map((saved) => saved.id)),
-    [savedItems]
-  );
+  // Estado de UI: solo los ids guardados viven en Zustand.
+  const savedIds = useSavedStore((state) => state.savedIds);
+  const toggleSaved = useSavedStore((state) => state.toggleSaved);
+
+  const savedIdSet = useMemo(() => new Set(savedIds), [savedIds]);
 
   // Referencia para enfocar el input al hacer click en cualquier parte de la barra
   const searchInputRef = useRef<TextInput>(null);
 
-  // Referencia para limpiar el timer de refresco al desmontar
-  const refreshTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
   // 1. Estado de búsqueda
   const [query, setQuery] = useState<string>('');
 
-  // 2. Estado de refresco (Pull-to-refresh)
-  const [refreshing, setRefreshing] = useState<boolean>(false);
-
-  useEffect(() => {
-    return () => {
-      if (refreshTimeoutRef.current) {
-        clearTimeout(refreshTimeoutRef.current);
-      }
-    };
-  }, []);
+  const plays = useMemo(() => data ?? [], [data]);
 
   // Manejador de selección de obra con navegación al detalle tipada
   const handleItemPress = useCallback(
@@ -87,28 +77,32 @@ export function HomeScreen(): React.JSX.Element {
     [navigation]
   );
 
-  // 3. Filtrado en tiempo real con useMemo
-  // Busca por título, director/compañía, género o sala (insensible a mayúsculas y acentos)
+  // Guarda o quita la obra usando únicamente su identificador.
+  const handleToggleSave = useCallback(
+    (item: Item): void => {
+      toggleSaved(item.id);
+    },
+    [toggleSaved]
+  );
+
+  // 2. Filtrado en tiempo real con useMemo
   const filteredItems = useMemo(() => {
     const cleanQuery = normalizeText(query.trim());
     if (!cleanQuery) {
-      return ITEMS;
+      return plays;
     }
 
-    return ITEMS.filter((item) =>
+    return plays.filter((item) =>
       [item.name, item.subtitle, item.genre, item.hall].some((field) =>
         normalizeText(field).includes(cleanQuery)
       )
     );
-  }, [query]);
+  }, [plays, query]);
 
-  // Manejador de refresco simulado
-  const onRefresh = useCallback(() => {
-    setRefreshing(true);
-    refreshTimeoutRef.current = setTimeout(() => {
-      setRefreshing(false);
-    }, 800);
-  }, []);
+  // 3. Pull-to-refresh delegado a TanStack Query
+  const handleRefresh = useCallback((): void => {
+    void refetch();
+  }, [refetch]);
 
   // 4. Render Item memorizado con useCallback
   const renderItem: ListRenderItem<Item> = useCallback(
@@ -116,11 +110,11 @@ export function HomeScreen(): React.JSX.Element {
       <ItemCard
         item={item}
         onPress={handleItemPress}
-        saved={savedIds.has(item.id)}
-        onToggleSave={toggleItem}
+        saved={savedIdSet.has(item.id)}
+        onToggleSave={handleToggleSave}
       />
     ),
-    [handleItemPress, savedIds, toggleItem]
+    [handleItemPress, savedIdSet, handleToggleSave]
   );
 
   // 5. Separador entre elementos con useCallback
@@ -129,8 +123,20 @@ export function HomeScreen(): React.JSX.Element {
     []
   );
 
-  // 6. Estado vacío memorizado con useCallback
+  // 6. Estado vacío: distingue cartelera vacía de búsqueda sin resultados
   const renderEmpty = useCallback(() => {
+    if (plays.length === 0) {
+      return (
+        <ScreenState
+          icon="ticket-outline"
+          title="Cartelera vacía"
+          message="Todavía no hay obras registradas. Crea la primera función para abrir la temporada."
+          actionLabel="Crear obra"
+          onAction={() => navigation.navigate('Create')}
+        />
+      );
+    }
+
     return (
       <View style={styles.emptyContainer}>
         <Text style={styles.emptyIcon}>🎭</Text>
@@ -139,23 +145,47 @@ export function HomeScreen(): React.JSX.Element {
           No hay funciones que coincidan con "{query}". Prueba buscando por otro
           título, director o género teatral.
         </Text>
-        {query.length > 0 && (
-          <Pressable
-            style={({ pressed }) => [
-              styles.clearFilterButton,
-              pressed && styles.clearFilterButtonPressed,
-            ]}
-            onPress={() => {
-              setQuery('');
-              searchInputRef.current?.focus();
-            }}
-          >
-            <Text style={styles.clearFilterButtonText}>Limpiar búsqueda</Text>
-          </Pressable>
-        )}
+        <Pressable
+          style={({ pressed }) => [
+            styles.clearFilterButton,
+            pressed && styles.clearFilterButtonPressed,
+          ]}
+          onPress={() => {
+            setQuery('');
+            searchInputRef.current?.focus();
+          }}
+        >
+          <Text style={styles.clearFilterButtonText}>Limpiar búsqueda</Text>
+        </Pressable>
       </View>
     );
-  }, [query]);
+  }, [navigation, plays.length, query]);
+
+  if (isLoading) {
+    return (
+      <SafeAreaView style={styles.safeArea} edges={['top']}>
+        <ScreenState
+          loading
+          title="Cargando cartelera"
+          message="Consultando las obras y funciones de la temporada."
+        />
+      </SafeAreaView>
+    );
+  }
+
+  if (isError) {
+    return (
+      <SafeAreaView style={styles.safeArea} edges={['top']}>
+        <ScreenState
+          icon="cloud-offline-outline"
+          title="No se pudo cargar la cartelera"
+          message={getApiErrorMessage(error)}
+          actionLabel="Reintentar"
+          onAction={handleRefresh}
+        />
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
@@ -167,10 +197,31 @@ export function HomeScreen(): React.JSX.Element {
           {/* Header del Dominio Teatro */}
           <View style={styles.header}>
             <View style={styles.headerTitleRow}>
-              <Text style={styles.theaterIcon}>🎭</Text>
-              <Text style={styles.headerTitle}>{DOMAIN_TITLE}</Text>
+              <View style={styles.headerTextBlock}>
+                <View style={styles.titleLine}>
+                  <Text style={styles.theaterIcon}>🎭</Text>
+                  <Text style={styles.headerTitle}>{DOMAIN_TITLE}</Text>
+                </View>
+                <Text style={styles.headerSubtitle}>{DOMAIN_SUBTITLE}</Text>
+              </View>
+
+              <Pressable
+                style={({ pressed }) => [
+                  styles.createButton,
+                  pressed && styles.createButtonPressed,
+                ]}
+                onPress={() => navigation.navigate('Create')}
+                accessibilityRole="button"
+                accessibilityLabel="Crear una obra nueva"
+              >
+                <Ionicons
+                  name="add"
+                  size={SIZES.iconSm}
+                  color={COLORS.background}
+                />
+                <Text style={styles.createButtonText}>Nueva</Text>
+              </Pressable>
             </View>
-            <Text style={styles.headerSubtitle}>{DOMAIN_SUBTITLE}</Text>
           </View>
 
           {/* Barra de búsqueda */}
@@ -236,8 +287,8 @@ export function HomeScreen(): React.JSX.Element {
                 keyboardShouldPersistTaps="handled"
                 keyboardDismissMode="on-drag"
                 showsVerticalScrollIndicator={false}
-                refreshing={refreshing}
-                onRefresh={onRefresh}
+                refreshing={isFetching && !isLoading}
+                onRefresh={handleRefresh}
               />
             </View>
           </TouchableWithoutFeedback>
@@ -270,6 +321,14 @@ const styles = StyleSheet.create({
   headerTitleRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: SPACING.md,
+  },
+  headerTextBlock: {
+    flex: 1,
+  },
+  titleLine: {
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: SPACING.sm,
   },
   theaterIcon: {
@@ -285,6 +344,24 @@ const styles = StyleSheet.create({
     fontSize: TYPOGRAPHY.size.sm,
     color: COLORS.textSecondary,
     marginTop: SPACING.xxs,
+  },
+  createButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.xxs,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
+    borderRadius: RADIUS.full,
+    backgroundColor: COLORS.accent,
+  },
+  createButtonPressed: {
+    backgroundColor: COLORS.accentHover,
+    opacity: 0.9,
+  },
+  createButtonText: {
+    fontSize: TYPOGRAPHY.size.xs,
+    fontWeight: TYPOGRAPHY.weight.bold,
+    color: COLORS.background,
   },
   searchSection: {
     paddingHorizontal: SPACING.base,
