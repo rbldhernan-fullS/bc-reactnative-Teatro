@@ -1,22 +1,33 @@
 // ============================================
-// TYPES — Semana 05: Dominio Teatro
-// Modelo de datos de las obras y contratos de la API
+// TYPES — Semana 06: Dominio Teatro
+// Modelo de datos, catálogos y contratos de la API
 // ============================================
 
-export type TheatreGenre =
-  | 'Drama'
-  | 'Tragedia'
-  | 'Musical'
-  | 'Comedia'
-  | 'Ópera'
-  | 'Monólogo'
-  | 'Clásico'
-  | 'Infantil';
+/**
+ * Catálogo de géneros teatrales. Se declara como tupla `as const` para poder
+ * reutilizarlo en el schema Zod (`z.enum`) sin duplicar la lista.
+ */
+export const THEATRE_GENRES = [
+  'Drama',
+  'Tragedia',
+  'Musical',
+  'Comedia',
+  'Ópera',
+  'Monólogo',
+  'Clásico',
+  'Infantil',
+] as const;
 
-export type TheatreHall =
-  | 'Sala Principal'
-  | 'Sala de Cámara'
-  | 'Teatro Experimental';
+export type TheatreGenre = (typeof THEATRE_GENRES)[number];
+
+/** Catálogo de salas del teatro, reutilizado por el formulario y por Zod. */
+export const THEATRE_HALLS = [
+  'Sala Principal',
+  'Sala de Cámara',
+  'Teatro Experimental',
+] as const;
+
+export type TheatreHall = (typeof THEATRE_HALLS)[number];
 
 export interface Item {
   /** Identificador único de la obra teatral */
