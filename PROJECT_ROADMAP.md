@@ -48,8 +48,8 @@ Para garantizar consistencia y continuidad en cualquier día de trabajo:
 | **02** | Listas, Inputs y Estilos | ✅ Completada | `Week-02` | FlatList virtualizada, búsqueda en tiempo real, KeyboardAvoidingView, theming centralizado |
 | **03** | React Navigation | ✅ Completada | `Week-03` | Stack anidado en Tabs (Cartelera, Detalle de Obra con parámetros tipados, Favoritos) |
 | **04** | Estado Global con Zustand | ✅ Completada | `Week-04` | Store global de obras guardadas, badge en vivo y acción Guardar/Quitar en cartelera y detalle |
-| **05** | Networking & TanStack Query | ⏳ Pendiente | `Week-05` | Consumo de API de cartelera, cache y refresco de funciones |
-| **06** | Formularios y Validación | ⏳ Pendiente | `Week-06` | Formulario de reserva, datos del asistente, validación Zod |
+| **05** | Networking & TanStack Query | ✅ Completada | `Week-05` | API REST local de cartelera con Axios, caché, estados de red, refresco y publicación de obras |
+| **06** | Formularios y Validación | 🚀 Siguiente | `Week-06` | Formulario de reserva, datos del asistente, validación Zod |
 | **07** | Persistencia Local | ⏳ Pendiente | `Week-07` | Historial de reservas y boletos guardados offline (MMKV / AsyncStorage) |
 | **08** | Autenticación | ⏳ Pendiente | `Week-08` | Login/Registro para miembros del club del teatro |
 | **09** | Animaciones Básicas | ⏳ Pendiente | `Week-09` | Transición de telón, fade-in de afiches, feedback táctil |
@@ -97,3 +97,28 @@ Para garantizar consistencia y continuidad en cualquier día de trabajo:
 - [x] Detalle: el botón alterna `Guardar` / `Guardada`.
 - [x] Guardados: quitar una obra actualiza el badge a `4`.
 - [x] Vaciar: lista vacía, estado vacío visible y badge oculto.
+
+---
+
+## 🎯 Control de Calidad: Semana 05 (Networking y TanStack Query v5)
+
+### Rúbrica Oficial (100 pts)
+- [x] **QueryClientProvider**: configurado en `App.tsx` con `staleTime` de 2 minutos y `retry: 2`.
+- [x] **Instancia Axios**: `src/services/api.ts` con `baseURL`, timeout e interceptor de respuesta.
+- [x] **Adaptador de dominio**: `src/services/theatreApi.ts` normaliza ids y números de json-server al modelo `Item`.
+- [x] **useQuery semántico**: `PLAYS_QUERY_KEY = ['plays']` y detalle `['plays', id]`.
+- [x] **useMutation**: `useCreatePlay` publica una obra y ejecuta `invalidateQueries` en `onSuccess`.
+- [x] **Estados de red**: loading, error con **Reintentar** y vacío diferenciado en `HomeScreen`.
+- [x] **Pull-to-refresh**: `refreshing={isFetching && !isLoading}` y `onRefresh={refetch}`.
+- [x] **API local**: `api/db.json` + json-server con scripts `pnpm api` y `pnpm dev`.
+- [x] **Estado de UI separado**: `savedStore` guarda solo `savedIds`; las obras viven en TanStack Query.
+- [x] **TypeScript**: `pnpm typecheck` sin errores ni usos de `any`.
+
+### Verificación funcional
+- [x] GET `/plays` devuelve las 12 obras de la temporada.
+- [x] La cartelera muestra spinner en el primer fetch y datos después.
+- [x] Con la API detenida aparece el mensaje de conexión y el botón **Reintentar**.
+- [x] Pull-to-refresh vuelve a consultar la API.
+- [x] POST `/plays` persiste la obra y la lista se refresca por invalidación.
+- [x] Guardados y badge consumen ids, no objetos del servidor.
+- [x] `expo export --platform web` genera el bundle sin errores.
