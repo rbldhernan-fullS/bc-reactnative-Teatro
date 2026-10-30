@@ -1,6 +1,6 @@
 // ============================================
-// TYPES — Semanas 03 y 04: Dominio Teatro
-// Interfaz y tipos de datos de obras teatrales
+// TYPES — Semana 05: Dominio Teatro
+// Modelo de datos de las obras y contratos de la API
 // ============================================
 
 export type TheatreGenre =
@@ -12,6 +12,11 @@ export type TheatreGenre =
   | 'Monólogo'
   | 'Clásico'
   | 'Infantil';
+
+export type TheatreHall =
+  | 'Sala Principal'
+  | 'Sala de Cámara'
+  | 'Teatro Experimental';
 
 export interface Item {
   /** Identificador único de la obra teatral */
@@ -39,7 +44,7 @@ export interface Item {
   price: number;
 
   /** Sala o auditorio del teatro */
-  hall: string;
+  hall: TheatreHall;
 
   /** Duración aproximada (ej. '120 min') */
   duration: string;
@@ -53,3 +58,9 @@ export interface Item {
   /** Sinopsis y argumento dramático de la obra */
   synopsis: string;
 }
+
+/** Cuerpo que espera json-server al crear una obra (sin id) */
+export type CreatePlayPayload = Omit<Item, 'id'>;
+
+/** Cuerpo completo para reemplazar una obra existente */
+export type UpdatePlayPayload = Item;
