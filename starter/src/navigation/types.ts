@@ -1,5 +1,5 @@
 // ============================================
-// NAVIGATION TYPES — Semana 05: Dominio Teatro
+// NAVIGATION TYPES — Semana 06: Dominio Teatro
 // Tipado estricto de parámetros para Tab y Stack Navigators (Sin tipos dinámicos)
 // ============================================
 
@@ -22,6 +22,11 @@ export type HomeStackParamList = {
 
   /** Formulario para publicar una obra nueva */
   Create: undefined;
+
+  /** Formulario para editar una obra existente */
+  Edit: {
+    id: string;
+  };
 };
 
 // ============================================
@@ -42,6 +47,12 @@ export type RootTabParamList = {
 export type DetailScreenProps = NativeStackScreenProps<
   HomeStackParamList,
   'HomeDetail'
+>;
+
+// Props para EditScreen
+export type EditScreenProps = NativeStackScreenProps<
+  HomeStackParamList,
+  'Edit'
 >;
 
 // Props para SavedScreen
