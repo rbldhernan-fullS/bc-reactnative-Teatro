@@ -1,9 +1,10 @@
 // ============================================
-// NAVIGATION: RootNavigator — Semana 05: Networking
-// Tab Navigator raíz con Stack anidado y badge conectado a Zustand
+// NAVIGATION: RootNavigator — Semana 06: Formularios
+// Tab Navigator raíz con Stack anidado, badge y rutas de creación/edición
 // ============================================
 
 import React from 'react';
+import { Pressable } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -13,6 +14,7 @@ import { DetailScreen } from '../screens/DetailScreen';
 import { SavedScreen } from '../screens/SavedScreen';
 import { HomeScreen } from '../screens/HomeScreen';
 import { CreateScreen } from '../screens/CreateScreen';
+import { EditScreen } from '../screens/EditScreen';
 import { COLORS, TYPOGRAPHY, SIZES } from '../theme';
 import { selectSavedCount, useSavedStore } from '../stores/savedStore';
 import type { HomeStackParamList, RootTabParamList } from './types';
@@ -51,10 +53,25 @@ function HomeStackNavigator(): React.JSX.Element {
       <HomeStack.Screen
         name="HomeDetail"
         component={DetailScreen}
-        options={({ route }) => ({
+        options={({ route, navigation }) => ({
           title: route.params.name,
           headerBackTitle: 'Cartelera',
           headerShown: true,
+          headerRight: () => (
+            <Pressable
+              onPress={() => navigation.navigate('Edit', { id: route.params.id })}
+              hitSlop={8}
+              accessibilityRole="button"
+              accessibilityLabel={`Editar ${route.params.name}`}
+              style={({ pressed }) => (pressed ? { opacity: 0.6 } : undefined)}
+            >
+              <Ionicons
+                name="create-outline"
+                size={SIZES.iconMd}
+                color={COLORS.accent}
+              />
+            </Pressable>
+          ),
         })}
       />
 
@@ -66,6 +83,16 @@ function HomeStackNavigator(): React.JSX.Element {
           title: 'Nueva obra',
           headerBackTitle: 'Cartelera',
           presentation: 'modal',
+        }}
+      />
+
+      {/* Formulario de edición con defaultValues desde la API */}
+      <HomeStack.Screen
+        name="Edit"
+        component={EditScreen}
+        options={{
+          title: 'Editar obra',
+          headerBackTitle: 'Detalle',
         }}
       />
     </HomeStack.Navigator>

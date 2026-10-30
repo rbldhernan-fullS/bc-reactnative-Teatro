@@ -3,7 +3,7 @@
 // Ficha técnica consultada a la API y acción de guardar por identificador
 // ============================================
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   View,
   Text,
@@ -37,6 +37,13 @@ export function DetailScreen(): React.JSX.Element {
   // Estado de UI: el botón lee y escribe solo el id en el store.
   const isSaved = useSavedStore(selectIsSaved(id));
   const toggleSaved = useSavedStore((state) => state.toggleSaved);
+
+  // Mantiene el título del header sincronizado después de editar la obra.
+  useEffect(() => {
+    if (item) {
+      navigation.setOptions({ title: item.name });
+    }
+  }, [item, navigation]);
 
   if (isLoading) {
     return (
