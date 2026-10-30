@@ -3,3 +3,8 @@ node_modules/
 dist/
 web-build/
 *.log
+
+# Variables de entorno locales (solo se versiona .env.example)
+.env
+.env.local
+.env.*.local
