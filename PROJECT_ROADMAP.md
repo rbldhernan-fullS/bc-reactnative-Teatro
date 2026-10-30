@@ -3,7 +3,7 @@
 > **Estudiante / Desarrollador**: Hernán Eduardo Robledo Montaña  
 > **Ficha**: 3407193  
 > **Dominio Asignado**: **TEATRO** (Cartelera, Funciones, Salas, Butacas, Reservas y Boletos)  
-> **Stack Base**: React Native 0.86, Expo 57, React 19, TypeScript 6, pnpm  
+> **Stack Base**: React Native 0.86, Expo 57, React 19, TypeScript 6, TanStack Query 5, React Hook Form 7, Zod 4, pnpm  
 > **Convención de Commits**: Conventional Commits (`feat`, `fix`, `refactor`, `style`, `docs`, `chore`, `test`)
 
 ---
@@ -49,8 +49,8 @@ Para garantizar consistencia y continuidad en cualquier día de trabajo:
 | **03** | React Navigation | ✅ Completada | `Week-03` | Stack anidado en Tabs (Cartelera, Detalle de Obra con parámetros tipados, Favoritos) |
 | **04** | Estado Global con Zustand | ✅ Completada | `Week-04` | Store global de obras guardadas, badge en vivo y acción Guardar/Quitar en cartelera y detalle |
 | **05** | Networking & TanStack Query | ✅ Completada | `Week-05` | API REST local de cartelera con Axios, caché, estados de red, refresco y publicación de obras |
-| **06** | Formularios y Validación | 🚀 Siguiente | `Week-06` | Formulario de reserva, datos del asistente, validación Zod |
-| **07** | Persistencia Local | ⏳ Pendiente | `Week-07` | Historial de reservas y boletos guardados offline (MMKV / AsyncStorage) |
+| **06** | Formularios y Validación | ✅ Completada | `Week-06` | Formularios Create/Edit con React Hook Form, Zod, `FormField` reutilizable y errores inline |
+| **07** | Persistencia Local | 🚀 Siguiente | `Week-07` | Historial de reservas y boletos guardados offline (MMKV / AsyncStorage) |
 | **08** | Autenticación | ⏳ Pendiente | `Week-08` | Login/Registro para miembros del club del teatro |
 | **09** | Animaciones Básicas | ⏳ Pendiente | `Week-09` | Transición de telón, fade-in de afiches, feedback táctil |
 | **10** | Reanimated & Gesture Handler | ⏳ Pendiente | `Week-10` | Mapa interactivo de butacas con zoom y gestos |
@@ -121,4 +121,30 @@ Para garantizar consistencia y continuidad en cualquier día de trabajo:
 - [x] Pull-to-refresh vuelve a consultar la API.
 - [x] POST `/plays` persiste la obra y la lista se refresca por invalidación.
 - [x] Guardados y badge consumen ids, no objetos del servidor.
+- [x] `expo export --platform web` genera el bundle sin errores.
+
+---
+
+## 🎯 Control de Calidad: Semana 06 (React Hook Form + Zod)
+
+### Rúbrica Oficial (100 pts)
+- [x] **Schema Zod**: `playSchema` con 12 campos, reglas de longitud, enums y URL.
+- [x] **`z.coerce.number()`**: aplicado a `price`, `availableSeats` y `rating`.
+- [x] **Tipos inferidos**: `PlayFormInput` y `PlayFormValues` derivados del schema con `z.input`/`z.output`.
+- [x] **`FormField` reutilizable**: `Controller` + `TextInput` + label + error, con genéricos de RHF.
+- [x] **`FormChips`**: selector de género y sala conectado con `Controller`.
+- [x] **`PlayForm` compartido**: un solo formulario para Create y Edit, sin duplicar campos.
+- [x] **Create funcional**: `zodResolver`, `useCreatePlay`, botón deshabilitado y `ActivityIndicator`.
+- [x] **Edit con `defaultValues`**: `usePlayById` + `reset()` en `useEffect` + `useUpdatePlay`.
+- [x] **Errores inline**: mensajes de Zod visibles bajo cada campo inválido.
+- [x] **Navegación tipada**: rutas `Create` y `Edit` dentro de `HomeStackParamList`.
+- [x] **TypeScript**: `pnpm typecheck` sin errores ni usos de `any`.
+
+### Verificación funcional
+- [x] Enviar el formulario vacío muestra los errores de nombre, director, precio y sinopsis.
+- [x] Una fecha imposible (ej. `2027-02-30`) es rechazada por el refine del schema.
+- [x] Un precio `0` o texto no numérico muestra el mensaje correspondiente.
+- [x] Publicar una obra válida la agrega a la cartelera y persiste en `api/db.json`.
+- [x] Editar una obra precarga sus valores y actualiza lista, detalle y header.
+- [x] `FormField` y `PlayForm` se reutilizan en las dos pantallas.
 - [x] `expo export --platform web` genera el bundle sin errores.
