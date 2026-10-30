@@ -1,5 +1,5 @@
 // ============================================
-// NAVIGATION: RootNavigator — Semana 04: Estado Global
+// NAVIGATION: RootNavigator — Semana 05: Networking
 // Tab Navigator raíz con Stack anidado y badge conectado a Zustand
 // ============================================
 
@@ -12,6 +12,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { DetailScreen } from '../screens/DetailScreen';
 import { SavedScreen } from '../screens/SavedScreen';
 import { HomeScreen } from '../screens/HomeScreen';
+import { CreateScreen } from '../screens/CreateScreen';
 import { COLORS, TYPOGRAPHY, SIZES } from '../theme';
 import { selectSavedCount, useSavedStore } from '../stores/savedStore';
 import type { HomeStackParamList, RootTabParamList } from './types';
@@ -55,6 +56,17 @@ function HomeStackNavigator(): React.JSX.Element {
           headerBackTitle: 'Cartelera',
           headerShown: true,
         })}
+      />
+
+      {/* Formulario de creación de una obra nueva */}
+      <HomeStack.Screen
+        name="Create"
+        component={CreateScreen}
+        options={{
+          title: 'Nueva obra',
+          headerBackTitle: 'Cartelera',
+          presentation: 'modal',
+        }}
       />
     </HomeStack.Navigator>
   );

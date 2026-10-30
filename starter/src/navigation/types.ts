@@ -1,5 +1,5 @@
 // ============================================
-// NAVIGATION TYPES — Semana 04: Dominio Teatro
+// NAVIGATION TYPES — Semana 05: Dominio Teatro
 // Tipado estricto de parámetros para Tab y Stack Navigators (Sin tipos dinámicos)
 // ============================================
 
@@ -19,6 +19,9 @@ export type HomeStackParamList = {
     id: string;
     name: string;
   };
+
+  /** Formulario para publicar una obra nueva */
+  Create: undefined;
 };
 
 // ============================================
