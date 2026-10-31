@@ -77,7 +77,7 @@ export const ItemCard = React.memo(function ItemCard({
           <Ionicons
             name={saved ? 'bookmark' : 'bookmark-outline'}
             size={SIZES.iconMd}
-            color={saved ? COLORS.tabActive : COLORS.textPrimary}
+            color={saved ? COLORS.accent : COLORS.textPrimary}
           />
         </Pressable>
       </View>
@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
     borderColor: COLORS.border,
   },
   saveButtonActive: {
-    borderColor: COLORS.tabActive,
+    borderColor: COLORS.accent,
   },
   saveButtonPressed: {
     opacity: 0.7,

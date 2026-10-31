@@ -173,7 +173,7 @@ export function DetailScreen(): React.JSX.Element {
             <Ionicons
               name={isSaved ? 'bookmark' : 'bookmark-outline'}
               size={SIZES.iconSm}
-              color={isSaved ? COLORS.tabActive : COLORS.textPrimary}
+              color={isSaved ? COLORS.accent : COLORS.textPrimary}
             />
             <Text
               style={[
@@ -367,7 +367,7 @@ const styles = StyleSheet.create({
     borderColor: COLORS.border,
   },
   savePillActive: {
-    borderColor: COLORS.tabActive,
+    borderColor: COLORS.accent,
   },
   savePillPressed: {
     opacity: 0.7,
@@ -378,7 +378,7 @@ const styles = StyleSheet.create({
     color: COLORS.textPrimary,
   },
   savePillTextActive: {
-    color: COLORS.tabActive,
+    color: COLORS.accent,
   },
   genreBadge: {
     backgroundColor: COLORS.surface,

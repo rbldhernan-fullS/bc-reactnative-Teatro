@@ -1,5 +1,5 @@
 // ============================================
-// THEME — Semanas 03 y 04: Dominio Teatro
+// THEME — Semanas 03 a 06: Dominio Teatro
 // Constantes de diseño globales (Paleta Vino y Oro)
 // ============================================
 
@@ -22,9 +22,6 @@ export const COLORS = {
   accent: '#d4a24c',
   accentDim: '#d4a24c33',   // 20% de opacidad para fondos de chips/badges
   accentHover: '#e5b565',
-
-  // Acento del Tab Bar (requisito explícito de la Semana 03)
-  tabActive: '#61DAFB',
 
   // Semánticos
   success: '#3fb950',
