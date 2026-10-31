@@ -1,6 +1,6 @@
 // ============================================
-// NAVIGATION: RootNavigator — Semana 06: Formularios
-// Tab Navigator raíz con Stack anidado, badge y rutas de creación/edición
+// NAVIGATION: RootNavigator — Semanas 06 y 07
+// Tab Navigator raíz con Stack anidado, badge, creación/edición y Ajustes
 // ============================================
 
 import React from 'react';
@@ -15,6 +15,7 @@ import { SavedScreen } from '../screens/SavedScreen';
 import { HomeScreen } from '../screens/HomeScreen';
 import { CreateScreen } from '../screens/CreateScreen';
 import { EditScreen } from '../screens/EditScreen';
+import { SettingsScreen } from '../screens/SettingsScreen';
 import { COLORS, TYPOGRAPHY, SIZES } from '../theme';
 import { selectSavedCount, useSavedStore } from '../stores/savedStore';
 import type { HomeStackParamList, RootTabParamList } from './types';
@@ -118,8 +119,10 @@ export function RootNavigator(): React.JSX.Element {
 
           if (route.name === 'Home') {
             iconName = focused ? 'ticket' : 'ticket-outline';
-          } else {
+          } else if (route.name === 'Saved') {
             iconName = focused ? 'bookmark' : 'bookmark-outline';
+          } else {
+            iconName = focused ? 'settings' : 'settings-outline';
           }
 
           return <Ionicons name={iconName} size={size} color={color} />;
@@ -163,6 +166,15 @@ export function RootNavigator(): React.JSX.Element {
             fontSize: TYPOGRAPHY.size.xs,
             fontWeight: TYPOGRAPHY.weight.bold,
           },
+        }}
+      />
+
+      {/* Pestaña 3: Ajustes (MMKV + SecureStore) */}
+      <Tab.Screen
+        name="Settings"
+        component={SettingsScreen}
+        options={{
+          tabBarLabel: 'Ajustes',
         }}
       />
     </Tab.Navigator>

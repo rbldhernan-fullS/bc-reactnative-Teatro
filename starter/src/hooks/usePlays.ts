@@ -15,7 +15,13 @@ import {
   fetchPlays,
   updatePlay,
 } from '../services/theatreApi';
-import type { CreatePlayPayload, Item, UpdatePlayPayload } from '../types';
+import { readPlaysCache, writePlaysCache } from '../storage/playsCache';
+import type {
+  CreatePlayPayload,
+  Item,
+  PlaysWithSource,
+  UpdatePlayPayload,
+} from '../types';
 
 /**
  * Query key semántica. Al invalidar la raíz `['plays']` se refrescan también
@@ -23,11 +29,38 @@ import type { CreatePlayPayload, Item, UpdatePlayPayload } from '../types';
  */
 export const PLAYS_QUERY_KEY = ['plays'] as const;
 
-/** Cartelera completa. */
+/**
+ * Cartelera completa con caché offline.
+ *
+ * 1. Con red: consulta la API y guarda una copia en AsyncStorage.
+ * 2. Sin red y con caché: devuelve la copia y marca `source: 'cache'`.
+ * 3. Sin red y sin caché: propaga el error para la pantalla de reintento.
+ */
 export function usePlays() {
-  return useQuery<Item[]>({
+  return useQuery<PlaysWithSource>({
     queryKey: PLAYS_QUERY_KEY,
-    queryFn: fetchPlays,
+    queryFn: async (): Promise<PlaysWithSource> => {
+      try {
+        const plays = await fetchPlays();
+
+        try {
+          await writePlaysCache(plays);
+        } catch {
+          // La caché es best-effort: un fallo de escritura no debe romper
+          // una carga de red que sí fue exitosa.
+        }
+
+        return { plays, source: 'network' };
+      } catch (error) {
+        const cachedPlays = await readPlaysCache();
+
+        if (cachedPlays) {
+          return { plays: cachedPlays, source: 'cache' };
+        }
+
+        throw error;
+      }
+    },
   });
 }
 

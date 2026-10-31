@@ -74,6 +74,7 @@ export const SPACING = {
 
 export const SIZES = {
   cardImageHeight: 160,
+  cardImageCompactHeight: 96,
   pressedScale: 0.995,
   detailImageHeight: 240,
   detailContentBottomPadding: 110,

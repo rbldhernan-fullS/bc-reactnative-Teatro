@@ -75,3 +75,19 @@ export type CreatePlayPayload = Omit<Item, 'id'>;
 
 /** Cuerpo completo para reemplazar una obra existente */
 export type UpdatePlayPayload = Item;
+
+// ============================================
+// Semana 07: origen de la cartelera (red o caché)
+// ============================================
+
+/** Origen de los datos que está mostrando la app. */
+export type PlaysSource = 'network' | 'cache';
+
+/**
+ * Resultado de `usePlays`: las obras y su procedencia.
+ * `source === 'cache'` activa el banner de modo offline en la cartelera.
+ */
+export interface PlaysWithSource {
+  plays: Item[];
+  source: PlaysSource;
+}

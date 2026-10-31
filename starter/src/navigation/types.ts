@@ -1,5 +1,5 @@
 // ============================================
-// NAVIGATION TYPES — Semana 06: Dominio Teatro
+// NAVIGATION TYPES — Semanas 06 y 07: Dominio Teatro
 // Tipado estricto de parámetros para Tab y Stack Navigators (Sin tipos dinámicos)
 // ============================================
 
@@ -37,6 +37,8 @@ export type RootTabParamList = {
   Home: NavigatorScreenParams<HomeStackParamList>;
   /** Pestaña de obras guardadas (su estado vive en Zustand) */
   Saved: undefined;
+  /** Pestaña de ajustes: preferencias MMKV y código seguro */
+  Settings: undefined;
 };
 
 // ============================================

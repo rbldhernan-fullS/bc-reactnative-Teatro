@@ -1,113 +1,111 @@
-# Semana 06 — Formularios y Validación: Teatro Colón
+# Semana 07 — Persistencia Local: Teatro Colón
 
 **Autor**: Hernán Eduardo Robledo Montaña  
 **Ficha**: 3407193  
 **Dominio Asignado**: Teatro  
-**Rama**: `Week-06`
+**Rama**: `Week-07`
 
-Aplicación móvil desarrollada con **React Native 0.86**, **Expo 57** y **TypeScript 6** que implementa formularios de creación y edición de obras teatrales con **React Hook Form + Zod**, conectados a una API REST local con **TanStack Query**.
+Aplicación móvil desarrollada con **React Native 0.86**, **Expo 57** y **TypeScript 6** que añade una capa de persistencia local a la cartelera del **Teatro Colón** usando los tres storages del ecosistema: **MMKV** para preferencias, **AsyncStorage** para caché offline y **Expo SecureStore** para un dato sensible del dominio.
+
+> ⚠️ **Build nativo obligatorio**: `react-native-mmkv` 4 usa Nitro Modules (JSI) y no funciona en Expo Go. Ejecuta `pnpm prebuild` y luego `pnpm android` o `pnpm ios`.
 
 ---
 
 ## 🎭 Dominio: Teatro
 
-La app administra la cartelera del **Teatro Colón**:
+La app administra la cartelera y las funciones del Teatro Colón:
 
-1. **Cartelera (`HomeList`)**: obras cargadas desde la API, búsqueda en tiempo real, pull-to-refresh y estados de carga, error y vacío.
-2. **Detalle (`HomeDetail`)**: ficha artística consultada por `id`, sinopsis, sala, duración, aforo, precio, guardado y reserva. Incluye acceso directo a **Editar**.
-3. **Nueva obra (`Create`)**: formulario completo validado con Zod antes de enviar el POST.
-4. **Editar obra (`Edit`)**: mismo formulario con `defaultValues` cargados desde la API y `reset()` cuando llega la respuesta.
-5. **Guardados (`Saved`)**: favoritos resueltos desde la caché usando solo ids en Zustand.
+1. **Cartelera (`HomeList`)**: obras desde la API, búsqueda en tiempo real, orden alfabético, filtro por butacas, modo compacto, paginación y banner offline.
+2. **Detalle (`HomeDetail`)**: ficha artística, sinopsis, sala, duración, aforo, precio, guardado y edición.
+3. **Nueva obra (`Create`)** y **Editar obra (`Edit`)**: formularios validados con Zod.
+4. **Guardados (`Saved`)**: favoritos por `id` resueltos desde la caché de TanStack Query, también disponibles sin red.
+5. **Ajustes (`Settings`)**: preferencias persistentes con MMKV y código de acceso de taquilla cifrado con SecureStore.
 
 ---
 
-## 🗺️ Arquitectura de formularios
+## 🗂️ Los tres storages y su responsabilidad
 
-```
-PlayForm (componente compartido)
-├── FormField  → Controller + TextInput + error inline
-└── FormChips  → Controller + Pressables (género y sala)
-                      ↓
-        useForm + zodResolver(playSchema)
-                      ↓
-      useCreatePlay / useUpdatePlay (TanStack Query)
-                      ↓
-             Axios → json-server → api/db.json
-```
-
-### Separación de estados
-
-| Estado | Dónde vive | Ejemplo |
+| Storage | Qué guarda en Teatro | Por qué |
 |---|---|---|
-| Datos de la API | TanStack Query | Obras, precios, aforo, sinopsis |
-| Estado del formulario | React Hook Form | Valores, errores, `isSubmitting` |
-| Estado de UI | Zustand | Ids de obras guardadas y badge |
+| **MMKV** | `sortOrder`, `compactMode`, `itemsPerPage`, `onlyAvailable` | Lectura/escritura sincrónica y reactiva; ideal para preferencias pequeñas que deben aplicarse al instante. |
+| **AsyncStorage** | Última copia válida de la cartelera (`@teatro/plays_cache_v1`) | Asíncrono y pensado para volúmenes mayores; permite mostrar la cartelera sin conexión. |
+| **SecureStore** | Código de acceso de taquilla (`teatro_taquilla_access_code`) | Cifrado por Keychain (iOS) o Keystore (Android); nunca se muestra completo en la UI. |
+
+Los tokens de sesión de la Semana 08 también vivirán exclusivamente en SecureStore.
 
 ---
 
-## 🧩 Componentes reutilizables
+## ⚡ MMKV: preferencias reactivas
 
-### `FormField<T>`
-
-Encapsula `Controller` + `TextInput` + label + mensaje de error. Usa genéricos reales de React Hook Form (`Control<T>`, `FieldPath<T>`), sin `any`:
-
-```tsx
-<FormField
-  control={control}
-  name="name"
-  label="Título de la obra"
-  required
-  placeholder="Ej. Sueño de una noche de verano"
-  errorMessage={errors.name?.message}
-/>
-```
-
-### `FormChips<T>`
-
-Selector de opciones conectado al formulario. Se usa para `genre` y `hall`, que son uniones de literales en TypeScript:
-
-```tsx
-<FormChips
-  control={control}
-  name="genre"
-  label="Género teatral"
-  required
-  options={THEATRE_GENRES}
-  errorMessage={errors.genre?.message}
-/>
-```
-
-### `PlayForm`
-
-Formulario compartido por `CreateScreen` y `EditScreen`: evita duplicar los 11 campos, el botón de envío, el spinner y el mensaje de error del servidor.
-
----
-
-## ✅ Reglas de validación (`src/schemas/playSchema.ts`)
-
-| Campo | Regla Zod | Mensaje |
-|---|---|---|
-| `name` | `string().trim().min(2).max(80)` | Título de 2 a 80 caracteres |
-| `subtitle` | `string().trim().min(3).max(120)` | Director o compañía obligatorio |
-| `genre` | `z.enum(THEATRE_GENRES)` | Género teatral válido |
-| `hall` | `z.enum(THEATRE_HALLS)` | Sala válida |
-| `date` | regex `AAAA-MM-DD` + fecha real del calendario | Fecha existente |
-| `time` | regex `HH:MM` (24 h) | Hora válida |
-| `price` | `z.coerce.number().int().positive().max(1.000.000)` | Precio entero mayor que cero |
-| `duration` | regex `120 min` | Formato de duración |
-| `availableSeats` | `z.coerce.number().int().min(0).max(500)` | Aforo entre 0 y 500 |
-| `rating` | `z.coerce.number().min(0).max(5)` | Calificación entre 0 y 5 |
-| `imageUri` | `string().url()` | URL válida del afiche |
-| `synopsis` | `string().trim().min(20).max(600)` | Sinopsis de 20 a 600 caracteres |
-
-Los campos numéricos usan `z.coerce.number()` porque `TextInput` siempre entrega un `string`. El formulario se tipa con `z.input` para los valores de entrada y `z.output` para los valores ya convertidos:
+`src/storage/mmkv.ts` crea una única instancia:
 
 ```ts
-useForm<PlayFormInput, unknown, PlayFormValues>({
-  resolver: zodResolver(playSchema),
-  defaultValues: EMPTY_PLAY_FORM,
-});
+import { createMMKV } from 'react-native-mmkv';
+
+export const storage = createMMKV({ id: 'teatro-preferences' });
 ```
+
+`src/hooks/usePreferences.ts` encapsula las claves, los valores por defecto y los setters tipados. Usa los hooks reactivos de MMKV (`useMMKVString`, `useMMKVBoolean`, `useMMKVNumber`), por lo que cualquier pantalla suscrita se actualiza sin `async/await` y sin reiniciar la app:
+
+```ts
+const {
+  sortOrder, setSortOrder,
+  compactMode, setCompactMode,
+  itemsPerPage, setItemsPerPage,
+  onlyAvailable, setOnlyAvailable,
+  resetPreferences,
+} = usePreferences();
+```
+
+| Preferencia | Tipo | Valores | Efecto |
+|---|---|---|---|
+| `sortOrder` | `'asc' \| 'desc'` | A → Z / Z → A | Ordena la cartelera por título (`localeCompare('es')`). |
+| `compactMode` | `boolean` | `false` / `true` | `ItemCard` oculta director, hora, duración y butacas; reduce el afiche a 96 px. |
+| `itemsPerPage` | `6 \| 12 \| 24` | 6 / 12 / 24 | Controla cuántas tarjetas se muestran antes del botón **Mostrar más**. |
+| `onlyAvailable` | `boolean` | `false` / `true` | Oculta las obras con `availableSeats === 0`. |
+
+Los valores guardados se normalizan al leerlos: si MMKV devuelve un valor inesperado, la app cae al valor por defecto tipado en lugar de romper la pantalla.
+
+---
+
+## 📴 Caché offline con AsyncStorage
+
+`src/storage/playsCache.ts` encapsula lectura, escritura y limpieza. Antes de devolver datos valida el JSON con Zod reutilizando `playSchema` (Semana 06) más el `id`. Si la caché está corrupta, se elimina y se devuelve `null`.
+
+`usePlays()` ahora responde con `PlaysWithSource`:
+
+```ts
+interface PlaysWithSource {
+  plays: Item[];
+  source: 'network' | 'cache';
+}
+```
+
+Flujo de la query:
+
+```
+¿La API responde?
+├── Sí → guarda copia en AsyncStorage y devuelve { source: 'network' }
+└── No → ¿existe caché válida?
+    ├── Sí → devuelve { source: 'cache' }
+    └── No → propaga el error → pantalla con Reintentar
+```
+
+Cuando `source === 'cache'`, `HomeScreen` y `SavedScreen` muestran el banner **“⚠️ Mostrando datos sin red”** con un botón **Reintentar** que vuelve a lanzar la query.
+
+La caché es *best-effort*: si falla la escritura en disco, la carga de red sigue funcionando.
+
+---
+
+## 🔐 SecureStore: código de acceso de taquilla
+
+`SettingsScreen` genera un código tipo `TCXXXX-XXXX` con un alfabeto sin caracteres ambiguos, lo guarda con `SecureStore.setItemAsync` y permite leerlo o eliminarlo:
+
+- **Generar y guardar** → `setItemAsync`.
+- **Leer** → `getItemAsync`; solo se muestra `TC-•••Q2M` (enmascarado).
+- **Eliminar** → `deleteItemAsync`.
+
+El valor completo nunca se pinta en pantalla. Al entrar a la pantalla se comprueba si existe el código, pero no se revela.
 
 ---
 
@@ -117,21 +115,66 @@ useForm<PlayFormInput, unknown, PlayFormValues>({
 cd starter
 pnpm install
 
-# API + Metro en un solo comando
-pnpm dev
+# 1. API local de la cartelera (terminal 1)
+pnpm api
 
-# O en dos terminales
-pnpm api    # json-server en http://localhost:3001
-pnpm start  # Expo / Metro
+# 2. Build nativo + Metro (terminal 2)
+pnpm prebuild      # genera android/ e ios/ (ignorados por git)
+pnpm android       # o: pnpm ios
 ```
 
-Para un celular físico, la app detecta la IP de Metro automáticamente. Si tu red lo requiere, crea `starter/.env` desde `.env.example`:
+Requisitos del build nativo:
+
+- **Android**: JDK 17 + Android Studio con un emulador o dispositivo conectado por USB.
+- **iOS**: macOS con Xcode y simulador.
+
+Tras la primera compilación puedes abrir la app instalada y arrancar Metro con `pnpm start`. **No abras el proyecto en Expo Go**: MMKV necesita el binario nativo.
+
+Para un celular físico, la app detecta la IP de Metro. Si tu red lo requiere, crea `starter/.env` desde `.env.example`:
 
 ```bash
 EXPO_PUBLIC_API_URL=http://192.168.1.50:3001
 ```
 
 > El firewall de Windows debe permitir el puerto `3001`. Para restaurar la semilla: `git checkout -- api/db.json`.
+
+---
+
+## ✅ Cumplimiento de la rúbrica (Semana 07)
+
+| Criterio | Puntos | Implementación |
+|---|:---:|---|
+| **MMKV**: ≥ 2 preferencias persistentes sin `async/await` | 8 | Cuatro preferencias en `usePreferences` con hooks reactivos; Settings las cambia en tiempo real. |
+| **AsyncStorage**: caché mostrada sin red con banner | 8 | `playsCache` + fallback en `usePlays` + banner “⚠️ Mostrando datos sin red” en Cartelera y Guardados. |
+| **SecureStore**: dato sensible guardado y leído | 6 | Código de taquilla con `setItemAsync` / `getItemAsync` / `deleteItemAsync`, siempre enmascarado. |
+| **Custom hook** `usePreferences()` | 5 | Claves, defaults, normalización y setters tipados en un solo hook. |
+| App funcional y TypeScript sin errores | 3 | `pnpm typecheck` con 0 errores; bundle Android exportado correctamente. |
+
+### Criterios transversales
+
+- Ningún token ni contraseña en AsyncStorage o MMKV.
+- `useState` se usa solo para estado de UI (búsqueda, paginación, lectura del código); la persistencia vive en MMKV/AsyncStorage/SecureStore.
+- La lógica de storage no está dispersa: `storage/mmkv.ts`, `storage/playsCache.ts`, `hooks/usePreferences.ts`.
+- Sin `TODO`, placeholders ni `as any`.
+
+---
+
+## 🧪 Verificación
+
+```bash
+cd starter
+pnpm typecheck                              # 0 errores
+npx expo export --platform android          # bundle nativo correcto
+```
+
+Flujo manual sugerido:
+
+1. Abrir **Ajustes** y cambiar el orden a **Z → A**: la cartelera se reordena al volver.
+2. Activar **Modo compacto** y **Solo funciones con butacas**: las tarjetas cambian y desaparecen las agotadas.
+3. Elegir **6 por página**: la lista muestra 6 tarjetas y el botón **Mostrar más**.
+4. Cerrar y reabrir la app: las cuatro preferencias se conservan (MMKV).
+5. Con la app abierta, detener `pnpm api` y hacer pull-to-refresh: aparece el banner offline con la caché.
+6. En **Ajustes**, generar y guardar el código de taquilla, leerlo (enmascarado) y eliminarlo.
 
 ---
 
@@ -143,16 +186,14 @@ EXPO_PUBLIC_API_URL=http://192.168.1.50:3001
 | Expo SDK | 57 | Runtime y tooling |
 | React | 19.2.3 | Componentes |
 | TypeScript | 6.0.3 | Tipado estricto (sin `any`) |
-| React Hook Form | 7.81.0 | Estado y envío de formularios |
-| Zod | 4.4.3 | Validación y tipos inferidos |
-| @hookform/resolvers | 5.4.0 | `zodResolver` |
-| TanStack Query | 5.105 | Estado del servidor |
-| Axios | 1.21 | Cliente HTTP |
-| json-server | 0.17.4 | API REST local |
-| Zustand | 5.0 | Estado de UI (ids guardados) |
+| React Native MMKV | 4.3.2 | Preferencias sincrónicas (Nitro/JSI) |
+| react-native-nitro-modules | 0.36.1 | Runtime nativo requerido por MMKV 4 |
+| AsyncStorage | 2.2.0 | Caché offline de la cartelera |
+| Expo SecureStore | 57.0.4 | Código sensible cifrado |
+| TanStack Query | 5.105 | Estado del servidor y caché en memoria |
+| React Hook Form + Zod | 7.81 / 4.4.3 | Formularios y validación |
+| Zustand | 5.0 | Ids de obras guardadas |
 | React Navigation | 7.x | Tabs + Stack anidado |
-
-> **Nota de tooling**: Expo incluye Zod 3 de forma transitiva. `starter/pnpm-workspace.yaml` declara el peer de Zod en `@hookform/resolvers` para que pnpm enlace la versión 4 del proyecto y TypeScript resuelva una sola instancia.
 
 ---
 
@@ -164,73 +205,34 @@ api/
 
 starter/
 ├── App.tsx                         # QueryClientProvider + NavigationContainer
+├── app.json                        # newArchEnabled + plugin expo-secure-store
 ├── pnpm-workspace.yaml             # Peer de Zod 4 para @hookform/resolvers
 └── src/
-    ├── schemas/
-    │   └── playSchema.ts           # Schema Zod, inferencia y mapeo de payloads
-    ├── components/
-    │   ├── FormField.tsx           # Controller + TextInput + error
-    │   ├── FormChips.tsx           # Selector de género y sala
-    │   ├── PlayForm.tsx            # Formulario compartido Create/Edit
-    │   ├── ItemCard.tsx            # Tarjeta de obra
-    │   └── ScreenState.tsx         # Loading / error / vacío
+    ├── storage/
+    │   ├── mmkv.ts                 # Instancia única de MMKV
+    │   └── playsCache.ts           # Caché AsyncStorage validada con Zod
     ├── hooks/
-    │   └── usePlays.ts             # Queries y mutations de la API
-    ├── navigation/
-    │   ├── RootNavigator.tsx       # HomeList, HomeDetail, Create y Edit
-    │   └── types.ts                # HomeStackParamList tipado
+    │   ├── usePreferences.ts       # Preferencias MMKV tipadas
+    │   └── usePlays.ts             # Query con fallback offline
     ├── screens/
-    │   ├── HomeScreen.tsx          # Cartelera con estados de red
-    │   ├── DetailScreen.tsx        # Detalle + acceso a editar
-    │   ├── CreateScreen.tsx        # Formulario de creación
-    │   ├── EditScreen.tsx          # Formulario con defaultValues
-    │   └── SavedScreen.tsx         # Guardados por id
+    │   ├── HomeScreen.tsx          # Banner, orden, compacto y paginación
+    │   ├── SavedScreen.tsx         # Guardados con aviso de caché
+    │   └── SettingsScreen.tsx      # MMKV + SecureStore
+    ├── components/
+    │   ├── ItemCard.tsx            # Variante compacta
+    │   └── ScreenState.tsx         # Loading / error / vacío
+    ├── navigation/
+    │   ├── RootNavigator.tsx       # Pestañas Cartelera, Guardados y Ajustes
+    │   └── types.ts                # RootTabParamList tipado
+    ├── schemas/
+    │   └── playSchema.ts           # Zod reutilizado por la caché
     ├── services/
     │   ├── api.ts                  # Axios y errores legibles
     │   └── theatreApi.ts           # Adaptador de dominio
     ├── stores/
     │   └── savedStore.ts           # Zustand: savedIds
     ├── types/
-    │   └── index.ts                # Item, catálogos y payloads
+    │   └── index.ts                # Item, PlaysWithSource y payloads
     └── theme/
         └── index.ts                # Paleta vino y oro
 ```
-
----
-
-## ✅ Cumplimiento de la rúbrica (Semana 06)
-
-| Criterio | Puntos | Implementación |
-|---|:---:|---|
-| `FormField` reutilizable | 5 | `Controller` + `TextInput` + error, usado en las dos pantallas vía `PlayForm` |
-| `CreateScreen` funcional | 8 | `useForm` + `zodResolver` + `useCreatePlay`; navega atrás en `onSuccess` |
-| `EditScreen` con `defaultValues` | 8 | `usePlayById` + `reset()` en `useEffect` + `useUpdatePlay` |
-| Validación activa y errores inline | 5 | Mensajes de Zod bajo cada campo y borde rojo |
-| App corriendo en simulador | 4 | Bundle web exportado sin errores y estructura compatible con Expo Go; capturas pendientes en dispositivo |
-
-### Criterios transversales
-
-- `FormField` y `FormChips` con genéricos, sin `any`.
-- `zodResolver` conectado a `useForm` en ambos formularios.
-- `z.coerce.number()` en precio, aforo y calificación.
-- `PlayFormValues` inferido con `z.infer<typeof playSchema>` (y `PlayFormInput` con `z.input`); no hay interfaces manuales duplicando el schema.
-- Botón deshabilitado y `ActivityIndicator` mientras `isSubmitting || isPending`.
-
----
-
-## 🧪 Verificación
-
-```bash
-cd starter
-pnpm typecheck                     # 0 errores
-pnpm expo export --platform web    # bundle correcto
-```
-
-Flujo manual sugerido:
-
-1. `pnpm dev` y abrir la app.
-2. Tocar **Nueva** y enviar el formulario vacío: aparecen los errores inline.
-3. Corregir los campos y publicar: la obra aparece en la cartelera.
-4. Abrir el detalle y tocar el icono de edición del header.
-5. Cambiar el título o el precio, guardar y comprobar la actualización en detalle y lista.
-6. Revisar la persistencia en `api/db.json` y reiniciar la app.

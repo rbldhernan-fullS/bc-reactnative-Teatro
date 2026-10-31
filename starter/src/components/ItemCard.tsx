@@ -1,6 +1,7 @@
 // ============================================
-// COMPONENT: ItemCard — Semanas 04 y 05
+// COMPONENT: ItemCard — Semanas 04, 05 y 07
 // Tarjeta de obra teatral con acción de guardar/quitar por id
+// y variante compacta controlada por las preferencias (MMKV)
 // ============================================
 
 import React from 'react';
@@ -17,6 +18,8 @@ interface ItemCardProps {
   saved: boolean;
   /** Guarda o quita la obra del store */
   onToggleSave: (item: Item) => void;
+  /** Variante compacta: afiche más bajo y menos metadatos */
+  compact?: boolean;
 }
 
 export const ItemCard = React.memo(function ItemCard({
@@ -24,6 +27,7 @@ export const ItemCard = React.memo(function ItemCard({
   onPress,
   saved,
   onToggleSave,
+  compact = false,
 }: ItemCardProps): React.JSX.Element {
   function handleSavePress(event: GestureResponderEvent): void {
     // Evita que el toque del bookmark abra el detalle de la obra.
@@ -42,7 +46,9 @@ export const ItemCard = React.memo(function ItemCard({
       accessibilityLabel={`Obra ${item.name}, género ${item.genre}, precio ${item.price} pesos`}
     >
       {/* Afiche / Portada de la obra */}
-      <View style={styles.imageWrapper}>
+      <View
+        style={[styles.imageWrapper, compact && styles.imageWrapperCompact]}
+      >
         <Image
           source={{ uri: item.imageUri }}
           style={styles.cardImage}
@@ -83,48 +89,69 @@ export const ItemCard = React.memo(function ItemCard({
       </View>
 
       {/* Cuerpo informativo de la obra */}
-      <View style={styles.cardBody}>
+      <View style={[styles.cardBody, compact && styles.cardBodyCompact]}>
         {/* Título de la obra */}
-        <Text style={styles.cardTitle} numberOfLines={1}>
+        <Text
+          style={[styles.cardTitle, compact && styles.cardTitleCompact]}
+          numberOfLines={1}
+        >
           {item.name}
         </Text>
 
-        {/* Director o compañía */}
-        <Text style={styles.cardSubtitle} numberOfLines={1}>
-          {item.subtitle}
-        </Text>
+        {/* Director o compañía (se oculta en modo compacto) */}
+        {!compact && (
+          <Text style={styles.cardSubtitle} numberOfLines={1}>
+            {item.subtitle}
+          </Text>
+        )}
 
-        {/* Sala y duración */}
+        {/* Sala y función */}
         <View style={styles.metaRow}>
           <Text style={styles.metaText}>🏛 {item.hall}</Text>
           <Text style={styles.metaDot}>•</Text>
-          <Text style={styles.metaText}>⏳ {item.duration}</Text>
-        </View>
-
-        {/* Fecha y hora de función */}
-        <View style={styles.metaRow}>
           <Text style={styles.metaText}>📅 {item.date}</Text>
-          <Text style={styles.metaDot}>•</Text>
-          <Text style={styles.metaText}>🕒 {item.time}</Text>
         </View>
 
-        {/* Separador sutil */}
-        <View style={styles.divider} />
-
-        {/* Pie de tarjeta: Butacas y Precio */}
-        <View style={styles.cardFooter}>
-          <View style={styles.seatsContainer}>
-            <Text style={styles.seatsLabel}>Disponibles</Text>
-            <Text style={styles.seatsValue}>{item.availableSeats} butacas</Text>
-          </View>
-
-          <View style={styles.priceContainer}>
-            <Text style={styles.priceLabel}>Entrada general</Text>
+        {compact ? (
+          /* Modo compacto: solo precio y butacas en una línea */
+          <View style={styles.compactFooter}>
+            <Text style={styles.compactSeats}>
+              {item.availableSeats} butacas
+            </Text>
             <Text style={styles.priceValue}>
               ${item.price.toLocaleString('es-CO')} COP
             </Text>
           </View>
-        </View>
+        ) : (
+          <>
+            {/* Hora y duración */}
+            <View style={styles.metaRow}>
+              <Text style={styles.metaText}>🕒 {item.time}</Text>
+              <Text style={styles.metaDot}>•</Text>
+              <Text style={styles.metaText}>⏳ {item.duration}</Text>
+            </View>
+
+            {/* Separador sutil */}
+            <View style={styles.divider} />
+
+            {/* Pie de tarjeta: Butacas y Precio */}
+            <View style={styles.cardFooter}>
+              <View style={styles.seatsContainer}>
+                <Text style={styles.seatsLabel}>Disponibles</Text>
+                <Text style={styles.seatsValue}>
+                  {item.availableSeats} butacas
+                </Text>
+              </View>
+
+              <View style={styles.priceContainer}>
+                <Text style={styles.priceLabel}>Entrada general</Text>
+                <Text style={styles.priceValue}>
+                  ${item.price.toLocaleString('es-CO')} COP
+                </Text>
+              </View>
+            </View>
+          </>
+        )}
       </View>
     </Pressable>
   );
@@ -150,6 +177,9 @@ const styles = StyleSheet.create({
     width: '100%',
     height: SIZES.cardImageHeight,
     backgroundColor: COLORS.borderLight,
+  },
+  imageWrapperCompact: {
+    height: SIZES.cardImageCompactHeight,
   },
   cardImage: {
     width: '100%',
@@ -207,10 +237,18 @@ const styles = StyleSheet.create({
     padding: SPACING.base,
     gap: SPACING.xs,
   },
+  cardBodyCompact: {
+    paddingVertical: SPACING.sm,
+    paddingHorizontal: SPACING.md,
+    gap: SPACING.xxs,
+  },
   cardTitle: {
     fontSize: TYPOGRAPHY.size.lg,
     fontWeight: TYPOGRAPHY.weight.bold,
     color: COLORS.textPrimary,
+  },
+  cardTitleCompact: {
+    fontSize: TYPOGRAPHY.size.md,
   },
   cardSubtitle: {
     fontSize: TYPOGRAPHY.size.sm,
@@ -252,6 +290,16 @@ const styles = StyleSheet.create({
     fontSize: TYPOGRAPHY.size.sm,
     fontWeight: TYPOGRAPHY.weight.semibold,
     color: COLORS.textSecondary,
+  },
+  compactFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: SPACING.xxs,
+  },
+  compactSeats: {
+    fontSize: TYPOGRAPHY.size.xs,
+    color: COLORS.textMuted,
   },
   priceContainer: {
     alignItems: 'flex-end',

@@ -1,6 +1,7 @@
 // ============================================
-// SCREEN: SavedScreen — Semana 05: Networking
+// SCREEN: SavedScreen — Semanas 05 y 07
 // Segunda pestaña: obras guardadas por id, resueltas desde TanStack Query
+// y visibles también cuando la cartelera viene de la caché offline
 // ============================================
 
 import React, { useCallback, useMemo } from 'react';
@@ -37,9 +38,12 @@ export function SavedScreen(): React.JSX.Element {
 
   const savedIdSet = useMemo(() => new Set(savedIds), [savedIds]);
 
+  const plays = useMemo(() => data?.plays ?? [], [data]);
+  const isOffline = data?.source === 'cache';
+
   const savedItems = useMemo(
-    () => (data ?? []).filter((item) => savedIdSet.has(item.id)),
-    [data, savedIdSet]
+    () => plays.filter((item) => savedIdSet.has(item.id)),
+    [plays, savedIdSet]
   );
 
   const handleRefresh = useCallback((): void => {
@@ -212,6 +216,15 @@ export function SavedScreen(): React.JSX.Element {
           </View>
         </View>
 
+        {/* Aviso de caché: las obras guardadas se resolvieron sin red */}
+        {isOffline && (
+          <View style={styles.offlineBanner}>
+            <Text style={styles.offlineText}>
+              ⚠️ Mostrando datos sin red — caché local
+            </Text>
+          </View>
+        )}
+
         {/* Lista de Guardados resuelta desde TanStack Query */}
         <FlatList
           data={savedItems}
@@ -280,6 +293,18 @@ const styles = StyleSheet.create({
     fontSize: TYPOGRAPHY.size.xs,
     fontWeight: TYPOGRAPHY.weight.semibold,
     color: COLORS.textSecondary,
+  },
+  offlineBanner: {
+    paddingHorizontal: SPACING.base,
+    paddingVertical: SPACING.sm,
+    backgroundColor: '#3a2210',
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.warning,
+  },
+  offlineText: {
+    fontSize: TYPOGRAPHY.size.xs,
+    fontWeight: TYPOGRAPHY.weight.semibold,
+    color: COLORS.warning,
   },
   listContent: {
     padding: SPACING.base,

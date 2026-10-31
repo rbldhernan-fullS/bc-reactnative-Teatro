@@ -18,7 +18,8 @@
       "package": "com.hernan.teatro"
     },
     "plugins": [
-      "expo-status-bar"
+      "expo-status-bar",
+      "expo-secure-store"
     ]
   }
 }

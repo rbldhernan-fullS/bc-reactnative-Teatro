@@ -50,8 +50,8 @@ Para garantizar consistencia y continuidad en cualquier día de trabajo:
 | **04** | Estado Global con Zustand | ✅ Completada | `Week-04` | Store global de obras guardadas, badge en vivo y acción Guardar/Quitar en cartelera y detalle |
 | **05** | Networking & TanStack Query | ✅ Completada | `Week-05` | API REST local de cartelera con Axios, caché, estados de red, refresco y publicación de obras |
 | **06** | Formularios y Validación | ✅ Completada | `Week-06` | Formularios Create/Edit con React Hook Form, Zod, `FormField` reutilizable y errores inline |
-| **07** | Persistencia Local | 🚀 Siguiente | `Week-07` | Historial de reservas y boletos guardados offline (MMKV / AsyncStorage) |
-| **08** | Autenticación | ⏳ Pendiente | `Week-08` | Login/Registro para miembros del club del teatro |
+| **07** | Persistencia Local | ✅ Completada | `Week-07` | Preferencias MMKV, caché offline de cartelera y código de taquilla en SecureStore |
+| **08** | Autenticación | 🚀 Siguiente | `Week-08` | Login/Registro para miembros del club del teatro |
 | **09** | Animaciones Básicas | ⏳ Pendiente | `Week-09` | Transición de telón, fade-in de afiches, feedback táctil |
 | **10** | Reanimated & Gesture Handler | ⏳ Pendiente | `Week-10` | Mapa interactivo de butacas con zoom y gestos |
 | **11** | APIs Nativas | ⏳ Pendiente | `Week-11` | Notificaciones de inicio de función, compartir afiche, hápticos |
@@ -148,3 +148,39 @@ Para garantizar consistencia y continuidad en cualquier día de trabajo:
 - [x] Editar una obra precarga sus valores y actualiza lista, detalle y header.
 - [x] `FormField` y `PlayForm` se reutilizan en las dos pantallas.
 - [x] `expo export --platform web` genera el bundle sin errores.
+
+---
+
+## 🎯 Control de Calidad: Semana 07 (Persistencia Local)
+
+### Rúbrica Oficial (Producto — 30 pts)
+
+- [x] **MMKV**: `storage/mmkv.ts` con instancia única y `newArchEnabled: true`.
+- [x] **Custom hook `usePreferences()`**: `sortOrder`, `compactMode`, `itemsPerPage` y `onlyAvailable` con hooks reactivos de MMKV.
+- [x] **Persistencia sin `async/await`**: los setters de MMKV escriben de forma sincrónica y la UI reacciona al instante.
+- [x] **Caché AsyncStorage**: `storage/playsCache.ts` guarda la última cartelera válida y la valida con Zod.
+- [x] **Fallback offline**: `usePlays()` devuelve `{ plays, source }`; si la API falla y hay caché, responde con `source: 'cache'`.
+- [x] **Banner offline**: “⚠️ Mostrando datos sin red” visible en Cartelera y Guardados, con acción **Reintentar**.
+- [x] **`SettingsScreen`**: switches y selectores para las cuatro preferencias, aplicados en tiempo real.
+- [x] **SecureStore**: código de acceso de taquilla guardado, leído y eliminado; solo se muestra enmascarado.
+- [x] **`HomeScreen` actualizado**: orden alfabético, filtro por butacas, modo compacto y paginación con `itemsPerPage`.
+- [x] **`ItemCard` compacto**: menos metadatos y afiche reducido sin romper la paleta vino/oro.
+- [x] **Scripts nativos**: `prebuild`, `android` (`expo run:android`) e `ios` (`expo run:ios`); `android/` e `ios/` ignorados.
+- [x] **TypeScript**: `pnpm typecheck` sin errores ni usos de `any`.
+- [x] **Bundle**: `expo export --platform android` genera el bundle correctamente.
+
+### Verificación funcional
+
+- [x] Cambiar el orden en Ajustes reordena la cartelera.
+- [x] Activar modo compacto reduce la información de cada tarjeta.
+- [x] “Solo funciones con butacas” oculta las obras agotadas.
+- [x] Elegir 6 por página muestra el botón **Mostrar más**.
+- [x] Las preferencias sobreviven al cierre y reapertura de la app (MMKV).
+- [x] Al detener la API, el pull-to-refresh muestra la caché con banner offline.
+- [x] El código de taquilla se guarda, lee enmascarado y elimina desde SecureStore.
+- [x] `pnpm typecheck` y `expo export --platform android` finalizan sin errores.
+
+### Limitación de entorno
+
+- No hay JDK, Android SDK ni `adb` en este equipo, por lo que la compilación y las capturas del simulador deben realizarse con Android Studio + JDK 17 o EAS Build.
+- La app ya no abre en Expo Go por el módulo nativo de MMKV; `Week-06` queda como versión compatible con Expo Go.
