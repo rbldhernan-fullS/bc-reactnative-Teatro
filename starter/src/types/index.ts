@@ -91,3 +91,52 @@ export interface PlaysWithSource {
   plays: Item[];
   source: PlaysSource;
 }
+
+// ============================================
+// Semana 08: autenticación del Club del Teatro
+// ============================================
+
+/** Par de tokens que devuelve dummyjson al autenticarse. */
+export interface AuthTokens {
+  accessToken: string;
+  refreshToken: string;
+}
+
+/** Datos públicos del miembro autenticado. */
+export interface AuthUser {
+  id: number;
+  username: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  image?: string;
+}
+
+/** Respuesta de `POST /auth/login`: usuario + tokens. */
+export interface AuthSession extends AuthUser, AuthTokens {}
+
+/** Credenciales del formulario de login. */
+export interface LoginCredentials {
+  username: string;
+  password: string;
+}
+
+/**
+ * Datos del registro simulado. dummyjson no crea usuarios reales, por eso el
+ * registro solo valida el formulario y simula la creación de la cuenta.
+ */
+export interface RegisterData {
+  username: string;
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+}
+
+/** Claims estándar de un JWT (solo para documentar la estructura). */
+export interface JwtPayload {
+  sub: number;
+  username: string;
+  iat: number;
+  exp: number;
+}

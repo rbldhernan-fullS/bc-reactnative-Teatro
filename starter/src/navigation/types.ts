@@ -1,5 +1,5 @@
 // ============================================
-// NAVIGATION TYPES — Semanas 06 y 07: Dominio Teatro
+// NAVIGATION TYPES — Semanas 06, 07 y 08: Dominio Teatro
 // Tipado estricto de parámetros para Tab y Stack Navigators (Sin tipos dinámicos)
 // ============================================
 
@@ -39,10 +39,20 @@ export type RootTabParamList = {
   Saved: undefined;
   /** Pestaña de ajustes: preferencias MMKV y código seguro */
   Settings: undefined;
+  /** Pestaña del perfil del miembro autenticado */
+  Profile: undefined;
 };
 
 // ============================================
-// 3. HELPERS DE TIPADO PARA PANTALLAS
+// 3. AUTH STACK — Login y Registro (sin autenticación)
+// ============================================
+export type AuthStackParamList = {
+  Login: undefined;
+  Register: undefined;
+};
+
+// ============================================
+// 4. HELPERS DE TIPADO PARA PANTALLAS
 // ============================================
 
 // Props para DetailScreen
@@ -61,4 +71,22 @@ export type EditScreenProps = NativeStackScreenProps<
 export type SavedScreenNavigationProp = BottomTabNavigationProp<
   RootTabParamList,
   'Saved'
+>;
+
+// Props para ProfileScreen
+export type ProfileScreenNavigationProp = BottomTabNavigationProp<
+  RootTabParamList,
+  'Profile'
+>;
+
+// Props para LoginScreen
+export type LoginScreenProps = NativeStackScreenProps<
+  AuthStackParamList,
+  'Login'
+>;
+
+// Props para RegisterScreen
+export type RegisterScreenProps = NativeStackScreenProps<
+  AuthStackParamList,
+  'Register'
 >;

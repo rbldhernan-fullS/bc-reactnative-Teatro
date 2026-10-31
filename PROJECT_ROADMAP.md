@@ -51,8 +51,8 @@ Para garantizar consistencia y continuidad en cualquier día de trabajo:
 | **05** | Networking & TanStack Query | ✅ Completada | `Week-05` | API REST local de cartelera con Axios, caché, estados de red, refresco y publicación de obras |
 | **06** | Formularios y Validación | ✅ Completada | `Week-06` | Formularios Create/Edit con React Hook Form, Zod, `FormField` reutilizable y errores inline |
 | **07** | Persistencia Local | ✅ Completada | `Week-07` | Preferencias MMKV, caché offline de cartelera y código de taquilla en SecureStore |
-| **08** | Autenticación | 🚀 Siguiente | `Week-08` | Login/Registro para miembros del club del teatro |
-| **09** | Animaciones Básicas | ⏳ Pendiente | `Week-09` | Transición de telón, fade-in de afiches, feedback táctil |
+| **08** | Autenticación | ✅ Completada | `Week-08` | Login/Registro del Club, tokens en SecureStore y navegación condicional |
+| **09** | Animaciones Básicas | 🚀 Siguiente | `Week-09` | Transición de telón, fade-in de afiches, feedback táctil |
 | **10** | Reanimated & Gesture Handler | ⏳ Pendiente | `Week-10` | Mapa interactivo de butacas con zoom y gestos |
 | **11** | APIs Nativas | ⏳ Pendiente | `Week-11` | Notificaciones de inicio de función, compartir afiche, hápticos |
 | **12** | Push Notifications | ⏳ Pendiente | `Week-12` | Recordatorios de función ("Tu obra comienza en 2 horas") |
@@ -184,3 +184,39 @@ Para garantizar consistencia y continuidad en cualquier día de trabajo:
 
 - No hay JDK, Android SDK ni `adb` en este equipo, por lo que la compilación y las capturas del simulador deben realizarse con Android Studio + JDK 17 o EAS Build.
 - La app ya no abre en Expo Go por el módulo nativo de MMKV; `Week-06` queda como versión compatible con Expo Go.
+
+---
+
+## 🎯 Control de Calidad: Semana 08 (Autenticación)
+
+### Rúbrica Oficial (Producto — 30 pts)
+
+- [x] **`useAuthStore`**: Zustand con `user`, `accessToken`, `isAuthenticated`, `login`, `logout`, `refreshTokens` y `bootstrap`.
+- [x] **Persistencia selectiva**: `persist` + `partialize` guarda solo `user` e `isAuthenticated`; los tokens viven en SecureStore.
+- [x] **`tokenService`**: `saveTokens`, `getAccessToken`, `getRefreshToken` y `clearTokens` con `expo-secure-store`.
+- [x] **`authService`**: login contra dummyjson, registro simulado, `/auth/me` y errores traducidos al español.
+- [x] **Interceptor 401**: refresh single-flight, reintento de la petición original y logout si el refresh falla.
+- [x] **`LoginScreen`**: RHF + Zod, errores inline, banner de credenciales, botón demo y spinner.
+- [x] **`RegisterScreen`**: nombre, apellido, usuario, correo, contraseña y confirmación; registro simulado con redirección a Login.
+- [x] **Navegación condicional**: `RootNavigator` monta `AuthNavigator` o `AppNavigator` según `isAuthenticated`.
+- [x] **Persistencia al reiniciar**: `BootstrapGate` espera la hidratación y valida la sesión sin pedir re-login.
+- [x] **`ProfileScreen`**: avatar, nombre, correo, número de socio, obras guardadas y logout.
+- [x] **Sin tokens en la UI**: ninguna pantalla ni log muestra access/refresh token.
+- [x] **TypeScript**: `pnpm typecheck` sin errores ni usos de `any`.
+- [x] **Bundle**: `expo export --platform android` genera el bundle correctamente.
+
+### Verificación funcional
+
+- [x] Sin sesión, la app abre en Login y no permite acceder a las pestañas privadas.
+- [x] Credenciales incorrectas muestran el mensaje de error sin cerrar la app.
+- [x] `emilys` / `emilyspass` autentica y monta `AppNavigator` sin recargar.
+- [x] El perfil muestra nombre, correo y número de socio.
+- [x] Cerrar y reabrir la app restaura la sesión desde SecureStore.
+- [x] Logout elimina los tokens y vuelve a Login.
+- [x] El registro valida el formulario y redirige a Login con aviso de simulación.
+- [x] `pnpm typecheck` y `expo export --platform android` finalizan sin errores.
+
+### Limitación de entorno
+
+- No hay JDK, Android SDK ni `adb` en este equipo, por lo que la compilación y las capturas del simulador deben realizarse con Android Studio + JDK 17 o EAS Build.
+- La app requiere build nativo por MMKV; Expo Go no es compatible a partir de la Semana 07.

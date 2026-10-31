@@ -1,111 +1,155 @@
-# Semana 07 — Persistencia Local: Teatro Colón
+# Semana 08 — Autenticación Completa: Club Teatro Colón
 
 **Autor**: Hernán Eduardo Robledo Montaña  
 **Ficha**: 3407193  
 **Dominio Asignado**: Teatro  
-**Rama**: `Week-07`
+**Rama**: `Week-08`
 
-Aplicación móvil desarrollada con **React Native 0.86**, **Expo 57** y **TypeScript 6** que añade una capa de persistencia local a la cartelera del **Teatro Colón** usando los tres storages del ecosistema: **MMKV** para preferencias, **AsyncStorage** para caché offline y **Expo SecureStore** para un dato sensible del dominio.
+Aplicación móvil desarrollada con **React Native 0.86**, **Expo 57** y **TypeScript 6** que incorpora autenticación JWT completa sobre la cartelera del **Teatro Colón**: login y registro con **React Hook Form + Zod**, tokens en **SecureStore**, estado global con **Zustand + persist**, navegación condicional e interceptor Axios con refresh automático en respuestas **401**.
 
-> ⚠️ **Build nativo obligatorio**: `react-native-mmkv` 4 usa Nitro Modules (JSI) y no funciona en Expo Go. Ejecuta `pnpm prebuild` y luego `pnpm android` o `pnpm ios`.
+> ⚠️ **Build nativo obligatorio**: la app usa **MMKV** (Semana 07) con Nitro Modules. No funciona en Expo Go; ejecuta `pnpm prebuild` y luego `pnpm android` o `pnpm ios`.
 
 ---
 
 ## 🎭 Dominio: Teatro
 
-La app administra la cartelera y las funciones del Teatro Colón:
+La app administra la cartelera y la cuenta de los socios del **Club Teatro Colón**:
 
-1. **Cartelera (`HomeList`)**: obras desde la API, búsqueda en tiempo real, orden alfabético, filtro por butacas, modo compacto, paginación y banner offline.
-2. **Detalle (`HomeDetail`)**: ficha artística, sinopsis, sala, duración, aforo, precio, guardado y edición.
-3. **Nueva obra (`Create`)** y **Editar obra (`Edit`)**: formularios validados con Zod.
-4. **Guardados (`Saved`)**: favoritos por `id` resueltos desde la caché de TanStack Query, también disponibles sin red.
-5. **Ajustes (`Settings`)**: preferencias persistentes con MMKV y código de acceso de taquilla cifrado con SecureStore.
-
----
-
-## 🗂️ Los tres storages y su responsabilidad
-
-| Storage | Qué guarda en Teatro | Por qué |
-|---|---|---|
-| **MMKV** | `sortOrder`, `compactMode`, `itemsPerPage`, `onlyAvailable` | Lectura/escritura sincrónica y reactiva; ideal para preferencias pequeñas que deben aplicarse al instante. |
-| **AsyncStorage** | Última copia válida de la cartelera (`@teatro/plays_cache_v1`) | Asíncrono y pensado para volúmenes mayores; permite mostrar la cartelera sin conexión. |
-| **SecureStore** | Código de acceso de taquilla (`teatro_taquilla_access_code`) | Cifrado por Keychain (iOS) o Keystore (Android); nunca se muestra completo en la UI. |
-
-Los tokens de sesión de la Semana 08 también vivirán exclusivamente en SecureStore.
+1. **Autenticación (`Login` / `Register`)**: acceso de socios y registro simulado.
+2. **Cartelera (`HomeList`)**: obras de la API, búsqueda, preferencias MMKV, paginación y modo offline.
+3. **Detalle (`HomeDetail`)**: ficha artística completa con edición.
+4. **Nueva obra (`Create`)** y **Editar obra (`Edit`)**: formularios Zod.
+5. **Guardados (`Saved`)**: obras favoritas del socio.
+6. **Perfil (`Profile`)**: datos del socio, número de miembro, obras guardadas y logout.
+7. **Ajustes (`Settings`)**: preferencias y código de taquilla en SecureStore.
 
 ---
 
-## ⚡ MMKV: preferencias reactivas
+## 🔐 Flujo de autenticación
 
-`src/storage/mmkv.ts` crea una única instancia:
+```
+┌──────────────┐    POST /auth/login    ┌──────────────────┐
+│ LoginScreen  │ ─────────────────────▶ │ dummyjson.com    │
+│ RHF + Zod    │ ◀───────────────────── │ access + refresh │
+└──────┬───────┘                        └──────────────────┘
+       │ login()
+       ▼
+┌───────────────────────┐   saveTokens()   ┌─────────────────┐
+│ useAuthStore (Zustand)│ ───────────────▶ │ SecureStore     │
+│ user · isAuthenticated│                  │ access/refresh  │
+│ accessToken (memoria) │                  └─────────────────┘
+└──────────┬────────────┘
+           │ isAuthenticated === true
+           ▼
+   RootNavigator → AppNavigator
+```
+
+Al reiniciar, `BootstrapGate` espera la hidratación de Zustand y ejecuta `bootstrap()`:
+
+1. Lee el access token de SecureStore.
+2. Si no existe → sesión cerrada.
+3. Si existe → `GET /auth/me` con `Authorization: Bearer`.
+4. Si el token expiró → el interceptor refresca y reintenta.
+5. Si no hay red pero el refresh token sigue guardado → conserva el perfil persistido (sin pedir re-login).
+
+---
+
+## 🧠 `useAuthStore`
+
+`src/stores/authStore.ts` expone exactamente el contrato pedido por la rúbrica:
+
+| Campo / acción | Descripción |
+|---|---|
+| `user` | Perfil del socio (`id`, `username`, `email`, `firstName`, `lastName`, `image`). |
+| `accessToken` | Copia **en memoria**; no se persiste con Zustand. |
+| `isAuthenticated` | Alterna entre `AuthNavigator` y `AppNavigator`. |
+| `isLoading` | Operación de login/registro/logout en curso. |
+| `isBootstrapping` | Restauración de sesión al abrir la app. |
+| `error` | Mensaje legible para Login/Registro. |
+| `login()` | Llama a dummyjson, guarda tokens y actualiza el estado. |
+| `register()` | Registro simulado; no autentica. |
+| `logout()` | `clearTokens()` + estado limpio. |
+| `refreshTokens()` | Renueva tokens desde el refresh token guardado. |
+| `bootstrap()` | Restaura la sesión persistida sin re-login. |
+| `clearError()` | Limpia el error de la pantalla. |
+
+### Persistencia selectiva
 
 ```ts
-import { createMMKV } from 'react-native-mmkv';
-
-export const storage = createMMKV({ id: 'teatro-preferences' });
+persist(initializer, {
+  name: 'teatro-auth',
+  storage: createJSONStorage(() => AsyncStorage),
+  partialize: (state) => ({
+    user: state.user,
+    isAuthenticated: state.isAuthenticated,
+  }),
+});
 ```
 
-`src/hooks/usePreferences.ts` encapsula las claves, los valores por defecto y los setters tipados. Usa los hooks reactivos de MMKV (`useMMKVString`, `useMMKVBoolean`, `useMMKVNumber`), por lo que cualquier pantalla suscrita se actualiza sin `async/await` y sin reiniciar la app:
-
-```ts
-const {
-  sortOrder, setSortOrder,
-  compactMode, setCompactMode,
-  itemsPerPage, setItemsPerPage,
-  onlyAvailable, setOnlyAvailable,
-  resetPreferences,
-} = usePreferences();
-```
-
-| Preferencia | Tipo | Valores | Efecto |
-|---|---|---|---|
-| `sortOrder` | `'asc' \| 'desc'` | A → Z / Z → A | Ordena la cartelera por título (`localeCompare('es')`). |
-| `compactMode` | `boolean` | `false` / `true` | `ItemCard` oculta director, hora, duración y butacas; reduce el afiche a 96 px. |
-| `itemsPerPage` | `6 \| 12 \| 24` | 6 / 12 / 24 | Controla cuántas tarjetas se muestran antes del botón **Mostrar más**. |
-| `onlyAvailable` | `boolean` | `false` / `true` | Oculta las obras con `availableSeats === 0`. |
-
-Los valores guardados se normalizan al leerlos: si MMKV devuelve un valor inesperado, la app cae al valor por defecto tipado en lugar de romper la pantalla.
+Solo se persisten el perfil y la bandera de sesión. **Los tokens nunca tocan AsyncStorage ni MMKV**: su única fuente de verdad es `expo-secure-store`.
 
 ---
 
-## 📴 Caché offline con AsyncStorage
+## 🔁 Interceptor 401 y refresh single-flight
 
-`src/storage/playsCache.ts` encapsula lectura, escritura y limpieza. Antes de devolver datos valida el JSON con Zod reutilizando `playSchema` (Semana 06) más el `id`. Si la caché está corrupta, se elimina y se devuelve `null`.
+`src/services/authClient.ts` crea dos instancias Axios:
 
-`usePlays()` ahora responde con `PlaysWithSource`:
+- `publicAuthClient`: login y refresh, sin interceptores (evita bucles).
+- `authClient`: añade `Authorization: Bearer <accessToken>` desde SecureStore.
 
-```ts
-interface PlaysWithSource {
-  plays: Item[];
-  source: 'network' | 'cache';
-}
-```
+Si una petición autenticada responde **401**:
 
-Flujo de la query:
-
-```
-¿La API responde?
-├── Sí → guarda copia en AsyncStorage y devuelve { source: 'network' }
-└── No → ¿existe caché válida?
-    ├── Sí → devuelve { source: 'cache' }
-    └── No → propaga el error → pantalla con Reintentar
-```
-
-Cuando `source === 'cache'`, `HomeScreen` y `SavedScreen` muestran el banner **“⚠️ Mostrando datos sin red”** con un botón **Reintentar** que vuelve a lanzar la query.
-
-La caché es *best-effort*: si falla la escritura en disco, la carga de red sigue funcionando.
+1. Marca la petición con `_retry` para no reintentar en bucle.
+2. Usa un **single-flight**: varias peticiones 401 comparten una sola llamada a `/auth/refresh`.
+3. Guarda los nuevos tokens en SecureStore y actualiza el token en memoria del store.
+4. Reintenta la petición original con el nuevo Bearer.
+5. Si el refresh falla, borra los tokens y cierra la sesión automáticamente.
 
 ---
 
-## 🔐 SecureStore: código de acceso de taquilla
+## 📝 Formularios con RHF + Zod
 
-`SettingsScreen` genera un código tipo `TCXXXX-XXXX` con un alfabeto sin caracteres ambiguos, lo guarda con `SecureStore.setItemAsync` y permite leerlo o eliminarlo:
+`src/schemas/authSchema.ts` define dos schemas:
 
-- **Generar y guardar** → `setItemAsync`.
-- **Leer** → `getItemAsync`; solo se muestra `TC-•••Q2M` (enmascarado).
-- **Eliminar** → `deleteItemAsync`.
+| Campo | Regla |
+|---|---|
+| `username` | 2–50 caracteres, solo letras/números/punto/guion/guion bajo. |
+| `email` | Correo válido, normalizado a minúsculas. |
+| `password` | 6–100 caracteres. |
+| `confirmPassword` | Debe coincidir con `password` (`refine`). |
+| `firstName` / `lastName` | 2–50 caracteres. |
 
-El valor completo nunca se pinta en pantalla. Al entrar a la pantalla se comprueba si existe el código, pero no se revela.
+`LoginScreen` y `RegisterScreen` usan `useForm` + `zodResolver`, muestran errores inline mediante `FormField` y deshabilitan el botón con `ActivityIndicator` mientras la petición está en curso.
+
+---
+
+## 🧪 Credenciales de prueba
+
+| Usuario | Contraseña |
+|---|---|
+| `emilys` | `emilyspass` |
+
+El Login incluye un botón **Rellenar demo** para cargar estas credenciales. El registro es **simulado**: dummyjson no persiste cuentas nuevas, así que al crear la cuenta se muestra un aviso y se redirige al Login.
+
+---
+
+## ✅ Cumplimiento de la rúbrica (Semana 08)
+
+| Criterio | Puntos | Implementación |
+|---|:---:|---|
+| `useAuthStore` con `user`, `accessToken`, `isAuthenticated`, `login`, `logout`, `refreshTokens` | 8 | Store Zustand con persist parcial y bootstrap de sesión. |
+| Pantalla de Login con RHF + Zod y errores de credenciales | 7 | `loginSchema`, `zodResolver`, errores inline y mensaje del servidor traducido. |
+| Navegación condicional Auth ↔ App | 7 | `RootNavigator` monta `AuthNavigator` o `AppNavigator` según `isAuthenticated`. |
+| Persistencia al reiniciar sin re-login | 5 | Tokens en SecureStore + `bootstrap()` + perfil persistido. |
+| App compila sin errores | 3 | `pnpm typecheck` con 0 errores y bundle Android correcto. |
+| Interceptor 401 con refresh automático | Extra | Single-flight, reintento y logout si el refresh falla. |
+
+### Criterios transversales
+
+- Tokens **solo** en SecureStore; nunca en AsyncStorage, MMKV ni logs.
+- El access token no se muestra en ninguna pantalla.
+- La lógica de auth está encapsulada en `authClient`, `authService`, `tokenService` y `authStore`; las pantallas solo consumen acciones.
+- Sin `TODO`, placeholders ni `as any`.
 
 ---
 
@@ -125,12 +169,12 @@ pnpm android       # o: pnpm ios
 
 Requisitos del build nativo:
 
-- **Android**: JDK 17 + Android Studio con un emulador o dispositivo conectado por USB.
+- **Android**: JDK 17 + Android Studio con emulador o dispositivo USB.
 - **iOS**: macOS con Xcode y simulador.
 
-Tras la primera compilación puedes abrir la app instalada y arrancar Metro con `pnpm start`. **No abras el proyecto en Expo Go**: MMKV necesita el binario nativo.
+Tras la primera compilación puedes abrir la app instalada y arrancar Metro con `pnpm start`. **No uses Expo Go**: MMKV requiere el binario nativo.
 
-Para un celular físico, la app detecta la IP de Metro. Si tu red lo requiere, crea `starter/.env` desde `.env.example`:
+Para un celular físico, crea `starter/.env` desde `.env.example`:
 
 ```bash
 EXPO_PUBLIC_API_URL=http://192.168.1.50:3001
@@ -140,41 +184,24 @@ EXPO_PUBLIC_API_URL=http://192.168.1.50:3001
 
 ---
 
-## ✅ Cumplimiento de la rúbrica (Semana 07)
-
-| Criterio | Puntos | Implementación |
-|---|:---:|---|
-| **MMKV**: ≥ 2 preferencias persistentes sin `async/await` | 8 | Cuatro preferencias en `usePreferences` con hooks reactivos; Settings las cambia en tiempo real. |
-| **AsyncStorage**: caché mostrada sin red con banner | 8 | `playsCache` + fallback en `usePlays` + banner “⚠️ Mostrando datos sin red” en Cartelera y Guardados. |
-| **SecureStore**: dato sensible guardado y leído | 6 | Código de taquilla con `setItemAsync` / `getItemAsync` / `deleteItemAsync`, siempre enmascarado. |
-| **Custom hook** `usePreferences()` | 5 | Claves, defaults, normalización y setters tipados en un solo hook. |
-| App funcional y TypeScript sin errores | 3 | `pnpm typecheck` con 0 errores; bundle Android exportado correctamente. |
-
-### Criterios transversales
-
-- Ningún token ni contraseña en AsyncStorage o MMKV.
-- `useState` se usa solo para estado de UI (búsqueda, paginación, lectura del código); la persistencia vive en MMKV/AsyncStorage/SecureStore.
-- La lógica de storage no está dispersa: `storage/mmkv.ts`, `storage/playsCache.ts`, `hooks/usePreferences.ts`.
-- Sin `TODO`, placeholders ni `as any`.
-
----
-
 ## 🧪 Verificación
 
 ```bash
 cd starter
 pnpm typecheck                              # 0 errores
-npx expo export --platform android          # bundle nativo correcto
+npx expo export --platform android          # bundle correcto
 ```
 
 Flujo manual sugerido:
 
-1. Abrir **Ajustes** y cambiar el orden a **Z → A**: la cartelera se reordena al volver.
-2. Activar **Modo compacto** y **Solo funciones con butacas**: las tarjetas cambian y desaparecen las agotadas.
-3. Elegir **6 por página**: la lista muestra 6 tarjetas y el botón **Mostrar más**.
-4. Cerrar y reabrir la app: las cuatro preferencias se conservan (MMKV).
-5. Con la app abierta, detener `pnpm api` y hacer pull-to-refresh: aparece el banner offline con la caché.
-6. En **Ajustes**, generar y guardar el código de taquilla, leerlo (enmascarado) y eliminarlo.
+1. Abrir la app sin sesión: se muestra **Login**.
+2. Enviar el formulario vacío: aparecen los errores de Zod.
+3. Probar credenciales incorrectas: banner “Usuario o contraseña incorrectos”.
+4. Tocar **Rellenar demo** y entrar: se monta `AppNavigator` sin recargar.
+5. Abrir **Perfil**: se ven nombre, correo, número de socio y obras guardadas.
+6. Cerrar y reabrir la app: la sesión se restaura sin volver a pedir credenciales.
+7. Cerrar sesión: vuelve a Login y los tokens se eliminan de SecureStore.
+8. Crear una cuenta en **Registro**: se valida el formulario y se redirige a Login (registro simulado).
 
 ---
 
@@ -186,14 +213,14 @@ Flujo manual sugerido:
 | Expo SDK | 57 | Runtime y tooling |
 | React | 19.2.3 | Componentes |
 | TypeScript | 6.0.3 | Tipado estricto (sin `any`) |
-| React Native MMKV | 4.3.2 | Preferencias sincrónicas (Nitro/JSI) |
-| react-native-nitro-modules | 0.36.1 | Runtime nativo requerido por MMKV 4 |
-| AsyncStorage | 2.2.0 | Caché offline de la cartelera |
-| Expo SecureStore | 57.0.4 | Código sensible cifrado |
-| TanStack Query | 5.105 | Estado del servidor y caché en memoria |
-| React Hook Form + Zod | 7.81 / 4.4.3 | Formularios y validación |
-| Zustand | 5.0 | Ids de obras guardadas |
-| React Navigation | 7.x | Tabs + Stack anidado |
+| React Hook Form | 7.81.0 | Estado de formularios |
+| Zod | 4.4.3 | Validación y tipos inferidos |
+| Zustand | 5.0 | Estado de sesión y guardados |
+| TanStack Query | 5.105 | Estado del servidor |
+| Axios | 1.21 | Cliente HTTP e interceptor 401 |
+| Expo SecureStore | 57.0.4 | Tokens cifrados |
+| React Native MMKV | 4.3.2 | Preferencias locales |
+| AsyncStorage | 2.2.0 | Perfil persistido y caché offline |
 
 ---
 
@@ -204,35 +231,41 @@ api/
 └── db.json                         # Semilla de las 12 obras
 
 starter/
-├── App.tsx                         # QueryClientProvider + NavigationContainer
+├── App.tsx                         # BootstrapGate + QueryClient + Navigation
 ├── app.json                        # newArchEnabled + plugin expo-secure-store
-├── pnpm-workspace.yaml             # Peer de Zod 4 para @hookform/resolvers
 └── src/
-    ├── storage/
-    │   ├── mmkv.ts                 # Instancia única de MMKV
-    │   └── playsCache.ts           # Caché AsyncStorage validada con Zod
-    ├── hooks/
-    │   ├── usePreferences.ts       # Preferencias MMKV tipadas
-    │   └── usePlays.ts             # Query con fallback offline
-    ├── screens/
-    │   ├── HomeScreen.tsx          # Banner, orden, compacto y paginación
-    │   ├── SavedScreen.tsx         # Guardados con aviso de caché
-    │   └── SettingsScreen.tsx      # MMKV + SecureStore
-    ├── components/
-    │   ├── ItemCard.tsx            # Variante compacta
-    │   └── ScreenState.tsx         # Loading / error / vacío
-    ├── navigation/
-    │   ├── RootNavigator.tsx       # Pestañas Cartelera, Guardados y Ajustes
-    │   └── types.ts                # RootTabParamList tipado
-    ├── schemas/
-    │   └── playSchema.ts           # Zod reutilizado por la caché
     ├── services/
-    │   ├── api.ts                  # Axios y errores legibles
+    │   ├── authClient.ts           # Axios auth + interceptor 401 single-flight
+    │   ├── authService.ts          # login / register / getProfile / errores
+    │   ├── tokenService.ts         # SecureStore: save/get/clear tokens
+    │   ├── api.ts                  # Axios de la cartelera
     │   └── theatreApi.ts           # Adaptador de dominio
     ├── stores/
-    │   └── savedStore.ts           # Zustand: savedIds
+    │   ├── authStore.ts            # Zustand + persist + bootstrap
+    │   └── savedStore.ts           # Ids de obras guardadas
+    ├── schemas/
+    │   ├── authSchema.ts           # Login y Registro con Zod
+    │   └── playSchema.ts           # Formularios de obras
+    ├── screens/
+    │   ├── LoginScreen.tsx         # RHF + Zod + credenciales demo
+    │   ├── RegisterScreen.tsx      # Registro simulado
+    │   ├── ProfileScreen.tsx       # Perfil, guardados y logout
+    │   ├── HomeScreen.tsx          # Cartelera y banner offline
+    │   ├── SavedScreen.tsx         # Obras guardadas
+    │   └── SettingsScreen.tsx      # MMKV + SecureStore
+    ├── navigation/
+    │   ├── RootNavigator.tsx       # Auth ↔ App condicional
+    │   ├── AuthNavigator.tsx       # Login / Registro
+    │   ├── AppNavigator.tsx        # Cartelera / Guardados / Perfil / Ajustes
+    │   └── types.ts                # AuthStackParamList + RootTabParamList
+    ├── components/
+    │   ├── FormField.tsx           # Controller + TextInput + error
+    │   └── ItemCard.tsx            # Tarjeta con modo compacto
+    ├── storage/
+    │   ├── mmkv.ts                 # Instancia MMKV
+    │   └── playsCache.ts           # Caché offline AsyncStorage
     ├── types/
-    │   └── index.ts                # Item, PlaysWithSource y payloads
+    │   └── index.ts                # Item, AuthUser, AuthTokens, AuthSession
     └── theme/
         └── index.ts                # Paleta vino y oro
 ```
