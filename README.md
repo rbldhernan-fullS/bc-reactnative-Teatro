@@ -206,7 +206,7 @@ starter/
 | `CreateScreen` funcional | 8 | `useForm` + `zodResolver` + `useCreatePlay`; navega atrás en `onSuccess` |
 | `EditScreen` con `defaultValues` | 8 | `usePlayById` + `reset()` en `useEffect` + `useUpdatePlay` |
 | Validación activa y errores inline | 5 | Mensajes de Zod bajo cada campo y borde rojo |
-| App corriendo en simulador | 4 | Flujo verificado en Expo Web; estructura compatible con Expo Go |
+| App corriendo en simulador | 4 | Bundle web exportado sin errores y estructura compatible con Expo Go; capturas pendientes en dispositivo |
 
 ### Criterios transversales
 
