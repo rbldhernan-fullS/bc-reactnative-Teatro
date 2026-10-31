@@ -213,7 +213,7 @@ starter/
 - `FormField` y `FormChips` con genéricos, sin `any`.
 - `zodResolver` conectado a `useForm` en ambos formularios.
 - `z.coerce.number()` en precio, aforo y calificación.
-- `PlayFormData` inferido con `z.infer`; no hay interfaces manuales duplicando el schema.
+- `PlayFormValues` inferido con `z.infer<typeof playSchema>` (y `PlayFormInput` con `z.input`); no hay interfaces manuales duplicando el schema.
 - Botón deshabilitado y `ActivityIndicator` mientras `isSubmitting || isPending`.
 
 ---

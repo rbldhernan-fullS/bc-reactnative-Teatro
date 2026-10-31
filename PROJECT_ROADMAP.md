@@ -130,7 +130,7 @@ Para garantizar consistencia y continuidad en cualquier día de trabajo:
 ### Rúbrica Oficial (100 pts)
 - [x] **Schema Zod**: `playSchema` con 12 campos, reglas de longitud, enums y URL.
 - [x] **`z.coerce.number()`**: aplicado a `price`, `availableSeats` y `rating`.
-- [x] **Tipos inferidos**: `PlayFormInput` y `PlayFormValues` derivados del schema con `z.input`/`z.output`.
+- [x] **Tipos inferidos**: `PlayFormInput` con `z.input` y `PlayFormValues` con `z.infer<typeof playSchema>`; sin interfaces manuales duplicadas.
 - [x] **`FormField` reutilizable**: `Controller` + `TextInput` + label + error, con genéricos de RHF.
 - [x] **`FormChips`**: selector de género y sala conectado con `Controller`.
 - [x] **`PlayForm` compartido**: un solo formulario para Create y Edit, sin duplicar campos.

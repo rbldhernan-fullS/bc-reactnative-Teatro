@@ -91,8 +91,12 @@ export const playSchema = z.object({
 /** Valores que entran al formulario (los numéricos llegan como texto desde TextInput). */
 export type PlayFormInput = z.input<typeof playSchema>;
 
-/** Valores ya validados y convertidos (price, aforo y rating son number). */
-export type PlayFormValues = z.output<typeof playSchema>;
+/**
+ * Valores ya validados y convertidos (price, aforo y rating son number).
+ * `z.infer` es equivalente a `z.output` y evita declarar una interfaz manual
+ * que podría desincronizarse del schema.
+ */
+export type PlayFormValues = z.infer<typeof playSchema>;
 
 /** Valores iniciales del formulario de creación. */
 export const EMPTY_PLAY_FORM: PlayFormInput = {
