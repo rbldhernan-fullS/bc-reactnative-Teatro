@@ -101,7 +101,7 @@ export function SavedScreen(): React.JSX.Element {
               <Ionicons
                 name="bookmark"
                 size={SIZES.iconMd}
-                color={COLORS.tabActive}
+                color={COLORS.accent}
               />
             </Pressable>
           </View>

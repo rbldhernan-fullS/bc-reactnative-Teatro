@@ -97,7 +97,7 @@ export function RootNavigator(): React.JSX.Element {
 
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: COLORS.tabActive,
+        tabBarActiveTintColor: COLORS.accent,
         tabBarInactiveTintColor: COLORS.textMuted,
         headerShown: false,
         tabBarStyle: {
@@ -131,7 +131,7 @@ export function RootNavigator(): React.JSX.Element {
           tabBarLabel: 'Guardados',
           tabBarBadge: savedCount > 0 ? savedCount : undefined,
           tabBarBadgeStyle: {
-            backgroundColor: COLORS.tabActive,
+            backgroundColor: COLORS.accent,
             color: COLORS.background,
             fontSize: TYPOGRAPHY.size.xs,
             fontWeight: TYPOGRAPHY.weight.bold,
