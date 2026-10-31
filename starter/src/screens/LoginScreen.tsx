@@ -50,11 +50,9 @@ export function LoginScreen({
     },
   });
 
-  // Limpia el error compartido al entrar y al salir de la pantalla.
-  useEffect(() => {
-    clearError();
-    return clearError;
-  }, [clearError]);
+  // Limpia el error al salir. Al montar conservamos el posible aviso de
+  // "sesión expirada" que emite el interceptor.
+  useEffect(() => clearError, [clearError]);
 
   const onSubmit = async (values: LoginFormValues): Promise<void> => {
     try {

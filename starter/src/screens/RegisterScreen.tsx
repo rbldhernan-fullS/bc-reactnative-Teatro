@@ -51,10 +51,8 @@ export function RegisterScreen({
     },
   });
 
-  useEffect(() => {
-    clearError();
-    return clearError;
-  }, [clearError]);
+  // Limpia el error compartido al salir del registro.
+  useEffect(() => clearError, [clearError]);
 
   const onSubmit = async (values: RegisterFormValues): Promise<void> => {
     try {
