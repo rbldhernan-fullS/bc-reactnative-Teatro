@@ -1,7 +1,9 @@
 // ============================================
-// APP ENTRY POINT — Semanas 05, 07 y 08
-// QueryClientProvider + restauración de sesión + NavigationContainer
+// APP ENTRY POINT — Semanas 05, 07, 08 y 10
+// GestureHandlerRootView + QueryClientProvider + restauración de sesión
 // ============================================
+
+import 'react-native-gesture-handler';
 
 import React, { useEffect } from 'react';
 import {
@@ -14,6 +16,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { NavigationContainer } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { RootNavigator } from './src/navigation/RootNavigator';
 import { useAuthStore } from './src/stores/authStore';
@@ -73,16 +76,21 @@ function BootstrapGate(): React.JSX.Element {
 
 export default function App(): React.JSX.Element {
   return (
-    <QueryClientProvider client={queryClient}>
-      <SafeAreaProvider>
-        <BootstrapGate />
-        <StatusBar style="light" />
-      </SafeAreaProvider>
-    </QueryClientProvider>
+    <GestureHandlerRootView style={styles.root}>
+      <QueryClientProvider client={queryClient}>
+        <SafeAreaProvider>
+          <BootstrapGate />
+          <StatusBar style="light" />
+        </SafeAreaProvider>
+      </QueryClientProvider>
+    </GestureHandlerRootView>
   );
 }
 
 const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+  },
   splash: {
     flex: 1,
     alignItems: 'center',

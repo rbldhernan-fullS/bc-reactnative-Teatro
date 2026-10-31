@@ -27,6 +27,12 @@ export type HomeStackParamList = {
   Edit: {
     id: string;
   };
+
+  /** Mapa interactivo de butacas de la función */
+  SeatMap: {
+    id: string;
+    name: string;
+  };
 };
 
 // ============================================
@@ -65,6 +71,12 @@ export type DetailScreenProps = NativeStackScreenProps<
 export type EditScreenProps = NativeStackScreenProps<
   HomeStackParamList,
   'Edit'
+>;
+
+// Props para SeatMapScreen
+export type SeatMapScreenProps = NativeStackScreenProps<
+  HomeStackParamList,
+  'SeatMap'
 >;
 
 // Props para SavedScreen

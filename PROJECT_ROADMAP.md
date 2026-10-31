@@ -53,8 +53,8 @@ Para garantizar consistencia y continuidad en cualquier día de trabajo:
 | **07** | Persistencia Local | ✅ Completada | `Week-07` | Preferencias MMKV, caché offline de cartelera y código de taquilla en SecureStore |
 | **08** | Autenticación | ✅ Completada | `Week-08` | Login/Registro del Club, tokens en SecureStore y navegación condicional |
 | **09** | Animaciones Básicas | ✅ Completada | `Week-09` | Entrada fade + slide, feedback táctil, barra de ocupación, cascada y LayoutAnimation |
-| **10** | Reanimated & Gesture Handler | 🚀 Siguiente | `Week-10` | Mapa interactivo de butacas con zoom y gestos |
-| **11** | APIs Nativas | ⏳ Pendiente | `Week-11` | Notificaciones de inicio de función, compartir afiche, hápticos |
+| **10** | Reanimated & Gesture Handler | ✅ Completada | `Week-10` | SwipeableCard, Gesture.Tap, entrada escalonada y mapa de butacas con zoom |
+| **11** | APIs Nativas | 🚀 Siguiente | `Week-11` | Notificaciones de inicio de función, compartir afiche, hápticos |
 | **12** | Push Notifications | ⏳ Pendiente | `Week-12` | Recordatorios de función ("Tu obra comienza en 2 horas") |
 | **13** | Testing | ⏳ Pendiente | `Week-13` | Pruebas unitarias de filtros, componentes y flujo de compra |
 | **14** | Performance | ⏳ Pendiente | `Week-14` | Optimización de renderizado de lista y mapa de asientos |
@@ -252,3 +252,37 @@ Para garantizar consistencia y continuidad en cualquier día de trabajo:
 
 - No hay JDK, Android SDK ni `adb` en este equipo, por lo que la compilación y las capturas del simulador deben realizarse con Android Studio + JDK 17 o EAS Build.
 - La app requiere build nativo por MMKV; Expo Go no es compatible a partir de la Semana 07.
+
+---
+
+## 🎯 Control de Calidad: Semana 10 (Reanimated 4 + Gesture Handler)
+
+### Rúbrica Oficial (Producto — 30 pts)
+
+- [x] **`SwipeableCard` con `Gesture.Pan`**: arrastre horizontal con rotación interpolada, umbral de ±120 px y snap-back con `withSpring(0)`.
+- [x] **Acción de dominio al superar el umbral**: derecha guarda o quita de Guardados; izquierda descarta la obra de la cartelera de la sesión con banner **Restaurar**.
+- [x] **`AnimatedButton` con `Gesture.Tap`**: `withTiming` al presionar y `withSpring` al soltar, con `runOnJS` para la acción.
+- [x] **Entrada escalonada**: `withDelay(index * 80, withTiming(...))` y `useAnimatedStyle` en las tarjetas de la cartelera.
+- [x] **Transición de detalle**: fade + slide con `useSharedValue`, `withTiming` e `interpolate`.
+- [x] **Bonus `Pinch`/zoom**: `SeatMapScreen` con `Gesture.Pinch` + `Gesture.Pan` simultáneos, escala 0.5x–2.5x y patrón `savedScale`.
+- [x] **Mapa de butacas del dominio**: 320/120/80 butacas según la sala, ocupación determinista por hash del `id`, selección máxima de 8 butacas y confirmación con `Alert`.
+- [x] **`GestureHandlerRootView`**: envuelve la app en `App.tsx`.
+- [x] **Plugin de worklets**: `babel.config.js` con `react-native-worklets/plugin`, el correcto para Reanimated 4.
+- [x] **TypeScript y bundle**: `pnpm typecheck` sin errores ni `as any`; `expo export --platform android` correcto.
+
+### Verificación funcional
+
+- [x] Deslizar a la derecha guarda o quita la obra del store de guardados.
+- [x] Deslizar a la izquierda descarta la obra y aparece el banner con el contador.
+- [x] Tocar **Restaurar** devuelve las obras descartadas a la cartelera.
+- [x] Las tarjetas nuevas entran con retardo escalonado al paginar.
+- [x] El detalle entra con fade + slide y muestra la ocupación de la sala.
+- [x] **Reservar Butacas** abre el mapa de la sala correspondiente.
+- [x] Pinch hace zoom y el pan de dos dedos recorre el mapa; **Centrar** restablece la vista.
+- [x] Seleccionar butacas actualiza el resumen y el total en COP; confirmar muestra el `Alert`.
+- [x] `pnpm typecheck` y `expo export --platform android` finalizan sin errores.
+
+### Limitación de entorno
+
+- No hay JDK, Android SDK ni `adb` en este equipo, por lo que la compilación y las capturas del simulador deben realizarse con Android Studio + JDK 17 o EAS Build.
+- La app requiere build nativo por MMKV y Reanimated 4; Expo Go no es compatible a partir de la Semana 07.

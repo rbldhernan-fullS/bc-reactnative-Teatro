@@ -77,6 +77,25 @@ export type CreatePlayPayload = Omit<Item, 'id'>;
 export type UpdatePlayPayload = Item;
 
 // ============================================
+// Semana 10: mapa interactivo de butacas
+// ============================================
+
+/** Estado de una butaca dentro de la sala. */
+export type SeatStatus = 'available' | 'occupied';
+
+/** Butaca individual del mapa interactivo. */
+export interface Seat {
+  /** Identificador legible, por ejemplo `C7` */
+  id: string;
+  /** Fila a la que pertenece la butaca */
+  row: string;
+  /** Número de butaca dentro de la fila */
+  number: number;
+  /** Disponible u ocupada */
+  status: SeatStatus;
+}
+
+// ============================================
 // Semana 07: origen de la cartelera (red o caché)
 // ============================================
 

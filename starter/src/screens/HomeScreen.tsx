@@ -1,8 +1,7 @@
 // ============================================================
-// SCREEN: HomeScreen — Semanas 05, 07 y 09
-// Cartelera con estados de red, caché offline (AsyncStorage),
-// preferencias MMKV (orden, modo compacto, paginación y filtro),
-// entrada en cascada y LayoutAnimation al cambiar la lista.
+// SCREEN: HomeScreen — Semanas 05, 07, 09 y 10
+// Cartelera con red/caché, preferencias MMKV, entrada escalonada con
+// Reanimated, tarjetas arrastrables y LayoutAnimation.
 // ============================================================
 
 import React, {
@@ -23,16 +22,22 @@ import {
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
   Pressable,
-  Animated,
   LayoutAnimation,
   UIManager,
 } from 'react-native';
 import type { ListRenderItem } from 'react-native';
+import Animated, {
+  interpolate,
+  useAnimatedStyle,
+  useSharedValue,
+  withDelay,
+  withTiming,
+} from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { Item } from '../types';
-import { AnimatedCard } from '../components/AnimatedCard';
+import { SwipeableCard } from '../components/SwipeableCard';
 import { AnimatedButton } from '../components/AnimatedButton';
 import { ScreenState } from '../components/ScreenState';
 import { usePlays } from '../hooks/usePlays';
@@ -57,6 +62,46 @@ if (Platform.OS === 'android') {
 
 function animateListLayout(): void {
   LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+}
+
+interface StaggeredItemProps {
+  index: number;
+  children: React.ReactNode;
+}
+
+/**
+ * Entrada escalonada con Reanimated: cada tarjeta espera `index * 80 ms`.
+ * El valor compartido evita re-renders en JS durante la animación.
+ */
+function StaggeredItem({
+  index,
+  children,
+}: StaggeredItemProps): React.JSX.Element {
+  const progress = useSharedValue(0);
+  const hasAnimated = useRef(false);
+
+  useEffect(() => {
+    if (hasAnimated.current) {
+      return;
+    }
+
+    hasAnimated.current = true;
+    progress.value = withDelay(
+      index * ENTRANCE_STAGGER_MS,
+      withTiming(1, { duration: ENTRANCE_DURATION_MS })
+    );
+  }, [index, progress]);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    opacity: progress.value,
+    transform: [
+      {
+        translateY: interpolate(progress.value, [0, 1], [24, 0]),
+      },
+    ],
+  }));
+
+  return <Animated.View style={animatedStyle}>{children}</Animated.View>;
 }
 
 /**
@@ -100,6 +145,10 @@ export function HomeScreen(): React.JSX.Element {
   // 2. Paginación local: no se persiste porque se reinicia con cada filtro.
   const [visibleCount, setVisibleCount] = useState<number>(itemsPerPage);
 
+  // 3. Obras descartadas con swipe izquierdo durante esta sesión.
+  const [dismissedIds, setDismissedIds] = useState<string[]>([]);
+  const dismissedIdSet = useMemo(() => new Set(dismissedIds), [dismissedIds]);
+
   const plays = useMemo(() => data?.plays ?? [], [data]);
   const isOffline = data?.source === 'cache';
 
@@ -128,11 +177,28 @@ export function HomeScreen(): React.JSX.Element {
     [toggleSaved]
   );
 
-  // 3. Filtrado por búsqueda/butacas y orden alfabético desde MMKV
+  // Acción del swipe izquierdo: oculta la obra de la cartelera de la sesión.
+  const handleDismiss = useCallback((item: Item): void => {
+    animateListLayout();
+    setDismissedIds((current) =>
+      current.includes(item.id) ? current : [...current, item.id]
+    );
+  }, []);
+
+  const handleRestoreDismissed = useCallback((): void => {
+    animateListLayout();
+    setDismissedIds([]);
+  }, []);
+
+  // 4. Filtrado por búsqueda, butacas, descartadas y orden alfabético
   const filteredItems = useMemo(() => {
     const cleanQuery = normalizeText(query.trim());
 
     const result = plays.filter((item) => {
+      if (dismissedIdSet.has(item.id)) {
+        return false;
+      }
+
       if (onlyAvailable && item.availableSeats === 0) {
         return false;
       }
@@ -151,52 +217,13 @@ export function HomeScreen(): React.JSX.Element {
         ? first.name.localeCompare(second.name, 'es')
         : second.name.localeCompare(first.name, 'es')
     );
-  }, [plays, query, onlyAvailable, sortOrder]);
+  }, [dismissedIdSet, plays, query, onlyAvailable, sortOrder]);
 
-  // 4. Página visible según `itemsPerPage`
+  // 5. Página visible según `itemsPerPage`
   const visibleItems = useMemo(
     () => filteredItems.slice(0, visibleCount),
     [filteredItems, visibleCount]
   );
-
-  // 5. Entrada en cascada: un Animated.Value estable por cada obra visible.
-  const entranceValues = useRef(new Map<string, Animated.Value>()).current;
-
-  const getEntranceValue = useCallback(
-    (id: string): Animated.Value => {
-      const existing = entranceValues.get(id);
-      if (existing) {
-        return existing;
-      }
-
-      const created = new Animated.Value(0);
-      entranceValues.set(id, created);
-      return created;
-    },
-    [entranceValues]
-  );
-
-  useEffect(() => {
-    if (visibleItems.length === 0) {
-      return;
-    }
-
-    const animations = visibleItems.map((item) => {
-      const value = getEntranceValue(item.id);
-      value.setValue(0);
-
-      return Animated.timing(value, {
-        toValue: 1,
-        duration: ENTRANCE_DURATION_MS,
-        useNativeDriver: true,
-      });
-    });
-
-    const stagger = Animated.stagger(ENTRANCE_STAGGER_MS, animations);
-    stagger.start();
-
-    return () => stagger.stop();
-  }, [getEntranceValue, visibleItems]);
 
   // 6. Pull-to-refresh delegado a TanStack Query
   const handleRefresh = useCallback((): void => {
@@ -218,37 +245,21 @@ export function HomeScreen(): React.JSX.Element {
 
   // 7. Render Item memorizado con useCallback
   const renderItem: ListRenderItem<Item> = useCallback(
-    ({ item }) => {
-      const entrance = getEntranceValue(item.id);
-
-      return (
-        <Animated.View
-          style={{
-            opacity: entrance,
-            transform: [
-              {
-                translateY: entrance.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [24, 0],
-                  extrapolate: 'clamp',
-                }),
-              },
-            ],
-          }}
-        >
-          <AnimatedCard
-            item={item}
-            onPress={handleItemPress}
-            saved={savedIdSet.has(item.id)}
-            onToggleSave={handleToggleSave}
-            compact={compactMode}
-          />
-        </Animated.View>
-      );
-    },
+    ({ item, index }) => (
+      <StaggeredItem index={index}>
+        <SwipeableCard
+          item={item}
+          onPress={handleItemPress}
+          saved={savedIdSet.has(item.id)}
+          onToggleSave={handleToggleSave}
+          onDismiss={handleDismiss}
+          compact={compactMode}
+        />
+      </StaggeredItem>
+    ),
     [
       compactMode,
-      getEntranceValue,
+      handleDismiss,
       handleItemPress,
       savedIdSet,
       handleToggleSave,
@@ -300,6 +311,29 @@ export function HomeScreen(): React.JSX.Element {
       );
     }
 
+    if (dismissedIds.length > 0) {
+      return (
+        <View style={styles.emptyContainer}>
+          <Text style={styles.emptyIcon}>🙈</Text>
+          <Text style={styles.emptyTitle}>Cartelera descartada</Text>
+          <Text style={styles.emptySubtitle}>
+            Descartaste {dismissedIds.length}{' '}
+            {dismissedIds.length === 1 ? 'obra' : 'obras'} de esta sesión.
+            Puedes restaurarlas cuando quieras.
+          </Text>
+          <Pressable
+            style={({ pressed }) => [
+              styles.clearFilterButton,
+              pressed && styles.clearFilterButtonPressed,
+            ]}
+            onPress={handleRestoreDismissed}
+          >
+            <Text style={styles.clearFilterButtonText}>Restaurar cartelera</Text>
+          </Pressable>
+        </View>
+      );
+    }
+
     return (
       <View style={styles.emptyContainer}>
         <Text style={styles.emptyIcon}>🎟️</Text>
@@ -320,6 +354,8 @@ export function HomeScreen(): React.JSX.Element {
       </View>
     );
   }, [
+    dismissedIds.length,
+    handleRestoreDismissed,
     handleToggleOnlyAvailable,
     navigation,
     onlyAvailable,
@@ -327,7 +363,7 @@ export function HomeScreen(): React.JSX.Element {
     query,
   ]);
 
-  // 10. Pie de lista: paginación local con la preferencia itemsPerPage
+  // 9. Pie de lista: paginación local con la preferencia itemsPerPage
   const renderFooter = useCallback(() => {
     const remaining = filteredItems.length - visibleItems.length;
 
@@ -485,6 +521,34 @@ export function HomeScreen(): React.JSX.Element {
               </Pressable>
             </View>
           )}
+
+          {/* Obras descartadas con swipe: se pueden restaurar en la sesión */}
+          {dismissedIds.length > 0 && (
+            <Pressable
+              style={({ pressed }) => [
+                styles.dismissedBanner,
+                pressed && styles.dismissedBannerPressed,
+              ]}
+              onPress={handleRestoreDismissed}
+              accessibilityRole="button"
+              accessibilityLabel="Restaurar las obras descartadas"
+            >
+              <Text style={styles.dismissedText}>
+                {dismissedIds.length}{' '}
+                {dismissedIds.length === 1
+                  ? 'obra descartada'
+                  : 'obras descartadas'}
+              </Text>
+              <Text style={styles.dismissedAction}>Restaurar</Text>
+            </Pressable>
+          )}
+
+          {/* Pista de gestos del dominio */}
+          <View style={styles.swipeHint}>
+            <Text style={styles.swipeHintText}>
+              Desliza → guardar · ← descartar
+            </Text>
+          </View>
 
           {/* Área de Lista con dismiss de teclado al tocar fuera */}
           <TouchableWithoutFeedback
@@ -663,6 +727,38 @@ const styles = StyleSheet.create({
     fontSize: TYPOGRAPHY.size.xs,
     fontWeight: TYPOGRAPHY.weight.semibold,
     color: COLORS.warning,
+  },
+  dismissedBanner: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: SPACING.base,
+    paddingVertical: SPACING.sm,
+    backgroundColor: COLORS.surfaceAlt,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border,
+  },
+  dismissedBannerPressed: {
+    opacity: 0.75,
+  },
+  dismissedText: {
+    fontSize: TYPOGRAPHY.size.xs,
+    color: COLORS.textSecondary,
+  },
+  dismissedAction: {
+    fontSize: TYPOGRAPHY.size.xs,
+    fontWeight: TYPOGRAPHY.weight.bold,
+    color: COLORS.accent,
+  },
+  swipeHint: {
+    paddingHorizontal: SPACING.base,
+    paddingTop: SPACING.sm,
+  },
+  swipeHintText: {
+    fontSize: TYPOGRAPHY.size.xs,
+    color: COLORS.textMuted,
+    textAlign: 'center',
+    letterSpacing: TYPOGRAPHY.letterSpacing.wide,
   },
   listWrapper: {
     flex: 1,

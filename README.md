@@ -1,13 +1,13 @@
-# Semana 09 — Animaciones Básicas: Teatro Colón
+# Semana 10 — Reanimated 4 + Gesture Handler: Mapa de Butacas
 
 **Autor**: Hernán Eduardo Robledo Montaña  
 **Ficha**: 3407193  
 **Dominio Asignado**: Teatro  
-**Rama**: `Week-09`
+**Rama**: `Week-10`
 
-Aplicación móvil desarrollada con **React Native 0.86**, **Expo 57** y **TypeScript 6** que incorpora animaciones fluidas sobre la cartelera del **Teatro Colón**: entrada del detalle con fade + slide, feedback táctil en las tarjetas y botones, barra de ocupación de la sala, aparición en cascada de la cartelera y transiciones de layout al cambiar la lista.
+Aplicación móvil desarrollada con **React Native 0.86**, **Expo 57** y **TypeScript 6** que migra las animaciones de la Semana 09 a **Reanimated 4** e incorpora **React Native Gesture Handler** sobre el dominio del **Teatro Colón**: tarjetas arrastrables, botones con tap gestual, entrada escalonada de la cartelera y un **mapa interactivo de butacas** con zoom, desplazamiento y selección.
 
-> ⚠️ **Build nativo obligatorio**: la app usa **MMKV** (Semana 07) con Nitro Modules. No funciona en Expo Go; ejecuta `pnpm prebuild` y luego `pnpm android` o `pnpm ios`.
+> ⚠️ **Build nativo obligatorio**: la app usa **MMKV** (Semana 07) con Nitro Modules y Reanimated 4. No funciona en Expo Go; ejecuta `pnpm prebuild` y luego `pnpm android` o `pnpm ios`.
 
 ---
 
@@ -16,52 +16,71 @@ Aplicación móvil desarrollada con **React Native 0.86**, **Expo 57** y **TypeS
 La app administra la cartelera y la cuenta de los socios del **Club Teatro Colón**:
 
 1. **Autenticación (`Login` / `Register`)**: acceso de socios y registro simulado.
-2. **Cartelera (`HomeList`)**: obras de la API, búsqueda, preferencias MMKV, paginación, modo offline y animación de entrada.
-3. **Detalle (`HomeDetail`)**: ficha artística, ocupación de la sala y acceso a la reserva.
-4. **Nueva obra (`Create`)** y **Editar obra (`Edit`)**: formularios Zod.
-5. **Guardados (`Saved`)**: obras favoritas del socio.
-6. **Perfil (`Profile`)**: datos del socio, número de miembro, obras guardadas y logout.
-7. **Ajustes (`Settings`)**: preferencias y código de taquilla en SecureStore.
+2. **Cartelera (`HomeList`)**: obras de la API, búsqueda, preferencias MMKV, paginación, modo offline, entrada escalonada y swipe.
+3. **Detalle (`HomeDetail`)**: ficha artística, ocupación de la sala y acceso al mapa de butacas.
+4. **Mapa de butacas (`SeatMap`)**: zoom, desplazamiento, selección y resumen de reserva.
+5. **Nueva obra (`Create`)** y **Editar obra (`Edit`)**: formularios Zod.
+6. **Guardados (`Saved`)**: obras favoritas del socio.
+7. **Perfil (`Profile`)** y **Ajustes (`Settings`)**: sesión, preferencias y SecureStore.
 
 ---
 
-## ✨ Animaciones implementadas
+## ✨ Migración a Reanimated 4 y gestos
 
-| # | Comportamiento | Archivo | Implementación |
-|:--:|---|---|---|
-| 1 | Entrada del detalle | `DetailScreen` | `Animated.parallel` con opacidad `0 → 1` y `translateY 30 → 0` en 500 ms. |
-| 2 | Feedback táctil de la tarjeta | `AnimatedCard` | `Animated.spring` de escala `1 → 0.95` al presionar y `0.95 → 1` con rebote al soltar. |
-| 3 | Ocupación de la sala | `ProgressBar` | `interpolate` de ancho y color según `(capacidad − butacas disponibles) / capacidad`. |
-| 4 | Entrada en cascada | `HomeScreen` | `Animated.stagger(80, [...])` sobre cada obra visible, con fade y `translateY 24 → 0`. |
-| 5 | Cambios de layout | `HomeScreen` | `LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)` al paginar y al aplicar el filtro de butacas. |
-| Extra | Botón con feedback | `AnimatedButton` | `Animated.timing` al presionar y `Animated.spring` con rebote al soltar. |
+| Requisito | Archivo | Implementación |
+|---|---|---|
+| `SwipeableCard` con `Gesture.Pan` | `SwipeableCard` | Umbral ±120 px, rotación interpolada y `withSpring(0)` para el snap-back. |
+| Acción de dominio al superar el umbral | `SwipeableCard` + `HomeScreen` | Derecha: guardar/quitar de la lista. Izquierda: descartar de la cartelera de la sesión. |
+| `AnimatedButton` con `Gesture.Tap` | `AnimatedButton` | `withTiming` al presionar y `withSpring` al soltar; reemplaza el `Pressable` de la Semana 09. |
+| Entrada escalonada | `HomeScreen` | `withDelay(index * 80, withTiming(...))` y `useAnimatedStyle`. |
+| Transición del detalle | `DetailScreen` | Fade + slide con `useSharedValue`, `withTiming` e `interpolate`. |
+| Mapa de butacas (bonus Pinch) | `SeatMapScreen` | `Gesture.Pinch` + `Gesture.Pan` simultáneos, patrón `savedScale`, selección por tap y confirmación. |
+| Raíz de gestos | `App.tsx` | `GestureHandlerRootView` envolviendo toda la app. |
+| Plugin de Babel | `babel.config.js` | `react-native-worklets/plugin` al final de la lista. |
 
-### Detalle técnico
+### Nota sobre el plugin de la rúbrica
 
-- Las propiedades de opacidad y transform usan `useNativeDriver: true`.
-- `ProgressBar` usa `useNativeDriver: false` **a propósito**: `width` y `backgroundColor` no son propiedades nativas. No hay otras animaciones con el driver desactivado.
-- La barra de ocupación se calcula con la capacidad real de cada sala (`Sala Principal` 320, `Sala de Cámara` 120, `Teatro Experimental` 80) y se acota entre 0 y 1.
-- En Android, `UIManager.setLayoutAnimationEnabledExperimental?.(true)` se ejecuta una sola vez, fuera del componente.
-- `ItemCard` quedó como **cuerpo visual** reutilizable; `AnimatedCard` es el envoltorio que aporta el tap y la escala. Esto permite que la Semana 10 sustituya el envoltorio por `SwipeableCard` sin reescribir estilos.
+La rúbrica de la Semana 10 menciona `'react-native-reanimated/plugin'`, que era el plugin de Reanimated 2/3. En **Reanimated 4** el plugin correcto es `'react-native-worklets/plugin'`; el starter oficial de la semana 10 también lo usa. La funcionalidad exigida (worklets de `useSharedValue` y `useAnimatedStyle`) está cubierta y el bundle Android compila con él.
+
+### Flujo de un gesto
+
+1. `onBegin` / `onStart`: se guarda el estado inicial (`savedScale`, `startX`, `startY`).
+2. `onUpdate`: se actualizan `useSharedValue` en el hilo de UI.
+3. `onEnd`: se evalúa el umbral o se ajusta la escala; el snap-back usa `withSpring(0)`.
+4. `runOnJS`: ejecuta acciones de JavaScript (guardar, descartar, confirmar) sin cruzar el hilo de UI durante el gesto.
 
 ---
 
-## ✅ Cumplimiento de la rúbrica (Semana 09)
+## 🗺️ Mapa interactivo de butacas
+
+- La sala se genera a partir de `HALL_LAYOUT`: **Sala Principal** 10 × 32, **Sala de Cámara** 8 × 15 y **Teatro Experimental** 8 × 10.
+- Las butacas ocupadas se reparten de forma **determinista** con un hash del `id` de la obra, respetando `availableSeats`. El mismo mapa se mantiene entre visitas.
+- **Pinch** para zoom entre `0.5x` y `2.5x`, con `savedScale` para acumular el gesto.
+- **Pan de dos dedos** para recorrer salas grandes; el desplazamiento se acota al tamaño del contenido.
+- **Tap** en una butaca disponible para seleccionarla; máximo **8 butacas** por reserva.
+- Botón **Centrar** para restablecer zoom y posición.
+- Resumen inferior con butacas seleccionadas, total en COP y confirmación con `Alert`.
+
+---
+
+## ✅ Cumplimiento de la rúbrica (Semana 10)
 
 | Criterio | Puntos | Implementación |
 |---|:---:|---|
-| Animación de entrada en `DetailScreen` | 8 | `Animated.parallel` de opacidad y desplazamiento vertical, 500 ms. |
-| Feedback de tap en tarjetas del dominio | 7 | `AnimatedCard` con `Animated.spring` y rebote al soltar. |
-| `LayoutAnimation` al agregar/eliminar elementos | 7 | Paginación y filtro de butacas animan la transición de la lista. |
-| App compila y corre sin errores | 5 | `pnpm typecheck` con 0 errores y bundle Android correcto. |
-| Animaciones coherentes con el dominio | 3 | Ocupación de sala, cartelera, ficha artística y botón de reserva. |
+| `SwipeableCard` funcional con `Gesture.Pan` | 8 | Arrastre horizontal con rotación, umbral y acción de dominio. |
+| Snap-back correcto sin superar el umbral | 6 | `withSpring(0)` en `translateX` y `translateY`. |
+| Umbral detectado y acción ejecutada | 6 | ±120 px: guardar/quitar o descartar, con `runOnJS`. |
+| Entrada animada con `useAnimatedStyle` | 5 | `StaggeredItem` y transición del detalle. |
+| App compila correctamente | 3 | `pnpm typecheck` con 0 errores y bundle Android correcto. |
+| Dominio coherente | 2 | Obras, salas, butacas, ocupación y reserva. |
 
 ### Criterios transversales
 
+- Sin `Animated` de `react-native` ni `useNativeDriver` en el código de la Semana 10.
 - Sin `TODO`, placeholders ni `as any`.
-- Animaciones construidas con `Animated.Value`, no con estilos hardcodeados.
-- `Animated.stagger(80, ...)`, `Animated.parallel` y `Animated.spring` presentes en el código.
-- La interfaz conserva la paleta **Vino y Oro** y los estilos existentes.
+- `GestureHandlerRootView` presente en `App.tsx`.
+- Plugin de worklets configurado en `babel.config.js`.
+- El mapa de butacas cubre el bonus de `PinchableImage` con `Gesture.Pinch`.
 
 ---
 
@@ -77,6 +96,9 @@ pnpm api
 # 2. Build nativo + Metro (terminal 2)
 pnpm prebuild      # genera android/ e ios/ (ignorados por git)
 pnpm android       # o: pnpm ios
+
+# Tras cambiar babel.config.js, arranca Metro limpio:
+pnpm start --clear
 ```
 
 Requisitos del build nativo:
@@ -84,7 +106,7 @@ Requisitos del build nativo:
 - **Android**: JDK 17 + Android Studio con emulador o dispositivo USB.
 - **iOS**: macOS con Xcode y simulador.
 
-Tras la primera compilación puedes abrir la app instalada y arrancar Metro con `pnpm start`. **No uses Expo Go**: MMKV requiere el binario nativo.
+Tras la primera compilación puedes abrir la app instalada y arrancar Metro con `pnpm start`. **No uses Expo Go**: MMKV y Reanimated 4 requieren el binario nativo.
 
 Para un celular físico, crea `starter/.env` desde `.env.example`:
 
@@ -106,12 +128,14 @@ npx expo export --platform android          # bundle correcto
 
 Flujo manual sugerido:
 
-1. Abrir la app y entrar con `emilys` / `emilyspass`.
-2. Observar la entrada en cascada de la cartelera.
-3. Presionar una tarjeta: se comprime con rebote y se abre el detalle.
-4. En el detalle, confirmar el fade + slide y la barra de ocupación de la sala.
-5. Tocar **Reservar Butacas**: el botón se comprime y vuelve con rebote.
-6. Volver a la cartelera, aplicar **Solo funciones con butacas** y tocar **Mostrar más**: la lista cambia con `LayoutAnimation`.
+1. Entrar con `emilys` / `emilyspass`.
+2. En la cartelera, deslizar una tarjeta a la derecha: se guarda o se quita de Guardados.
+3. Deslizar a la izquierda: la obra se descarta y aparece el aviso **Restaurar**.
+4. Tocar **Mostrar más**: las tarjetas nuevas entran con `withDelay`.
+5. Abrir una obra: el detalle entra con fade + slide y muestra la ocupación.
+6. Tocar **Reservar Butacas**: se abre el mapa de la sala.
+7. Hacer pinch para zoom y arrastrar con dos dedos para recorrer el mapa.
+8. Seleccionar butacas disponibles (máximo 8) y confirmar la reserva.
 
 > Las capturas del simulador deben generarse en un equipo con Android Studio + JDK 17 o con EAS Build. En este entorno no hay JDK, Android SDK ni `adb`.
 
@@ -125,15 +149,16 @@ Flujo manual sugerido:
 | Expo SDK | 57 | Runtime y tooling |
 | React | 19.2.3 | Componentes |
 | TypeScript | 6.0.3 | Tipado estricto (sin `any`) |
-| React Hook Form | 7.81.0 | Estado de formularios |
-| Zod | 4.4.3 | Validación y tipos inferidos |
-| Zustand | 5.0 | Estado de sesión y guardados |
+| React Native Reanimated | 4.5.1 | Animaciones en el hilo de UI |
+| React Native Gesture Handler | 2.32.0 | Pan, pinch y tap |
+| React Native Worklets | 0.10.1 | Plugin de Babel para worklets |
 | TanStack Query | 5.105 | Estado del servidor |
-| Axios | 1.21 | Cliente HTTP e interceptor 401 |
+| Zustand | 5.0 | Sesión y obras guardadas |
+| React Hook Form + Zod | 7.81 / 4.4.3 | Formularios y validación |
 | Expo SecureStore | 57.0.4 | Tokens cifrados |
 | React Native MMKV | 4.3.2 | Preferencias locales |
 | AsyncStorage | 2.2.0 | Perfil persistido y caché offline |
-| Animated API | React Native | Animaciones de la Semana 09 |
+| Axios | 1.21 | Cliente HTTP e interceptor 401 |
 
 ---
 
@@ -144,28 +169,31 @@ api/
 └── db.json                         # Semilla de las 12 obras
 
 starter/
-├── App.tsx                         # BootstrapGate + QueryClient + Navigation
+├── App.tsx                         # GestureHandlerRootView + BootstrapGate
+├── babel.config.js                 # react-native-worklets/plugin
 ├── app.json                        # newArchEnabled + plugin expo-secure-store
 └── src/
     ├── components/
-    │   ├── AnimatedCard.tsx        # Envoltorio táctil con spring
-    │   ├── AnimatedButton.tsx      # Botón con timing + spring
-    │   ├── ProgressBar.tsx         # Ancho y color interpolados
+    │   ├── SwipeableCard.tsx       # Gesture.Pan + umbral + snap-back
+    │   ├── AnimatedCard.tsx        # Tap + escala con Reanimated
+    │   ├── AnimatedButton.tsx      # Gesture.Tap + withSpring
+    │   ├── ProgressBar.tsx         # Ocupación con Reanimated
     │   ├── ItemCard.tsx            # Cuerpo visual de la tarjeta
     │   ├── FormField.tsx           # Controller + TextInput + error
     │   └── ScreenState.tsx         # Loading / error / vacío
     ├── screens/
+    │   ├── HomeScreen.tsx          # Cascada + swipe + descartadas
+    │   ├── DetailScreen.tsx        # Fade + slide + ocupación
+    │   ├── SeatMapScreen.tsx       # Zoom, pan y selección de butacas
     │   ├── LoginScreen.tsx         # RHF + Zod + credenciales demo
     │   ├── RegisterScreen.tsx      # Registro simulado
-    │   ├── HomeScreen.tsx          # Cascada + LayoutAnimation
-    │   ├── DetailScreen.tsx        # Fade + slide + ocupación
     │   ├── SavedScreen.tsx         # Obras guardadas
-    │   ├── ProfileScreen.tsx       # Perfil, guardados y logout
+    │   ├── ProfileScreen.tsx       # Perfil y logout
     │   └── SettingsScreen.tsx      # MMKV + SecureStore
     ├── navigation/
     │   ├── RootNavigator.tsx       # Auth ↔ App condicional
     │   ├── AuthNavigator.tsx       # Login / Registro
-    │   ├── AppNavigator.tsx        # Cartelera / Guardados / Perfil / Ajustes
+    │   ├── AppNavigator.tsx        # Stack con SeatMap
     │   └── types.ts                # Parámetros tipados de navegación
     ├── stores/
     │   ├── authStore.ts            # Zustand + persist + bootstrap
@@ -180,9 +208,9 @@ starter/
     │   ├── mmkv.ts                 # Instancia MMKV
     │   └── playsCache.ts           # Caché offline AsyncStorage
     ├── utils/
-    │   └── theatre.ts              # Aforo y ocupación por sala
+    │   └── theatre.ts              # Aforo, ocupación y mapa de butacas
     ├── types/
-    │   └── index.ts                # Item, AuthUser, AuthTokens, AuthSession
+    │   └── index.ts                # Item, Seat, AuthUser, AuthSession
     └── theme/
         └── index.ts                # Paleta vino y oro
 ```

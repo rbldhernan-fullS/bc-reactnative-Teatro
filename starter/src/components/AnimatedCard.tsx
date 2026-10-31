@@ -1,10 +1,16 @@
 // ============================================
-// COMPONENT: AnimatedCard — Semana 09
-// Envoltorio táctil de ItemCard con feedback de escala (Animated.spring)
+// COMPONENT: AnimatedCard — Semana 10
+// Envoltorio táctil migrado a Reanimated: spring de escala sin Animated API
 // ============================================
 
-import React, { useRef } from 'react';
-import { Animated, Pressable } from 'react-native';
+import React from 'react';
+import { Pressable } from 'react-native';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
 import type { Item } from '../types';
 import { SIZES } from '../theme';
 import { ItemCard } from './ItemCard';
@@ -17,18 +23,10 @@ interface AnimatedCardProps {
   compact?: boolean;
 }
 
-const PRESS_IN_SPRING = {
-  toValue: SIZES.pressedScale,
-  tension: 400,
-  friction: 28,
-  useNativeDriver: true,
-} as const;
-
 const PRESS_OUT_SPRING = {
-  toValue: 1,
-  tension: 200,
-  friction: 8,
-  useNativeDriver: true,
+  damping: 10,
+  stiffness: 220,
+  mass: 0.7,
 } as const;
 
 export const AnimatedCard = React.memo(function AnimatedCard({
@@ -38,18 +36,22 @@ export const AnimatedCard = React.memo(function AnimatedCard({
   onToggleSave,
   compact = false,
 }: AnimatedCardProps): React.JSX.Element {
-  const scale = useRef(new Animated.Value(1)).current;
+  const scale = useSharedValue(1);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
 
   function handlePressIn(): void {
-    Animated.spring(scale, PRESS_IN_SPRING).start();
+    scale.value = withTiming(SIZES.pressedScale, { duration: 90 });
   }
 
   function handlePressOut(): void {
-    Animated.spring(scale, PRESS_OUT_SPRING).start();
+    scale.value = withSpring(1, PRESS_OUT_SPRING);
   }
 
   return (
-    <Animated.View style={{ transform: [{ scale }] }}>
+    <Animated.View style={animatedStyle}>
       <Pressable
         onPress={() => onPress(item)}
         onPressIn={handlePressIn}

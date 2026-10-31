@@ -15,6 +15,7 @@ import { SavedScreen } from '../screens/SavedScreen';
 import { HomeScreen } from '../screens/HomeScreen';
 import { CreateScreen } from '../screens/CreateScreen';
 import { EditScreen } from '../screens/EditScreen';
+import { SeatMapScreen } from '../screens/SeatMapScreen';
 import { SettingsScreen } from '../screens/SettingsScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
 import { COLORS, TYPOGRAPHY, SIZES } from '../theme';
@@ -75,6 +76,16 @@ function HomeStackNavigator(): React.JSX.Element {
             </Pressable>
           ),
         })}
+      />
+
+      {/* Mapa interactivo de butacas (Reanimated + Gesture Handler) */}
+      <HomeStack.Screen
+        name="SeatMap"
+        component={SeatMapScreen}
+        options={{
+          title: 'Mapa de butacas',
+          headerBackTitle: 'Detalle',
+        }}
       />
 
       {/* Formulario de creación de una obra nueva */}

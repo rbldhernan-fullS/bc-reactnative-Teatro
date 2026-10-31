@@ -1,23 +1,27 @@
 // ============================================
-// SCREEN: DetailScreen — Semanas 05 y 09
-// Ficha técnica con entrada fade + slide (Animated.parallel),
-// barra de ocupación y botón con feedback táctil.
+// SCREEN: DetailScreen — Semanas 05, 09 y 10
+// Ficha técnica con entrada Reanimated, barra de ocupación y acceso
+// al mapa interactivo de butacas.
 // ============================================
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import {
   View,
   Text,
   Image,
-  Animated,
   StyleSheet,
   Pressable,
-  Alert,
-  Platform,
 } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import Animated, {
+  Easing,
+  interpolate,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 import type { DetailScreenProps } from '../navigation/types';
 import { AnimatedButton } from '../components/AnimatedButton';
 import { ProgressBar } from '../components/ProgressBar';
@@ -38,9 +42,8 @@ export function DetailScreen(): React.JSX.Element {
   // Estado del servidor: la ficha viene de la caché de TanStack Query.
   const { data: item, isLoading, isError, error, refetch } = usePlayById(id);
 
-  // Entrada del contenido: fade in + slide up de 500 ms con Animated.parallel.
-  const contentOpacity = useRef(new Animated.Value(0)).current;
-  const contentOffset = useRef(new Animated.Value(30)).current;
+  // Entrada del contenido con Reanimated: fade in + slide up de 500 ms.
+  const entrance = useSharedValue(0);
   const itemId = item?.id;
 
   useEffect(() => {
@@ -48,25 +51,21 @@ export function DetailScreen(): React.JSX.Element {
       return;
     }
 
-    contentOpacity.setValue(0);
-    contentOffset.setValue(30);
+    entrance.value = 0;
+    entrance.value = withTiming(1, {
+      duration: 500,
+      easing: Easing.out(Easing.cubic),
+    });
+  }, [entrance, itemId]);
 
-    const entrance = Animated.parallel([
-      Animated.timing(contentOpacity, {
-        toValue: 1,
-        duration: 500,
-        useNativeDriver: true,
-      }),
-      Animated.timing(contentOffset, {
-        toValue: 0,
-        duration: 500,
-        useNativeDriver: true,
-      }),
-    ]);
-
-    entrance.start();
-    return () => entrance.stop();
-  }, [contentOffset, contentOpacity, itemId]);
+  const contentStyle = useAnimatedStyle(() => ({
+    opacity: entrance.value,
+    transform: [
+      {
+        translateY: interpolate(entrance.value, [0, 1], [30, 0]),
+      },
+    ],
+  }));
 
   // Estado de UI: el botón lee y escribe solo el id en el store.
   const isSaved = useSavedStore(selectIsSaved(id));
@@ -146,33 +145,13 @@ export function DetailScreen(): React.JSX.Element {
   const occupancy = getHallOccupancy(hall, availableSeats);
 
   function handleBookingPress(): void {
-    const message = `¿Deseas iniciar la selección de butacas para "${name}" en la ${hall} (${date} · ${time})?`;
-    if (Platform.OS === 'web') {
-      window.alert(
-        `Reserva iniciada:\n${message}\nValor: $${price.toLocaleString('es-CO')} COP`
-      );
-    } else {
-      Alert.alert('Reservar Butacas', message, [
-        { text: 'Cancelar', style: 'cancel' },
-        {
-          text: 'Continuar',
-          onPress: () =>
-            Alert.alert('Reserva iniciada', `Obra: ${name}\nID: ${id}`),
-        },
-      ]);
-    }
+    navigation.navigate('SeatMap', { id, name });
   }
 
   return (
     <View style={styles.screenWrapper}>
       <Animated.ScrollView
-        style={[
-          styles.container,
-          {
-            opacity: contentOpacity,
-            transform: [{ translateY: contentOffset }],
-          },
-        ]}
+        style={[styles.container, contentStyle]}
         contentContainerStyle={[
           styles.contentContainer,
           { paddingBottom: SIZES.detailContentBottomPadding + insets.bottom },

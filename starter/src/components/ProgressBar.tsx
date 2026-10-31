@@ -1,10 +1,16 @@
 // ============================================
-// COMPONENT: ProgressBar — Semana 09
-// Ancho y color interpolados según la ocupación de la sala
+// COMPONENT: ProgressBar — Semana 10
+// Ancho y color interpolados con Reanimated (sin Animated API de RN)
 // ============================================
 
-import React, { useEffect, useRef, useState } from 'react';
-import { Animated, StyleSheet, Text, View } from 'react-native';
+import React, { useEffect } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import Animated, {
+  interpolateColor,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 import { COLORS, TYPOGRAPHY, SPACING, RADIUS } from '../theme';
 
 interface ProgressBarProps {
@@ -25,32 +31,23 @@ export function ProgressBar({
   caption,
 }: ProgressBarProps): React.JSX.Element {
   const clampedProgress = Math.min(1, Math.max(0, progress));
-  const animatedProgress = useRef(new Animated.Value(0)).current;
-  const [trackWidth, setTrackWidth] = useState(0);
+  const progressValue = useSharedValue(0);
+  const trackWidth = useSharedValue(0);
 
   useEffect(() => {
-    const animation = Animated.timing(animatedProgress, {
-      toValue: clampedProgress,
+    progressValue.value = withTiming(clampedProgress, {
       duration: ANIMATION_DURATION,
-      // El ancho y el color no son propiedades nativas: deben animarse en JS.
-      useNativeDriver: false,
     });
+  }, [clampedProgress, progressValue]);
 
-    animation.start();
-    return () => animation.stop();
-  }, [animatedProgress, clampedProgress]);
-
-  const width = animatedProgress.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, trackWidth],
-    extrapolate: 'clamp',
-  });
-
-  const backgroundColor = animatedProgress.interpolate({
-    inputRange: [0, 0.6, 1],
-    outputRange: [COLORS.success, '#facc15', COLORS.error],
-    extrapolate: 'clamp',
-  });
+  const fillStyle = useAnimatedStyle(() => ({
+    width: trackWidth.value * progressValue.value,
+    backgroundColor: interpolateColor(
+      progressValue.value,
+      [0, 0.6, 1],
+      [COLORS.success, '#facc15', COLORS.error]
+    ),
+  }));
 
   const percent = Math.round(clampedProgress * 100);
 
@@ -63,14 +60,14 @@ export function ProgressBar({
 
       <View
         style={styles.track}
-        onLayout={(event) => setTrackWidth(event.nativeEvent.layout.width)}
+        onLayout={(event) => {
+          trackWidth.value = event.nativeEvent.layout.width;
+        }}
         accessibilityRole="progressbar"
         accessibilityLabel={label}
         accessibilityValue={{ min: 0, max: 100, now: percent }}
       >
-        <Animated.View
-          style={[styles.fill, { width, backgroundColor }]}
-        />
+        <Animated.View style={[styles.fill, fillStyle]} />
       </View>
 
       {caption ? <Text style={styles.caption}>{caption}</Text> : null}
