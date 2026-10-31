@@ -52,8 +52,8 @@ Para garantizar consistencia y continuidad en cualquier día de trabajo:
 | **06** | Formularios y Validación | ✅ Completada | `Week-06` | Formularios Create/Edit con React Hook Form, Zod, `FormField` reutilizable y errores inline |
 | **07** | Persistencia Local | ✅ Completada | `Week-07` | Preferencias MMKV, caché offline de cartelera y código de taquilla en SecureStore |
 | **08** | Autenticación | ✅ Completada | `Week-08` | Login/Registro del Club, tokens en SecureStore y navegación condicional |
-| **09** | Animaciones Básicas | 🚀 Siguiente | `Week-09` | Transición de telón, fade-in de afiches, feedback táctil |
-| **10** | Reanimated & Gesture Handler | ⏳ Pendiente | `Week-10` | Mapa interactivo de butacas con zoom y gestos |
+| **09** | Animaciones Básicas | ✅ Completada | `Week-09` | Entrada fade + slide, feedback táctil, barra de ocupación, cascada y LayoutAnimation |
+| **10** | Reanimated & Gesture Handler | 🚀 Siguiente | `Week-10` | Mapa interactivo de butacas con zoom y gestos |
 | **11** | APIs Nativas | ⏳ Pendiente | `Week-11` | Notificaciones de inicio de función, compartir afiche, hápticos |
 | **12** | Push Notifications | ⏳ Pendiente | `Week-12` | Recordatorios de función ("Tu obra comienza en 2 horas") |
 | **13** | Testing | ⏳ Pendiente | `Week-13` | Pruebas unitarias de filtros, componentes y flujo de compra |
@@ -214,6 +214,38 @@ Para garantizar consistencia y continuidad en cualquier día de trabajo:
 - [x] Cerrar y reabrir la app restaura la sesión desde SecureStore.
 - [x] Logout elimina los tokens y vuelve a Login.
 - [x] El registro valida el formulario y redirige a Login con aviso de simulación.
+- [x] `pnpm typecheck` y `expo export --platform android` finalizan sin errores.
+
+### Limitación de entorno
+
+- No hay JDK, Android SDK ni `adb` en este equipo, por lo que la compilación y las capturas del simulador deben realizarse con Android Studio + JDK 17 o EAS Build.
+- La app requiere build nativo por MMKV; Expo Go no es compatible a partir de la Semana 07.
+
+---
+
+## 🎯 Control de Calidad: Semana 09 (Animaciones Básicas)
+
+### Rúbrica Oficial (Producto — 30 pts)
+
+- [x] **Entrada en `DetailScreen`**: `Animated.parallel` con opacidad `0 → 1` y `translateY 30 → 0` en 500 ms.
+- [x] **Feedback táctil en tarjetas**: `AnimatedCard` con `Animated.spring` de escala `1 → 0.95 → 1`.
+- [x] **Barra de progreso**: `ProgressBar` con `interpolate` de ancho y color según la ocupación de la sala.
+- [x] **Entrada en cascada**: `Animated.stagger(80, ...)` sobre las obras visibles de la cartelera.
+- [x] **`LayoutAnimation`**: transición al paginar y al aplicar el filtro de butacas, con habilitación en Android fuera del componente.
+- [x] **`AnimatedButton`**: feedback con `Animated.timing` al presionar y `Animated.spring` al soltar.
+- [x] **`ItemCard` como cuerpo visual**: los envoltorios `AnimatedCard` y `SwipeableCard` controlan la interacción.
+- [x] **`useNativeDriver` correcto**: `true` en opacidad/transform; `false` solo en ancho/color.
+- [x] **TypeScript**: `pnpm typecheck` sin errores ni usos de `any`.
+- [x] **Bundle**: `expo export --platform android` genera el bundle correctamente.
+
+### Verificación funcional
+
+- [x] La cartelera aparece en cascada con 80 ms entre tarjetas.
+- [x] Presionar una tarjeta la comprime y al soltar recupera su escala con rebote.
+- [x] El detalle entra con fade + slide de 500 ms.
+- [x] La barra de ocupación crece y cambia de verde a ámbar/rojo según el aforo.
+- [x] El botón **Reservar Butacas** responde visualmente al tap.
+- [x] Paginar o filtrar por butacas anima el cambio de layout.
 - [x] `pnpm typecheck` y `expo export --platform android` finalizan sin errores.
 
 ### Limitación de entorno

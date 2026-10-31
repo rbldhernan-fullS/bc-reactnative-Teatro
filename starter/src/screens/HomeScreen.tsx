@@ -1,7 +1,8 @@
 // ============================================================
-// SCREEN: HomeScreen — Semanas 05 y 07
+// SCREEN: HomeScreen — Semanas 05, 07 y 09
 // Cartelera con estados de red, caché offline (AsyncStorage),
-// preferencias MMKV (orden, modo compacto, paginación y filtro)
+// preferencias MMKV (orden, modo compacto, paginación y filtro),
+// entrada en cascada y LayoutAnimation al cambiar la lista.
 // ============================================================
 
 import React, {
@@ -22,26 +23,41 @@ import {
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
   Pressable,
+  Animated,
+  LayoutAnimation,
+  UIManager,
 } from 'react-native';
 import type { ListRenderItem } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Ionicons } from '@expo/vector-icons';
 import type { Item } from '../types';
-import { ItemCard } from '../components/ItemCard';
+import { AnimatedCard } from '../components/AnimatedCard';
+import { AnimatedButton } from '../components/AnimatedButton';
 import { ScreenState } from '../components/ScreenState';
 import { usePlays } from '../hooks/usePlays';
 import { usePreferences } from '../hooks/usePreferences';
 import { getApiErrorMessage } from '../services/api';
 import { useSavedStore } from '../stores/savedStore';
-import { COLORS, TYPOGRAPHY, SPACING, RADIUS, SIZES } from '../theme';
+import { COLORS, TYPOGRAPHY, SPACING, RADIUS } from '../theme';
 import type { HomeStackParamList } from '../navigation/types';
 
 type HomeScreenNavProp = NativeStackNavigationProp<HomeStackParamList, 'HomeList'>;
 
 const DOMAIN_TITLE = 'Teatro Colón';
 const DOMAIN_SUBTITLE = 'Cartelera oficial de la temporada';
+const ENTRANCE_STAGGER_MS = 80;
+const ENTRANCE_DURATION_MS = 420;
+
+// LayoutAnimation requiere habilitarse explícitamente en Android.
+// Se ejecuta una sola vez, fuera del ciclo de render.
+if (Platform.OS === 'android') {
+  UIManager.setLayoutAnimationEnabledExperimental?.(true);
+}
+
+function animateListLayout(): void {
+  LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+}
 
 /**
  * Normaliza un texto para búsquedas insensibles a mayúsculas y acentos.
@@ -143,36 +159,109 @@ export function HomeScreen(): React.JSX.Element {
     [filteredItems, visibleCount]
   );
 
-  // 5. Pull-to-refresh delegado a TanStack Query
+  // 5. Entrada en cascada: un Animated.Value estable por cada obra visible.
+  const entranceValues = useRef(new Map<string, Animated.Value>()).current;
+
+  const getEntranceValue = useCallback(
+    (id: string): Animated.Value => {
+      const existing = entranceValues.get(id);
+      if (existing) {
+        return existing;
+      }
+
+      const created = new Animated.Value(0);
+      entranceValues.set(id, created);
+      return created;
+    },
+    [entranceValues]
+  );
+
+  useEffect(() => {
+    if (visibleItems.length === 0) {
+      return;
+    }
+
+    const animations = visibleItems.map((item) => {
+      const value = getEntranceValue(item.id);
+      value.setValue(0);
+
+      return Animated.timing(value, {
+        toValue: 1,
+        duration: ENTRANCE_DURATION_MS,
+        useNativeDriver: true,
+      });
+    });
+
+    const stagger = Animated.stagger(ENTRANCE_STAGGER_MS, animations);
+    stagger.start();
+
+    return () => stagger.stop();
+  }, [getEntranceValue, visibleItems]);
+
+  // 6. Pull-to-refresh delegado a TanStack Query
   const handleRefresh = useCallback((): void => {
     void refetch();
   }, [refetch]);
 
   const handleLoadMore = useCallback((): void => {
+    animateListLayout();
     setVisibleCount((current) => current + itemsPerPage);
   }, [itemsPerPage]);
 
-  // 6. Render Item memorizado con useCallback
-  const renderItem: ListRenderItem<Item> = useCallback(
-    ({ item }) => (
-      <ItemCard
-        item={item}
-        onPress={handleItemPress}
-        saved={savedIdSet.has(item.id)}
-        onToggleSave={handleToggleSave}
-        compact={compactMode}
-      />
-    ),
-    [compactMode, handleItemPress, savedIdSet, handleToggleSave]
+  const handleToggleOnlyAvailable = useCallback(
+    (value: boolean): void => {
+      animateListLayout();
+      setOnlyAvailable(value);
+    },
+    [setOnlyAvailable]
   );
 
-  // 7. Separador entre elementos con useCallback
+  // 7. Render Item memorizado con useCallback
+  const renderItem: ListRenderItem<Item> = useCallback(
+    ({ item }) => {
+      const entrance = getEntranceValue(item.id);
+
+      return (
+        <Animated.View
+          style={{
+            opacity: entrance,
+            transform: [
+              {
+                translateY: entrance.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [24, 0],
+                  extrapolate: 'clamp',
+                }),
+              },
+            ],
+          }}
+        >
+          <AnimatedCard
+            item={item}
+            onPress={handleItemPress}
+            saved={savedIdSet.has(item.id)}
+            onToggleSave={handleToggleSave}
+            compact={compactMode}
+          />
+        </Animated.View>
+      );
+    },
+    [
+      compactMode,
+      getEntranceValue,
+      handleItemPress,
+      savedIdSet,
+      handleToggleSave,
+    ]
+  );
+
+  // 8. Separador entre elementos con useCallback
   const renderSeparator = useCallback(
     () => <View style={styles.separator} />,
     []
   );
 
-  // 8. Estado vacío: distingue cartelera vacía, búsqueda y filtro de butacas
+  // 9. Estado vacío: distingue cartelera vacía, búsqueda y filtro de butacas
   const renderEmpty = useCallback(() => {
     if (plays.length === 0) {
       return (
@@ -224,15 +313,21 @@ export function HomeScreen(): React.JSX.Element {
             styles.clearFilterButton,
             pressed && styles.clearFilterButtonPressed,
           ]}
-          onPress={() => setOnlyAvailable(false)}
+          onPress={() => handleToggleOnlyAvailable(false)}
         >
           <Text style={styles.clearFilterButtonText}>Ver todas las obras</Text>
         </Pressable>
       </View>
     );
-  }, [navigation, onlyAvailable, plays.length, query, setOnlyAvailable]);
+  }, [
+    handleToggleOnlyAvailable,
+    navigation,
+    onlyAvailable,
+    plays.length,
+    query,
+  ]);
 
-  // 9. Pie de lista: paginación local con la preferencia itemsPerPage
+  // 10. Pie de lista: paginación local con la preferencia itemsPerPage
   const renderFooter = useCallback(() => {
     const remaining = filteredItems.length - visibleItems.length;
 
@@ -242,19 +337,12 @@ export function HomeScreen(): React.JSX.Element {
 
     return (
       <View style={styles.footer}>
-        <Pressable
-          style={({ pressed }) => [
-            styles.loadMoreButton,
-            pressed && styles.loadMoreButtonPressed,
-          ]}
+        <AnimatedButton
+          label={`Mostrar ${Math.min(remaining, itemsPerPage)} más`}
           onPress={handleLoadMore}
-          accessibilityRole="button"
+          variant="outline"
           accessibilityLabel={`Mostrar ${Math.min(remaining, itemsPerPage)} obras más`}
-        >
-          <Text style={styles.loadMoreText}>
-            Mostrar {Math.min(remaining, itemsPerPage)} más
-          </Text>
-        </Pressable>
+        />
         <Text style={styles.footerHint}>
           {visibleItems.length} de {filteredItems.length} obras
         </Text>
@@ -306,22 +394,13 @@ export function HomeScreen(): React.JSX.Element {
                 <Text style={styles.headerSubtitle}>{DOMAIN_SUBTITLE}</Text>
               </View>
 
-              <Pressable
-                style={({ pressed }) => [
-                  styles.createButton,
-                  pressed && styles.createButtonPressed,
-                ]}
+              <AnimatedButton
+                label="Nueva"
                 onPress={() => navigation.navigate('Create')}
-                accessibilityRole="button"
+                icon="add"
+                compact
                 accessibilityLabel="Crear una obra nueva"
-              >
-                <Ionicons
-                  name="add"
-                  size={SIZES.iconSm}
-                  color={COLORS.background}
-                />
-                <Text style={styles.createButtonText}>Nueva</Text>
-              </Pressable>
+              />
             </View>
           </View>
 
@@ -482,24 +561,6 @@ const styles = StyleSheet.create({
     color: COLORS.textSecondary,
     marginTop: SPACING.xxs,
   },
-  createButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: SPACING.xxs,
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
-    borderRadius: RADIUS.full,
-    backgroundColor: COLORS.accent,
-  },
-  createButtonPressed: {
-    backgroundColor: COLORS.accentHover,
-    opacity: 0.9,
-  },
-  createButtonText: {
-    fontSize: TYPOGRAPHY.size.xs,
-    fontWeight: TYPOGRAPHY.weight.bold,
-    color: COLORS.background,
-  },
   searchSection: {
     paddingHorizontal: SPACING.base,
     paddingTop: SPACING.md,
@@ -617,23 +678,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: SPACING.xs,
     paddingVertical: SPACING.lg,
-  },
-  loadMoreButton: {
-    paddingHorizontal: SPACING.xl,
-    paddingVertical: SPACING.sm,
-    borderRadius: RADIUS.full,
-    borderWidth: 1,
-    borderColor: COLORS.accent,
-    backgroundColor: COLORS.surface,
-  },
-  loadMoreButtonPressed: {
-    backgroundColor: COLORS.surfaceAlt,
-    opacity: 0.8,
-  },
-  loadMoreText: {
-    fontSize: TYPOGRAPHY.size.sm,
-    fontWeight: TYPOGRAPHY.weight.semibold,
-    color: COLORS.accent,
   },
   footerHint: {
     fontSize: TYPOGRAPHY.size.xs,

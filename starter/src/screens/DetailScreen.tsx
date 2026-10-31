@@ -1,14 +1,15 @@
 // ============================================
-// SCREEN: DetailScreen — Semana 05: Networking
-// Ficha técnica consultada a la API y acción de guardar por identificador
+// SCREEN: DetailScreen — Semanas 05 y 09
+// Ficha técnica con entrada fade + slide (Animated.parallel),
+// barra de ocupación y botón con feedback táctil.
 // ============================================
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   View,
   Text,
   Image,
-  ScrollView,
+  Animated,
   StyleSheet,
   Pressable,
   Alert,
@@ -18,11 +19,14 @@ import { useRoute, useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import type { DetailScreenProps } from '../navigation/types';
+import { AnimatedButton } from '../components/AnimatedButton';
+import { ProgressBar } from '../components/ProgressBar';
 import { ScreenState } from '../components/ScreenState';
 import { usePlayById } from '../hooks/usePlays';
 import { getApiErrorMessage } from '../services/api';
 import { COLORS, TYPOGRAPHY, SPACING, RADIUS, SIZES } from '../theme';
 import { selectIsSaved, useSavedStore } from '../stores/savedStore';
+import { getHallCapacity, getHallOccupancy } from '../utils/theatre';
 
 export function DetailScreen(): React.JSX.Element {
   const route = useRoute<DetailScreenProps['route']>();
@@ -33,6 +37,36 @@ export function DetailScreen(): React.JSX.Element {
 
   // Estado del servidor: la ficha viene de la caché de TanStack Query.
   const { data: item, isLoading, isError, error, refetch } = usePlayById(id);
+
+  // Entrada del contenido: fade in + slide up de 500 ms con Animated.parallel.
+  const contentOpacity = useRef(new Animated.Value(0)).current;
+  const contentOffset = useRef(new Animated.Value(30)).current;
+  const itemId = item?.id;
+
+  useEffect(() => {
+    if (!itemId) {
+      return;
+    }
+
+    contentOpacity.setValue(0);
+    contentOffset.setValue(30);
+
+    const entrance = Animated.parallel([
+      Animated.timing(contentOpacity, {
+        toValue: 1,
+        duration: 500,
+        useNativeDriver: true,
+      }),
+      Animated.timing(contentOffset, {
+        toValue: 0,
+        duration: 500,
+        useNativeDriver: true,
+      }),
+    ]);
+
+    entrance.start();
+    return () => entrance.stop();
+  }, [contentOffset, contentOpacity, itemId]);
 
   // Estado de UI: el botón lee y escribe solo el id en el store.
   const isSaved = useSavedStore(selectIsSaved(id));
@@ -107,6 +141,10 @@ export function DetailScreen(): React.JSX.Element {
     synopsis,
   } = item;
 
+  const hallCapacity = getHallCapacity(hall);
+  const occupiedSeats = Math.max(0, hallCapacity - availableSeats);
+  const occupancy = getHallOccupancy(hall, availableSeats);
+
   function handleBookingPress(): void {
     const message = `¿Deseas iniciar la selección de butacas para "${name}" en la ${hall} (${date} · ${time})?`;
     if (Platform.OS === 'web') {
@@ -127,8 +165,14 @@ export function DetailScreen(): React.JSX.Element {
 
   return (
     <View style={styles.screenWrapper}>
-      <ScrollView
-        style={styles.container}
+      <Animated.ScrollView
+        style={[
+          styles.container,
+          {
+            opacity: contentOpacity,
+            transform: [{ translateY: contentOffset }],
+          },
+        ]}
         contentContainerStyle={[
           styles.contentContainer,
           { paddingBottom: SIZES.detailContentBottomPadding + insets.bottom },
@@ -235,6 +279,16 @@ export function DetailScreen(): React.JSX.Element {
             </View>
           </View>
 
+          {/* Ocupación de la sala: ancho y color interpolados */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Estado del aforo</Text>
+            <ProgressBar
+              progress={occupancy}
+              label="Butacas ocupadas"
+              caption={`${occupiedSeats} de ${hallCapacity} butacas ocupadas en la ${hall}`}
+            />
+          </View>
+
           {/* Sinopsis de la obra */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Sinopsis Argumental</Text>
@@ -264,7 +318,7 @@ export function DetailScreen(): React.JSX.Element {
             </View>
           </View>
         </View>
-      </ScrollView>
+      </Animated.ScrollView>
 
       {/* Barra de acción inferior fija */}
       <View
@@ -281,17 +335,12 @@ export function DetailScreen(): React.JSX.Element {
           </Text>
         </View>
 
-        <Pressable
-          style={({ pressed }) => [
-            styles.bookButton,
-            pressed && styles.bookButtonPressed,
-          ]}
+        <AnimatedButton
+          label="Reservar Butacas"
           onPress={handleBookingPress}
-          accessibilityRole="button"
+          icon="ticket-outline"
           accessibilityLabel={`Reservar butacas para ${name}`}
-        >
-          <Text style={styles.bookButtonText}>Reservar Butacas</Text>
-        </Pressable>
+        />
       </View>
     </View>
   );
@@ -545,9 +594,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.xl,
     paddingVertical: SPACING.md,
     borderRadius: RADIUS.full,
-  },
-  bookButtonPressed: {
-    opacity: 0.8,
   },
   bookButtonText: {
     color: COLORS.background,

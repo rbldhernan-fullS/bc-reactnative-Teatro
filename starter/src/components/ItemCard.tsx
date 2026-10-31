@@ -1,7 +1,7 @@
 // ============================================
-// COMPONENT: ItemCard — Semanas 04, 05 y 07
-// Tarjeta de obra teatral con acción de guardar/quitar por id
-// y variante compacta controlada por las preferencias (MMKV)
+// COMPONENT: ItemCard — Semanas 04, 05, 07 y 09
+// Cuerpo visual de la tarjeta de obra. La interacción (tap, swipe y escala)
+// vive en los envoltorios AnimatedCard / SwipeableCard.
 // ============================================
 
 import React from 'react';
@@ -13,7 +13,6 @@ import { COLORS, TYPOGRAPHY, SPACING, RADIUS, SIZES } from '../theme';
 
 interface ItemCardProps {
   item: Item;
-  onPress: (item: Item) => void;
   /** Indica si la obra ya está en el store de guardados */
   saved: boolean;
   /** Guarda o quita la obra del store */
@@ -24,7 +23,6 @@ interface ItemCardProps {
 
 export const ItemCard = React.memo(function ItemCard({
   item,
-  onPress,
   saved,
   onToggleSave,
   compact = false,
@@ -36,15 +34,7 @@ export const ItemCard = React.memo(function ItemCard({
   }
 
   return (
-    <Pressable
-      style={({ pressed }) => [
-        styles.card,
-        pressed && styles.cardPressed,
-      ]}
-      onPress={() => onPress(item)}
-      accessibilityRole="button"
-      accessibilityLabel={`Obra ${item.name}, género ${item.genre}, precio ${item.price} pesos`}
-    >
+    <View style={styles.card}>
       {/* Afiche / Portada de la obra */}
       <View
         style={[styles.imageWrapper, compact && styles.imageWrapperCompact]}
@@ -153,7 +143,7 @@ export const ItemCard = React.memo(function ItemCard({
           </>
         )}
       </View>
-    </Pressable>
+    </View>
   );
 });
 
@@ -166,11 +156,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.border,
     overflow: 'hidden',
-  },
-  cardPressed: {
-    backgroundColor: COLORS.surfaceAlt,
-    opacity: 0.9,
-    transform: [{ scale: SIZES.pressedScale }],
   },
   imageWrapper: {
     position: 'relative',
