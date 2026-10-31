@@ -16,6 +16,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { FormChips } from './FormChips';
 import { FormField } from './FormField';
+import { PhotoPicker } from './PhotoPicker';
 import type { PlayFormInput } from '../schemas/playSchema';
 import { THEATRE_GENRES, THEATRE_HALLS } from '../types';
 import { COLORS, RADIUS, SIZES, SPACING, TYPOGRAPHY } from '../theme';
@@ -29,6 +30,10 @@ interface PlayFormProps {
   onCancel: () => void;
   intro: string;
   serverError?: string;
+  /** Id de la obra (o del borrador) para guardar el afiche local */
+  posterTargetId: string;
+  /** Afiche de la API que se muestra mientras no hay foto local */
+  posterFallbackUri: string;
 }
 
 export function PlayForm({
@@ -40,6 +45,8 @@ export function PlayForm({
   onCancel,
   intro,
   serverError,
+  posterTargetId,
+  posterFallbackUri,
 }: PlayFormProps): React.JSX.Element {
   return (
     <View style={styles.container}>
@@ -161,6 +168,19 @@ export function PlayForm({
         errorMessage={errors.imageUri?.message}
       />
 
+      {/* Semana 11: afiche local con cámara o galería */}
+      <View style={styles.posterSection}>
+        <Text style={styles.posterLabel}>Afiche local de la obra</Text>
+        <Text style={styles.posterHint}>
+          Toma una foto con la cámara o elige una imagen de la galería. El
+          afiche local tiene prioridad sobre la URL en este dispositivo.
+        </Text>
+        <PhotoPicker
+          targetId={posterTargetId}
+          fallbackUri={posterFallbackUri}
+        />
+      </View>
+
       <FormField
         control={control}
         name="synopsis"
@@ -232,6 +252,24 @@ const styles = StyleSheet.create({
     borderColor: COLORS.error,
     borderRadius: RADIUS.sm,
     padding: SPACING.md,
+  },
+  posterSection: {
+    gap: SPACING.xs,
+    backgroundColor: COLORS.surface,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    borderRadius: RADIUS.md,
+    padding: SPACING.md,
+  },
+  posterLabel: {
+    fontSize: TYPOGRAPHY.size.sm,
+    fontWeight: TYPOGRAPHY.weight.semibold,
+    color: COLORS.textPrimary,
+  },
+  posterHint: {
+    fontSize: TYPOGRAPHY.size.xs,
+    color: COLORS.textMuted,
+    lineHeight: TYPOGRAPHY.lineHeight.base,
   },
   submitButton: {
     marginTop: SPACING.sm,

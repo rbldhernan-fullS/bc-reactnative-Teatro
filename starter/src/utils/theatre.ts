@@ -1,6 +1,6 @@
 // ============================================
-// UTILS: theatre — Semanas 09 y 10
-// Aforo por sala, ocupación y generación del mapa de butacas
+// UTILS: theatre — Semanas 09, 10 y 11
+// Aforo por sala, ocupación, mapa de butacas y sede del teatro
 // ============================================
 
 import type { Item, Seat, TheatreHall } from '../types';
@@ -98,4 +98,79 @@ export function buildSeatMap(
   }
 
   return seats;
+}
+
+// ============================================
+// Semana 11: sede del teatro y distancia
+// ============================================
+
+export interface VenueCoordinates {
+  latitude: number;
+  longitude: number;
+}
+
+export interface TheatreVenue extends VenueCoordinates {
+  name: string;
+  address: string;
+  city: string;
+}
+
+/**
+ * Sede física del Teatro Colón en La Candelaria (Bogotá). Se usa como destino
+ * para calcular la distancia desde la ubicación del socio y para abrir el mapa.
+ */
+export const TEATRO_COLON_VENUE: TheatreVenue = {
+  name: 'Teatro Colón',
+  address: 'Calle 10 # 5-32, La Candelaria',
+  city: 'Bogotá',
+  latitude: 4.5964,
+  longitude: -74.0734,
+};
+
+const EARTH_RADIUS_METERS = 6_371_000;
+
+function toRadians(degrees: number): number {
+  return (degrees * Math.PI) / 180;
+}
+
+/**
+ * Distancia en metros entre dos coordenadas usando la fórmula de Haversine.
+ * Es suficientemente precisa para mostrar "estás a X del teatro" sin librerías.
+ */
+export function getDistanceInMeters(
+  from: VenueCoordinates,
+  to: VenueCoordinates
+): number {
+  const deltaLatitude = toRadians(to.latitude - from.latitude);
+  const deltaLongitude = toRadians(to.longitude - from.longitude);
+  const fromLatitude = toRadians(from.latitude);
+  const toLatitude = toRadians(to.latitude);
+
+  const haversine =
+    Math.sin(deltaLatitude / 2) ** 2 +
+    Math.cos(fromLatitude) *
+      Math.cos(toLatitude) *
+      Math.sin(deltaLongitude / 2) ** 2;
+
+  return 2 * EARTH_RADIUS_METERS * Math.asin(Math.sqrt(haversine));
+}
+
+/** Formatea la distancia en metros o kilómetros con un decimal. */
+export function formatDistance(meters: number): string {
+  if (!Number.isFinite(meters) || meters < 0) {
+    return 'sin datos';
+  }
+
+  if (meters < 1000) {
+    return `${Math.round(meters)} m`;
+  }
+
+  return `${(meters / 1000).toFixed(1)} km`;
+}
+
+/** Enlace de Google Maps para llegar caminando a la sede. */
+export function getVenueDirectionsUrl(
+  venue: TheatreVenue = TEATRO_COLON_VENUE
+): string {
+  return `https://www.google.com/maps/dir/?api=1&destination=${venue.latitude},${venue.longitude}&travelmode=walking`;
 }

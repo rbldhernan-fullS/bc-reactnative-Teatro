@@ -131,6 +131,8 @@ export function EditScreen(): React.JSX.Element {
           onSubmit={handleSubmit(onSubmit)}
           onCancel={() => navigation.goBack()}
           intro={`Actualiza la ficha de "${play.name}". Los cambios se validan con Zod y se guardan en la API.`}
+          posterTargetId={id}
+          posterFallbackUri={play.imageUri}
           serverError={
             mutationError ? getApiErrorMessage(mutationError) : undefined
           }

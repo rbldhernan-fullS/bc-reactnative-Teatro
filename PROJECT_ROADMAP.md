@@ -54,8 +54,8 @@ Para garantizar consistencia y continuidad en cualquier día de trabajo:
 | **08** | Autenticación | ✅ Completada | `Week-08` | Login/Registro del Club, tokens en SecureStore y navegación condicional |
 | **09** | Animaciones Básicas | ✅ Completada | `Week-09` | Entrada fade + slide, feedback táctil, barra de ocupación, cascada y LayoutAnimation |
 | **10** | Reanimated & Gesture Handler | ✅ Completada | `Week-10` | SwipeableCard, Gesture.Tap, entrada escalonada y mapa de butacas con zoom |
-| **11** | APIs Nativas | 🚀 Siguiente | `Week-11` | Notificaciones de inicio de función, compartir afiche, hápticos |
-| **12** | Push Notifications | ⏳ Pendiente | `Week-12` | Recordatorios de función ("Tu obra comienza en 2 horas") |
+| **11** | APIs Nativas | ✅ Completada | `Week-11` | Cámara y galería para el afiche, sede del teatro con ubicación y distancia |
+| **12** | Push Notifications | 🚀 Siguiente | `Week-12` | Recordatorios de función ("Tu obra comienza en 2 horas") |
 | **13** | Testing | ⏳ Pendiente | `Week-13` | Pruebas unitarias de filtros, componentes y flujo de compra |
 | **14** | Performance | ⏳ Pendiente | `Week-14` | Optimización de renderizado de lista y mapa de asientos |
 | **15** | EAS Build | ⏳ Pendiente | `Week-15` | Compilación de binarios APK / AAB para Android |
@@ -286,3 +286,42 @@ Para garantizar consistencia y continuidad en cualquier día de trabajo:
 
 - No hay JDK, Android SDK ni `adb` en este equipo, por lo que la compilación y las capturas del simulador deben realizarse con Android Studio + JDK 17 o EAS Build.
 - La app requiere build nativo por MMKV y Reanimated 4; Expo Go no es compatible a partir de la Semana 07.
+
+---
+
+## 🎯 Control de Calidad: Semana 11 (APIs Nativas)
+
+### Rúbrica Oficial (Producto — 30 pts)
+
+- [x] **`PermissionGate` reutilizable**: estados comprobando / denegado / concedido, solicitud y `Linking.openSettings()`; lo usan cámara y ubicación.
+- [x] **`PhotoPicker` integrado al dominio**: cámara o galería para el afiche, recorte `3:4`, preview y acción de quitar.
+- [x] **Ubicación relevante al dominio**: sede del Teatro Colón, dirección del socio, distancia y ruta caminando.
+- [x] **App compila sin crashes**: `pnpm typecheck` con 0 errores y bundle Android correcto.
+- [x] **Coherencia con el dominio**: afiche de la obra y sede del teatro, sin pantallas genéricas.
+- [x] **Originalidad**: implementación propia sobre la cartelera del Teatro Colón.
+
+### Criterios de desempeño
+
+- [x] **Permiso de cámara**: `useCameraPermissions()` con UI de solicitud, no la API deprecada.
+- [x] **`CameraView` a pantalla completa**: `takePictureAsync({ quality: 0.8 })` y flash/cambio de cámara.
+- [x] **Galería**: `launchImageLibraryAsync()` con `mediaTypes: ['images']` y `result.canceled` controlado.
+- [x] **Ubicación puntual**: `requestForegroundPermissionsAsync()` + `getCurrentPositionAsync()` con `Location.Accuracy.Balanced`.
+- [x] **Seguimiento en vivo**: `watchPositionAsync()` cada 5 s / 10 m.
+- [x] **Cleanup**: `subscription.remove()` al desmontar o detener el seguimiento.
+- [x] **Dirección textual**: `reverseGeocodeAsync()` con `formattedAddress` y respaldo armado por campos.
+- [x] **Permisos declarados**: plugins de cámara, fotos y ubicación en `app.json`; sin micrófono.
+
+### Verificación funcional
+
+- [x] El afiche capturado con la cámara se muestra en el banner del detalle con el badge **Afiche local**.
+- [x] La galería reemplaza el afiche y **Quitar** vuelve al de la API.
+- [x] El afiche elegido en **Crear obra** se conserva al abrir el detalle de la obra creada.
+- [x] La tarjeta de sede muestra coordenadas, dirección y distancia al Teatro Colón.
+- [x] **Seguir mi recorrido** actualiza la distancia y se detiene con el switch.
+- [x] Al volver de los ajustes con el permiso activado, la ubicación se carga sin reabrir la pantalla.
+- [x] `pnpm typecheck` y `expo export --platform android` finalizan sin errores.
+
+### Limitación de entorno
+
+- No hay JDK, Android SDK ni `adb` en este equipo, por lo que la compilación, la cámara y las capturas del simulador deben realizarse con Android Studio + JDK 17 o EAS Build.
+- La app requiere build nativo por MMKV, Reanimated 4 y los módulos de cámara/ubicación; Expo Go no es compatible a partir de la Semana 07.

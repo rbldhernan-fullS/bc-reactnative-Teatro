@@ -33,6 +33,12 @@ export type HomeStackParamList = {
     id: string;
     name: string;
   };
+
+  /** Cámara a pantalla completa para capturar el afiche local */
+  Camera: {
+    /** Id de la obra, o `poster-draft` mientras se crea */
+    targetId: string;
+  };
 };
 
 // ============================================
@@ -77,6 +83,12 @@ export type EditScreenProps = NativeStackScreenProps<
 export type SeatMapScreenProps = NativeStackScreenProps<
   HomeStackParamList,
   'SeatMap'
+>;
+
+// Props para CameraScreen
+export type CameraScreenProps = NativeStackScreenProps<
+  HomeStackParamList,
+  'Camera'
 >;
 
 // Props para SavedScreen

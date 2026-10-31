@@ -1,7 +1,7 @@
 // ============================================
-// SCREEN: DetailScreen — Semanas 05, 09 y 10
-// Ficha técnica con entrada Reanimated, barra de ocupación y acceso
-// al mapa interactivo de butacas.
+// SCREEN: DetailScreen — Semanas 05, 09, 10 y 11
+// Ficha técnica con entrada Reanimated, barra de ocupación, mapa de butacas,
+// afiche local (cámara/galería) y sede del teatro con ubicación.
 // ============================================
 
 import React, { useEffect } from 'react';
@@ -24,12 +24,15 @@ import Animated, {
 } from 'react-native-reanimated';
 import type { DetailScreenProps } from '../navigation/types';
 import { AnimatedButton } from '../components/AnimatedButton';
+import { PhotoPicker } from '../components/PhotoPicker';
 import { ProgressBar } from '../components/ProgressBar';
 import { ScreenState } from '../components/ScreenState';
+import { VenueCard } from '../components/VenueCard';
 import { usePlayById } from '../hooks/usePlays';
 import { getApiErrorMessage } from '../services/api';
 import { COLORS, TYPOGRAPHY, SPACING, RADIUS, SIZES } from '../theme';
 import { selectIsSaved, useSavedStore } from '../stores/savedStore';
+import { selectPoster, usePosterStore } from '../stores/posterStore';
 import { getHallCapacity, getHallOccupancy } from '../utils/theatre';
 
 export function DetailScreen(): React.JSX.Element {
@@ -70,6 +73,9 @@ export function DetailScreen(): React.JSX.Element {
   // Estado de UI: el botón lee y escribe solo el id en el store.
   const isSaved = useSavedStore(selectIsSaved(id));
   const toggleSaved = useSavedStore((state) => state.toggleSaved);
+
+  // Semana 11: el afiche local tiene prioridad sobre el de la API.
+  const localPoster = usePosterStore(selectPoster(id));
 
   // Mantiene el título del header sincronizado después de editar la obra.
   useEffect(() => {
@@ -143,6 +149,7 @@ export function DetailScreen(): React.JSX.Element {
   const hallCapacity = getHallCapacity(hall);
   const occupiedSeats = Math.max(0, hallCapacity - availableSeats);
   const occupancy = getHallOccupancy(hall, availableSeats);
+  const posterUri = localPoster ?? imageUri;
 
   function handleBookingPress(): void {
     navigation.navigate('SeatMap', { id, name });
@@ -158,10 +165,10 @@ export function DetailScreen(): React.JSX.Element {
         ]}
         showsVerticalScrollIndicator={false}
       >
-        {/* Banner principal / Afiche */}
+        {/* Banner principal / Afiche (local o de la API) */}
         <View style={styles.imageContainer}>
           <Image
-            source={{ uri: imageUri }}
+            source={{ uri: posterUri }}
             style={styles.image}
             resizeMode="cover"
           />
@@ -176,6 +183,13 @@ export function DetailScreen(): React.JSX.Element {
               <Text style={styles.ratingBadgeText}>★ {rating.toFixed(1)}</Text>
             </View>
           </View>
+
+          {localPoster ? (
+            <View style={styles.localPosterBadge}>
+              <Ionicons name="camera" size={12} color={COLORS.background} />
+              <Text style={styles.localPosterBadgeText}>Afiche local</Text>
+            </View>
+          ) : null}
 
           {/* Acción Guardar / Quitar conectada al store */}
           <Pressable
@@ -267,6 +281,19 @@ export function DetailScreen(): React.JSX.Element {
               caption={`${occupiedSeats} de ${hallCapacity} butacas ocupadas en la ${hall}`}
             />
           </View>
+
+          {/* Semana 11: afiche local con cámara o galería */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Afiche de la obra</Text>
+            <PhotoPicker
+              targetId={id}
+              fallbackUri={imageUri}
+              showPreview={false}
+            />
+          </View>
+
+          {/* Semana 11: sede del teatro, ubicación y distancia */}
+          <VenueCard hall={hall} />
 
           {/* Sinopsis de la obra */}
           <View style={styles.section}>
@@ -407,6 +434,23 @@ const styles = StyleSheet.create({
   },
   savePillTextActive: {
     color: COLORS.accent,
+  },
+  localPosterBadge: {
+    position: 'absolute',
+    left: SPACING.base,
+    bottom: SPACING.base,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.xxs,
+    paddingHorizontal: SPACING.sm,
+    paddingVertical: SPACING.xxs,
+    borderRadius: RADIUS.full,
+    backgroundColor: COLORS.accent,
+  },
+  localPosterBadgeText: {
+    fontSize: TYPOGRAPHY.size.xs,
+    fontWeight: TYPOGRAPHY.weight.bold,
+    color: COLORS.background,
   },
   genreBadge: {
     backgroundColor: COLORS.surface,

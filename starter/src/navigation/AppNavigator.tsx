@@ -16,6 +16,7 @@ import { HomeScreen } from '../screens/HomeScreen';
 import { CreateScreen } from '../screens/CreateScreen';
 import { EditScreen } from '../screens/EditScreen';
 import { SeatMapScreen } from '../screens/SeatMapScreen';
+import { CameraScreen } from '../screens/CameraScreen';
 import { SettingsScreen } from '../screens/SettingsScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
 import { COLORS, TYPOGRAPHY, SIZES } from '../theme';
@@ -85,6 +86,16 @@ function HomeStackNavigator(): React.JSX.Element {
         options={{
           title: 'Mapa de butacas',
           headerBackTitle: 'Detalle',
+        }}
+      />
+
+      {/* Cámara a pantalla completa para el afiche local (Semana 11) */}
+      <HomeStack.Screen
+        name="Camera"
+        component={CameraScreen}
+        options={{
+          headerShown: false,
+          presentation: 'fullScreenModal',
         }}
       />
 

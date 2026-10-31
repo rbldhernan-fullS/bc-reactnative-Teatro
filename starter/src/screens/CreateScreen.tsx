@@ -1,9 +1,10 @@
 // ============================================
-// SCREEN: CreateScreen — Semana 06
-// Formulario validado con React Hook Form + Zod
+// SCREEN: CreateScreen — Semanas 06 y 11
+// Formulario validado con React Hook Form + Zod y afiche local opcional
+// capturado con la cámara o elegido de la galería.
 // ============================================
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -18,12 +19,14 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { PlayForm } from '../components/PlayForm';
 import { useCreatePlay } from '../hooks/usePlays';
 import {
+  DEFAULT_PLAY_IMAGE,
   EMPTY_PLAY_FORM,
   playSchema,
   toCreatePlayPayload,
   type PlayFormInput,
   type PlayFormValues,
 } from '../schemas/playSchema';
+import { POSTER_DRAFT_ID, usePosterStore } from '../stores/posterStore';
 import { getApiErrorMessage } from '../services/api';
 import { COLORS, SPACING } from '../theme';
 import type { HomeStackParamList } from '../navigation/types';
@@ -32,8 +35,13 @@ type CreateNavProp = NativeStackNavigationProp<HomeStackParamList, 'Create'>;
 
 export function CreateScreen(): React.JSX.Element {
   const navigation = useNavigation<CreateNavProp>();
+  const movePoster = usePosterStore((state) => state.movePoster);
+  const clearDraft = usePosterStore((state) => state.clearDraft);
 
   const { mutateAsync: createPlay, isPending, error: mutationError } = useCreatePlay();
+
+  // Si el formulario se cierra sin publicar, el afiche del borrador se descarta.
+  useEffect(() => () => clearDraft(), [clearDraft]);
 
   const {
     control,
@@ -47,7 +55,8 @@ export function CreateScreen(): React.JSX.Element {
 
   async function onSubmit(values: PlayFormValues): Promise<void> {
     try {
-      await createPlay(toCreatePlayPayload(values));
+      const created = await createPlay(toCreatePlayPayload(values));
+      movePoster(POSTER_DRAFT_ID, created.id);
       navigation.goBack();
     } catch {
       // El mensaje se muestra desde mutationError con getApiErrorMessage.
@@ -75,6 +84,8 @@ export function CreateScreen(): React.JSX.Element {
           onSubmit={handleSubmit(onSubmit)}
           onCancel={() => navigation.goBack()}
           intro="Publica una nueva obra en la cartelera. Todos los campos se validan con Zod antes de enviarse a la API."
+          posterTargetId={POSTER_DRAFT_ID}
+          posterFallbackUri={DEFAULT_PLAY_IMAGE}
           serverError={
             mutationError ? getApiErrorMessage(mutationError) : undefined
           }
