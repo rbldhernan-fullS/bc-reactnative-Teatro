@@ -1,7 +1,7 @@
 // ============================================
-// SCREEN: CreateScreen — Semanas 06 y 11
-// Formulario validado con React Hook Form + Zod y afiche local opcional
-// capturado con la cámara o elegido de la galería.
+// SCREEN: CreateScreen — Semanas 06, 11 y 12
+// Formulario validado con React Hook Form + Zod, afiche local opcional y
+// aviso de cartelera al publicar la obra.
 // ============================================
 
 import React, { useEffect } from 'react';
@@ -18,6 +18,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import { PlayForm } from '../components/PlayForm';
 import { useCreatePlay } from '../hooks/usePlays';
+import { useNotifications } from '../hooks/useNotifications';
 import {
   DEFAULT_PLAY_IMAGE,
   EMPTY_PLAY_FORM,
@@ -39,6 +40,7 @@ export function CreateScreen(): React.JSX.Element {
   const clearDraft = usePosterStore((state) => state.clearDraft);
 
   const { mutateAsync: createPlay, isPending, error: mutationError } = useCreatePlay();
+  const { scheduleCartelera } = useNotifications();
 
   // Si el formulario se cierra sin publicar, el afiche del borrador se descarta.
   useEffect(() => () => clearDraft(), [clearDraft]);
@@ -57,6 +59,10 @@ export function CreateScreen(): React.JSX.Element {
     try {
       const created = await createPlay(toCreatePlayPayload(values));
       movePoster(POSTER_DRAFT_ID, created.id);
+
+      // Semana 12: aviso inmediato si el socio ya concedió el permiso.
+      await scheduleCartelera(created, 'created');
+
       navigation.goBack();
     } catch {
       // El mensaje se muestra desde mutationError con getApiErrorMessage.

@@ -1,10 +1,12 @@
 // ============================================
-// NAVIGATION: RootNavigator — Semana 08
-// Navegación condicional: AuthNavigator ↔ AppNavigator según la sesión
+// NAVIGATION: RootNavigator — Semanas 08 y 12
+// Navegación condicional: AuthNavigator ↔ AppNavigator según la sesión.
+// Al iniciar sesión se procesa un tap de notificación pendiente.
 // ============================================
 
-import React from 'react';
+import React, { useEffect } from 'react';
 
+import { flushPendingNotificationNavigation } from './navigationRef';
 import { useAuthStore } from '../stores/authStore';
 import { AppNavigator } from './AppNavigator';
 import { AuthNavigator } from './AuthNavigator';
@@ -15,6 +17,12 @@ import { AuthNavigator } from './AuthNavigator';
  */
 export function RootNavigator(): React.JSX.Element {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      flushPendingNotificationNavigation();
+    }
+  }, [isAuthenticated]);
 
   return isAuthenticated ? <AppNavigator /> : <AuthNavigator />;
 }

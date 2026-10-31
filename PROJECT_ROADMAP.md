@@ -55,7 +55,7 @@ Para garantizar consistencia y continuidad en cualquier día de trabajo:
 | **09** | Animaciones Básicas | ✅ Completada | `Week-09` | Entrada fade + slide, feedback táctil, barra de ocupación, cascada y LayoutAnimation |
 | **10** | Reanimated & Gesture Handler | ✅ Completada | `Week-10` | SwipeableCard, Gesture.Tap, entrada escalonada y mapa de butacas con zoom |
 | **11** | APIs Nativas | ✅ Completada | `Week-11` | Cámara y galería para el afiche, sede del teatro con ubicación y distancia |
-| **12** | Push Notifications | 🚀 Siguiente | `Week-12` | Recordatorios de función ("Tu obra comienza en 2 horas") |
+| **12** | Push Notifications | ✅ Completada | `Week-12` | Avisos de cartelera, recordatorio 2 h antes, prueba de 10 s y Expo Push Token |
 | **13** | Testing | ⏳ Pendiente | `Week-13` | Pruebas unitarias de filtros, componentes y flujo de compra |
 | **14** | Performance | ⏳ Pendiente | `Week-14` | Optimización de renderizado de lista y mapa de asientos |
 | **15** | EAS Build | ⏳ Pendiente | `Week-15` | Compilación de binarios APK / AAB para Android |
@@ -325,3 +325,46 @@ Para garantizar consistencia y continuidad en cualquier día de trabajo:
 
 - No hay JDK, Android SDK ni `adb` en este equipo, por lo que la compilación, la cámara y las capturas del simulador deben realizarse con Android Studio + JDK 17 o EAS Build.
 - La app requiere build nativo por MMKV, Reanimated 4 y los módulos de cámara/ubicación; Expo Go no es compatible a partir de la Semana 07.
+
+---
+
+## 🎯 Control de Calidad: Semana 12 (Push Notifications)
+
+### Rúbrica Oficial (Producto — 30 pts)
+
+- [x] **Dos tipos de notificación del dominio**: aviso de cartelera al publicar o editar una obra y recordatorio **2 horas antes** de la función.
+- [x] **Notificación local en primer plano**: `setNotificationHandler` a nivel de módulo muestra banner, lista y sonido.
+- [x] **Push token en dispositivo físico**: `Device.isDevice` + `getExpoPushTokenAsync({ projectId })`, token visible en Ajustes.
+- [x] **Handler en la raíz de la app**: declarado en `App.tsx`, fuera de cualquier componente.
+- [x] **Listeners con cleanup**: los tres `useEffect` de `NotificationCenter` llaman a `subscription.remove()`.
+- [x] **TypeScript sin errores**: `pnpm typecheck` en 0 y sin `as any`.
+
+### Criterios de desempeño
+
+- [x] **Permisos**: `getPermissionsAsync()` sin diálogo y `requestPermissionsAsync()` solo en acciones del socio; `denied` ofrece abrir los ajustes del sistema.
+- [x] **Aviso de cartelera**: se envía solo si el permiso ya estaba concedido (`ensureNotificationPermission(false)`), sin interrumpir el alta.
+- [x] **Recordatorio 2 h**: trigger `DATE` calculado desde `date` + `time` de la obra, con validación de funciones ya pasadas o inminentes.
+- [x] **Prueba de 10 s**: trigger `TIME_INTERVAL` desde el detalle y desde Ajustes para comprobar el formato.
+- [x] **Canal de Android**: `setNotificationChannelAsync('teatro-funciones')` con importancia `HIGH`, color `#d4a24c` y vibración.
+- [x] **Navegación al banner**: `navigationRef` + payload tipado (`screen`, `kind`, `itemId`, `name`) y `getLastNotificationResponseAsync()` para app cerrada.
+- [x] **Cancelación**: individual desde el detalle, masiva desde Ajustes y automática al desactivar el switch de recordatorios.
+- [x] **Persistencia y reconciliación**: `reminderStore` en MMKV y `pruneReminders()` contra `getAllScheduledNotificationsAsync()` al arrancar.
+- [x] **Configuración nativa**: plugin `expo-notifications` y permisos `POST_NOTIFICATIONS`, `RECEIVE_BOOT_COMPLETED` y `VIBRATE` en `app.json`.
+
+### Verificación funcional
+
+- [x] Ajustes muestra permiso, dispositivo físico/emulador, `projectId`, token y última notificación recibida.
+- [x] **Probar aviso inmediato** muestra el banner y actualiza «Última notificación recibida».
+- [x] **Probar recordatorio (10 s)** llega en 10 s y elimina su registro al recibirse.
+- [x] El detalle de Hamlet (`2026-11-14 20:00`) programa el recordatorio para el `2026-11-14 18:00`.
+- [x] Tocar el banner abre el detalle de la obra, también tras reiniciar la app.
+- [x] Publicar o editar una obra con permiso concedido dispara el aviso de cartelera.
+- [x] Desactivar **Recordatorios de función** cancela los avisos activos en el sistema.
+- [x] `pnpm typecheck` y `expo export --platform android` finalizan sin errores.
+
+### Limitación de entorno
+
+- No hay JDK, Android SDK ni `adb` en este equipo: la compilación y las capturas deben realizarse con Android Studio + JDK 17 o EAS Build.
+- No hay `projectId` de EAS ni credenciales FCM/APNs: el token real y el push desde Expo Push Tool requieren `npx eas init` y un dispositivo físico.
+- Las notificaciones locales y la prueba de 10 s sí pueden validarse en emulador Android o iOS Simulator con el build nativo.
+- La app requiere build nativo por MMKV, Reanimated 4, cámara/ubicación y `expo-notifications`; Expo Go no es compatible a partir de la Semana 07.

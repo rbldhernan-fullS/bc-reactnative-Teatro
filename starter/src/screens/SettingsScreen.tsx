@@ -8,6 +8,7 @@ import {
   Alert,
   Pressable,
   ScrollView,
+  Share,
   StyleSheet,
   Switch,
   Text,
@@ -22,6 +23,13 @@ import {
   usePreferences,
 } from '../hooks/usePreferences';
 import type { ItemsPerPage, SortOrder } from '../hooks/usePreferences';
+import { useNotifications } from '../hooks/useNotifications';
+import {
+  formatScheduleDate,
+  scheduleTestNotification,
+  scheduleTestReminder,
+  type NotificationPermissionState,
+} from '../services/notifications';
 import { COLORS, RADIUS, SIZES, SPACING, TYPOGRAPHY } from '../theme';
 
 // ============================================
@@ -219,6 +227,12 @@ const PAGE_OPTIONS: readonly SegmentOption<ItemsPerPage>[] =
     value: size,
   }));
 
+const PERMISSION_LABELS: Record<NotificationPermissionState, string> = {
+  granted: 'Concedido',
+  denied: 'Bloqueado',
+  undetermined: 'Sin decidir',
+};
+
 export function SettingsScreen(): React.JSX.Element {
   const {
     sortOrder,
@@ -229,8 +243,28 @@ export function SettingsScreen(): React.JSX.Element {
     setItemsPerPage,
     onlyAvailable,
     setOnlyAvailable,
+    remindersEnabled,
+    setRemindersEnabled,
     resetPreferences,
   } = usePreferences();
+
+  const {
+    permission,
+    pushToken,
+    projectId,
+    isPhysicalDevice,
+    isRegistering,
+    error: notificationError,
+    lastReceived,
+    reminders,
+    registerForPush,
+    refreshPermission,
+    openSystemSettings,
+    cancelReminder,
+    cancelAllReminders,
+  } = useNotifications();
+
+  const reminderList = Object.values(reminders);
 
   // Estado de UI (no persistente) para el dato sensible.
   const [isSaved, setIsSaved] = useState<boolean>(false);
@@ -337,6 +371,109 @@ export function SettingsScreen(): React.JSX.Element {
     );
   }, [resetPreferences]);
 
+  // Semana 12: al entrar a Ajustes se relee el permiso del sistema.
+  useEffect(() => {
+    void refreshPermission();
+  }, [refreshPermission]);
+
+  const handleRegisterPush = useCallback(async (): Promise<void> => {
+    const result = await registerForPush();
+
+    if (result.token) {
+      Alert.alert(
+        'Notificaciones activas',
+        'El Expo Push Token ya está disponible. Compártelo o pégalo en https://expo.dev/notifications para enviar un push de prueba.'
+      );
+      return;
+    }
+
+    if (result.error) {
+      Alert.alert('No se pudo activar el push', result.error);
+    }
+  }, [registerForPush]);
+
+  const handleShareToken = useCallback(async (): Promise<void> => {
+    if (!pushToken) {
+      return;
+    }
+
+    try {
+      await Share.share({
+        message: `Expo Push Token del Teatro Colón: ${pushToken}`,
+      });
+    } catch {
+      Alert.alert(
+        'No se pudo compartir',
+        'Mantén pulsado el token para copiarlo manualmente.'
+      );
+    }
+  }, [pushToken]);
+
+  const handleTestNotification = useCallback(async (): Promise<void> => {
+    const outcome = await scheduleTestNotification();
+
+    if (!outcome.ok) {
+      Alert.alert('No se pudo enviar el aviso', outcome.reason);
+    }
+  }, []);
+
+  const handleTestReminder = useCallback(async (): Promise<void> => {
+    const outcome = await scheduleTestReminder();
+
+    if (outcome.ok) {
+      Alert.alert(
+        'Prueba programada',
+        'El recordatorio llegará en 10 segundos. Mantén la app abierta para verlo en primer plano.'
+      );
+      return;
+    }
+
+    Alert.alert('No se pudo programar la prueba', outcome.reason);
+  }, []);
+
+  const handleToggleReminders = useCallback(
+    async (value: boolean): Promise<void> => {
+      setRemindersEnabled(value);
+
+      if (!value) {
+        const count = await cancelAllReminders();
+
+        if (count > 0) {
+          Alert.alert(
+            'Recordatorios desactivados',
+            `Se cancelaron ${count} aviso(s) programado(s) en el sistema.`
+          );
+        }
+      }
+    },
+    [cancelAllReminders, setRemindersEnabled]
+  );
+
+  const handleCancelReminder = useCallback(
+    async (itemId: string, playName: string): Promise<void> => {
+      const cancelled = await cancelReminder(itemId);
+
+      Alert.alert(
+        cancelled ? 'Recordatorio cancelado' : 'Recordatorio retirado',
+        cancelled
+          ? `Se canceló el aviso de "${playName}".`
+          : 'El aviso ya no estaba programado en el sistema; el registro local quedó limpio.'
+      );
+    },
+    [cancelReminder]
+  );
+
+  const handleCancelAll = useCallback(async (): Promise<void> => {
+    const count = await cancelAllReminders();
+
+    Alert.alert(
+      'Recordatorios cancelados',
+      count > 0
+        ? `Se cancelaron ${count} recordatorio(s) de función.`
+        : 'No había recordatorios activos.'
+    );
+  }, [cancelAllReminders]);
+
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <View style={styles.header}>
@@ -349,7 +486,7 @@ export function SettingsScreen(): React.JSX.Element {
           <Text style={styles.headerTitle}>Ajustes</Text>
         </View>
         <Text style={styles.headerSubtitle}>
-          Preferencias de la cartelera y seguridad del dispositivo
+          Preferencias, notificaciones y seguridad del dispositivo
         </Text>
       </View>
 
@@ -487,6 +624,216 @@ export function SettingsScreen(): React.JSX.Element {
             enmascarada.
           </Text>
         </View>
+
+        {/* ───────────── Notificaciones (Semana 12) ───────────── */}
+        <Text style={styles.sectionTitle}>Notificaciones</Text>
+        <Text style={styles.sectionHint}>
+          Recordatorios 2 horas antes de cada función y avisos de la
+          cartelera. El token identifica a este dispositivo ante Expo.
+        </Text>
+
+        <View style={styles.notificationCard}>
+          <View style={styles.secureHeader}>
+            <View style={styles.secureIcon}>
+              <Ionicons
+                name="notifications"
+                size={SIZES.iconMd}
+                color={COLORS.accent}
+              />
+            </View>
+
+            <View style={styles.secureHeaderText}>
+              <Text style={styles.rowLabel}>Avisos del Teatro Colón</Text>
+              <Text style={styles.rowDesc}>
+                {isPhysicalDevice
+                  ? 'Dispositivo físico · push y locales'
+                  : 'Emulador · solo notificaciones locales'}
+              </Text>
+            </View>
+
+            <Text
+              style={[
+                styles.statusBadge,
+                permission === 'granted'
+                  ? styles.statusSaved
+                  : permission === 'denied'
+                    ? styles.statusDenied
+                    : styles.statusEmpty,
+              ]}
+            >
+              {PERMISSION_LABELS[permission]}
+            </Text>
+          </View>
+
+          <SwitchRow
+            label="Recordatorios de función"
+            description="Habilita el aviso 2 h antes desde el detalle de cada obra."
+            value={remindersEnabled}
+            onValueChange={(value) => {
+              void handleToggleReminders(value);
+            }}
+          />
+
+          <View style={styles.tokenBox}>
+            <Text style={styles.maskedLabel}>Expo Push Token</Text>
+
+            {pushToken ? (
+              <Text selectable style={styles.tokenValue}>
+                {pushToken}
+              </Text>
+            ) : (
+              <Text style={styles.tokenFallback}>
+                {projectId
+                  ? 'Pulsa «Activar notificaciones» para solicitar el token al servidor de Expo.'
+                  : 'Falta el projectId de EAS. Ejecuta `npx eas init` o agrega `expo.extra.eas.projectId` en app.json.'}
+              </Text>
+            )}
+
+            <Text style={styles.tokenMeta}>
+              Proyecto: {projectId ?? 'sin configurar'}
+            </Text>
+          </View>
+
+          {!isPhysicalDevice ? (
+            <Text style={styles.secureNote}>
+              Los push tokens requieren un dispositivo físico con APNs o FCM.
+              En el emulador solo funcionan las notificaciones locales.
+            </Text>
+          ) : null}
+
+          {notificationError ? (
+            <Text style={styles.notificationError}>{notificationError}</Text>
+          ) : null}
+
+          <View style={styles.secureActions}>
+            <SecureAction
+              label={pushToken ? 'Actualizar token' : 'Activar notificaciones'}
+              icon="notifications-outline"
+              onPress={() => {
+                void handleRegisterPush();
+              }}
+              variant="primary"
+              disabled={isRegistering}
+            />
+
+            {pushToken ? (
+              <SecureAction
+                label="Compartir token"
+                icon="share-outline"
+                onPress={() => {
+                  void handleShareToken();
+                }}
+              />
+            ) : null}
+
+            {permission === 'denied' ? (
+              <SecureAction
+                label="Abrir ajustes"
+                icon="settings-outline"
+                onPress={() => {
+                  void openSystemSettings();
+                }}
+              />
+            ) : null}
+          </View>
+
+          <View style={styles.secureActions}>
+            <SecureAction
+              label="Probar aviso inmediato"
+              icon="flash-outline"
+              onPress={() => {
+                void handleTestNotification();
+              }}
+            />
+            <SecureAction
+              label="Probar recordatorio (10 s)"
+              icon="timer-outline"
+              onPress={() => {
+                void handleTestReminder();
+              }}
+            />
+          </View>
+
+          <Text style={styles.secureNote}>
+            Pega el token en https://expo.dev/notifications para enviar un push
+            real desde la Expo Push Tool.
+          </Text>
+        </View>
+
+        {lastReceived ? (
+          <View style={styles.infoBox}>
+            <Text style={styles.maskedLabel}>
+              Última notificación recibida
+            </Text>
+            <Text style={styles.infoLine}>
+              <Text style={styles.infoStrong}>{lastReceived.title}</Text>
+            </Text>
+            {lastReceived.body ? (
+              <Text style={styles.infoLine}>{lastReceived.body}</Text>
+            ) : null}
+            <Text style={styles.infoLine}>
+              {formatScheduleDate(lastReceived.receivedAt)}
+              {lastReceived.payload?.itemId
+                ? ` · obra ${lastReceived.payload.itemId}`
+                : ''}
+            </Text>
+          </View>
+        ) : null}
+
+        {reminderList.length > 0 ? (
+          <View style={styles.reminderCard}>
+            <View style={styles.reminderHeader}>
+              <Text style={styles.rowLabel}>
+                Recordatorios programados ({reminderList.length})
+              </Text>
+
+              <Pressable
+                onPress={() => {
+                  void handleCancelAll();
+                }}
+                accessibilityRole="button"
+                accessibilityLabel="Cancelar todos los recordatorios"
+              >
+                <Text style={styles.cancelAll}>Cancelar todos</Text>
+              </Pressable>
+            </View>
+
+            {reminderList.map((reminder) => (
+              <View key={reminder.itemId} style={styles.reminderRow}>
+                <View style={styles.reminderInfo}>
+                  <Text style={styles.reminderName} numberOfLines={1}>
+                    {reminder.playName}
+                  </Text>
+                  <Text style={styles.reminderDate}>
+                    {reminder.kind === 'show' ? '2 h antes · ' : 'Prueba · '}
+                    {formatScheduleDate(reminder.scheduledAt)}
+                  </Text>
+                </View>
+
+                <Pressable
+                  onPress={() => {
+                    void handleCancelReminder(
+                      reminder.itemId,
+                      reminder.playName
+                    );
+                  }}
+                  hitSlop={8}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Cancelar el recordatorio de ${reminder.playName}`}
+                  style={({ pressed }) =>
+                    pressed ? styles.reminderCancelPressed : undefined
+                  }
+                >
+                  <Ionicons
+                    name="close-circle-outline"
+                    size={SIZES.iconMd}
+                    color={COLORS.error}
+                  />
+                </Pressable>
+              </View>
+            ))}
+          </View>
+        ) : null}
 
         {/* ───────────── Resumen de storages ───────────── */}
         <Text style={styles.sectionTitle}>Almacenamiento de la app</Text>
@@ -689,6 +1036,87 @@ const styles = StyleSheet.create({
   statusEmpty: {
     color: COLORS.textMuted,
     backgroundColor: COLORS.surfaceAlt,
+  },
+  statusDenied: {
+    color: COLORS.error,
+    backgroundColor: '#3a1a1a',
+  },
+  notificationCard: {
+    backgroundColor: COLORS.surface,
+    borderRadius: RADIUS.lg,
+    borderWidth: 1,
+    borderColor: COLORS.accentDim,
+    padding: SPACING.md,
+    gap: SPACING.md,
+  },
+  tokenBox: {
+    backgroundColor: COLORS.surfaceAlt,
+    borderRadius: RADIUS.md,
+    padding: SPACING.md,
+    gap: SPACING.xs,
+  },
+  tokenValue: {
+    fontSize: TYPOGRAPHY.size.xs,
+    color: COLORS.accent,
+    letterSpacing: 0.5,
+    lineHeight: TYPOGRAPHY.lineHeight.base,
+  },
+  tokenFallback: {
+    fontSize: TYPOGRAPHY.size.xs,
+    color: COLORS.textSecondary,
+    lineHeight: TYPOGRAPHY.lineHeight.base,
+  },
+  tokenMeta: {
+    fontSize: TYPOGRAPHY.size.xs,
+    color: COLORS.textMuted,
+  },
+  notificationError: {
+    fontSize: TYPOGRAPHY.size.xs,
+    color: COLORS.error,
+    lineHeight: TYPOGRAPHY.lineHeight.base,
+  },
+  reminderCard: {
+    backgroundColor: COLORS.surface,
+    borderRadius: RADIUS.lg,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    padding: SPACING.md,
+    gap: SPACING.sm,
+  },
+  reminderHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: SPACING.sm,
+  },
+  cancelAll: {
+    fontSize: TYPOGRAPHY.size.xs,
+    fontWeight: TYPOGRAPHY.weight.bold,
+    color: COLORS.error,
+  },
+  reminderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.md,
+    paddingVertical: SPACING.xs,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.borderLight,
+  },
+  reminderInfo: {
+    flex: 1,
+  },
+  reminderName: {
+    fontSize: TYPOGRAPHY.size.sm,
+    fontWeight: TYPOGRAPHY.weight.semibold,
+    color: COLORS.textPrimary,
+  },
+  reminderDate: {
+    fontSize: TYPOGRAPHY.size.xs,
+    color: COLORS.textMuted,
+    marginTop: SPACING.xxs,
+  },
+  reminderCancelPressed: {
+    opacity: 0.6,
   },
   maskedBox: {
     backgroundColor: COLORS.surfaceAlt,

@@ -1,6 +1,6 @@
 // ============================================
-// APP ENTRY POINT — Semanas 05, 07, 08 y 10
-// GestureHandlerRootView + QueryClientProvider + restauración de sesión
+// APP ENTRY POINT — Semanas 05, 07, 08, 10 y 12
+// GestureHandlerRootView + QueryClientProvider + sesión + notificaciones
 // ============================================
 
 import 'react-native-gesture-handler';
@@ -17,10 +17,31 @@ import { NavigationContainer } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import * as Notifications from 'expo-notifications';
 
+import { NotificationCenter } from './src/components/NotificationCenter';
+import {
+  flushPendingNotificationNavigation,
+  navigationRef,
+} from './src/navigation/navigationRef';
 import { RootNavigator } from './src/navigation/RootNavigator';
 import { useAuthStore } from './src/stores/authStore';
 import { COLORS, SPACING, TYPOGRAPHY } from './src/theme';
+
+// ============================================
+// HANDLER GLOBAL DE NOTIFICACIONES — Semana 12
+// ============================================
+// Debe declararse a nivel de módulo, fuera del componente: expo-notifications
+// lo consulta antes de montar React para decidir cómo presentar el aviso.
+// Sin esto, las notificaciones no aparecen con la app en primer plano.
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowBanner: true,
+    shouldShowList: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
 
 // Una sola instancia por app: se crea fuera del componente para que no se
 // recree en cada render.
@@ -68,7 +89,10 @@ function BootstrapGate(): React.JSX.Element {
   }
 
   return (
-    <NavigationContainer>
+    <NavigationContainer
+      ref={navigationRef}
+      onReady={flushPendingNotificationNavigation}
+    >
       <RootNavigator />
     </NavigationContainer>
   );
@@ -80,6 +104,7 @@ export default function App(): React.JSX.Element {
       <QueryClientProvider client={queryClient}>
         <SafeAreaProvider>
           <BootstrapGate />
+          <NotificationCenter />
           <StatusBar style="light" />
         </SafeAreaProvider>
       </QueryClientProvider>

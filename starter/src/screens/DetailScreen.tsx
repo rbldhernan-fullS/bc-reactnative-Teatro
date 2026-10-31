@@ -1,16 +1,18 @@
 // ============================================
-// SCREEN: DetailScreen — Semanas 05, 09, 10 y 11
+// SCREEN: DetailScreen — Semanas 05, 09, 10, 11 y 12
 // Ficha técnica con entrada Reanimated, barra de ocupación, mapa de butacas,
-// afiche local (cámara/galería) y sede del teatro con ubicación.
+// afiche local (cámara/galería), sede del teatro y recordatorio de función.
 // ============================================
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
   Image,
   StyleSheet,
   Pressable,
+  Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -23,13 +25,17 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import type { DetailScreenProps } from '../navigation/types';
+import type { Item } from '../types';
 import { AnimatedButton } from '../components/AnimatedButton';
 import { PhotoPicker } from '../components/PhotoPicker';
 import { ProgressBar } from '../components/ProgressBar';
 import { ScreenState } from '../components/ScreenState';
 import { VenueCard } from '../components/VenueCard';
 import { usePlayById } from '../hooks/usePlays';
+import { useNotifications } from '../hooks/useNotifications';
+import { usePreferences } from '../hooks/usePreferences';
 import { getApiErrorMessage } from '../services/api';
+import { formatScheduleDate } from '../services/notifications';
 import { COLORS, TYPOGRAPHY, SPACING, RADIUS, SIZES } from '../theme';
 import { selectIsSaved, useSavedStore } from '../stores/savedStore';
 import { selectPoster, usePosterStore } from '../stores/posterStore';
@@ -76,6 +82,12 @@ export function DetailScreen(): React.JSX.Element {
 
   // Semana 11: el afiche local tiene prioridad sobre el de la API.
   const localPoster = usePosterStore(selectPoster(id));
+
+  // Semana 12: recordatorio local y preferencia que lo habilita.
+  const { reminders, scheduleReminder, cancelReminder } = useNotifications();
+  const { remindersEnabled } = usePreferences();
+  const [isScheduling, setIsScheduling] = useState(false);
+  const reminder = reminders[id];
 
   // Mantiene el título del header sincronizado después de editar la obra.
   useEffect(() => {
@@ -146,10 +158,67 @@ export function DetailScreen(): React.JSX.Element {
     synopsis,
   } = item;
 
+  // Alias con tipo estrecho: las funciones declaradas debajo (closures) no
+  // conservan el estrechamiento de `item` tras el return temprano.
+  const play: Item = item;
+
   const hallCapacity = getHallCapacity(hall);
   const occupiedSeats = Math.max(0, hallCapacity - availableSeats);
   const occupancy = getHallOccupancy(hall, availableSeats);
   const posterUri = localPoster ?? imageUri;
+
+  async function handleScheduleReminder(): Promise<void> {
+    setIsScheduling(true);
+
+    try {
+      const outcome = await scheduleReminder(play, 'show');
+
+      if (outcome.ok) {
+        Alert.alert(
+          'Recordatorio programado',
+          `Te avisaremos el ${formatScheduleDate(
+            outcome.scheduledAt
+          )}, 2 horas antes de "${name}".`
+        );
+        return;
+      }
+
+      Alert.alert('No se pudo programar', outcome.reason);
+    } finally {
+      setIsScheduling(false);
+    }
+  }
+
+  async function handleDemoReminder(): Promise<void> {
+    setIsScheduling(true);
+
+    try {
+      const outcome = await scheduleReminder(play, 'demo');
+
+      if (outcome.ok) {
+        Alert.alert(
+          'Prueba programada',
+          `El aviso de "${name}" llegará en 10 segundos. Mantén la app abierta para verlo en primer plano.`
+        );
+        return;
+      }
+
+      Alert.alert('No se pudo programar la prueba', outcome.reason);
+    } finally {
+      setIsScheduling(false);
+    }
+  }
+
+  async function handleCancelReminder(): Promise<void> {
+    const cancelled = await cancelReminder(id);
+
+    Alert.alert(
+      cancelled ? 'Recordatorio cancelado' : 'Recordatorio retirado',
+      cancelled
+        ? `Ya no recibirás el aviso de "${name}".`
+        : 'El aviso ya no estaba programado en el sistema; el registro local quedó limpio.'
+    );
+  }
 
   function handleBookingPress(): void {
     navigation.navigate('SeatMap', { id, name });
@@ -294,6 +363,123 @@ export function DetailScreen(): React.JSX.Element {
 
           {/* Semana 11: sede del teatro, ubicación y distancia */}
           <VenueCard hall={hall} />
+
+          {/* Semana 12: recordatorio local 2 h antes de la función */}
+          <View style={styles.section}>
+            <View style={styles.reminderHeader}>
+              <Text style={styles.sectionTitle}>Recordatorio de función</Text>
+
+              {reminder ? (
+                <View style={styles.reminderBadge}>
+                  <Ionicons
+                    name="notifications"
+                    size={12}
+                    color={COLORS.background}
+                  />
+                  <Text style={styles.reminderBadgeText}>Activo</Text>
+                </View>
+              ) : null}
+            </View>
+
+            <Text style={styles.reminderDescription}>
+              {reminder
+                ? `Aviso programado para el ${formatScheduleDate(
+                    reminder.scheduledAt
+                  )}${
+                    reminder.kind === 'demo'
+                      ? ' (prueba de 10 s).'
+                      : ', 2 horas antes de la función.'
+                  }`
+                : `Programa un aviso 2 horas antes de la función del ${date} a las ${time}.`}
+            </Text>
+
+            {!remindersEnabled ? (
+              <Text style={styles.reminderDisabled}>
+                Los recordatorios están desactivados en Ajustes.
+              </Text>
+            ) : null}
+
+            <View style={styles.reminderActions}>
+              {reminder ? (
+                <Pressable
+                  style={({ pressed }) => [
+                    styles.reminderAction,
+                    pressed && styles.reminderActionPressed,
+                  ]}
+                  onPress={() => {
+                    void handleCancelReminder();
+                  }}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Cancelar el recordatorio de ${name}`}
+                >
+                  <Ionicons
+                    name="notifications-off-outline"
+                    size={SIZES.iconSm}
+                    color={COLORS.accent}
+                  />
+                  <Text style={styles.reminderActionText}>
+                    Cancelar recordatorio
+                  </Text>
+                </Pressable>
+              ) : (
+                <Pressable
+                  style={({ pressed }) => [
+                    styles.reminderAction,
+                    pressed && styles.reminderActionPressed,
+                    (!remindersEnabled || isScheduling) &&
+                      styles.reminderActionDisabled,
+                  ]}
+                  onPress={() => {
+                    void handleScheduleReminder();
+                  }}
+                  disabled={!remindersEnabled || isScheduling}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Programar recordatorio 2 horas antes de ${name}`}
+                  accessibilityState={{
+                    disabled: !remindersEnabled || isScheduling,
+                  }}
+                >
+                  {isScheduling ? (
+                    <ActivityIndicator size="small" color={COLORS.accent} />
+                  ) : (
+                    <Ionicons
+                      name="notifications-outline"
+                      size={SIZES.iconSm}
+                      color={COLORS.accent}
+                    />
+                  )}
+                  <Text style={styles.reminderActionText}>
+                    Recordar 2 h antes
+                  </Text>
+                </Pressable>
+              )}
+
+              <Pressable
+                style={({ pressed }) => [
+                  styles.reminderAction,
+                  pressed && styles.reminderActionPressed,
+                  (!remindersEnabled || isScheduling) &&
+                    styles.reminderActionDisabled,
+                ]}
+                onPress={() => {
+                  void handleDemoReminder();
+                }}
+                disabled={!remindersEnabled || isScheduling}
+                accessibilityRole="button"
+                accessibilityLabel={`Probar un recordatorio de ${name} en 10 segundos`}
+                accessibilityState={{
+                  disabled: !remindersEnabled || isScheduling,
+                }}
+              >
+                <Ionicons
+                  name="timer-outline"
+                  size={SIZES.iconSm}
+                  color={COLORS.accent}
+                />
+                <Text style={styles.reminderActionText}>Probar en 10 s</Text>
+              </Pressable>
+            </View>
+          </View>
 
           {/* Sinopsis de la obra */}
           <View style={styles.section}>
@@ -559,6 +745,62 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: TYPOGRAPHY.size.md,
     fontWeight: TYPOGRAPHY.weight.bold,
+    color: COLORS.accent,
+  },
+  reminderHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: SPACING.sm,
+  },
+  reminderBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.xxs,
+    paddingHorizontal: SPACING.sm,
+    paddingVertical: SPACING.xxs,
+    borderRadius: RADIUS.full,
+    backgroundColor: COLORS.accent,
+  },
+  reminderBadgeText: {
+    fontSize: TYPOGRAPHY.size.xs,
+    fontWeight: TYPOGRAPHY.weight.bold,
+    color: COLORS.background,
+  },
+  reminderDescription: {
+    fontSize: TYPOGRAPHY.size.sm,
+    color: COLORS.textSecondary,
+    lineHeight: TYPOGRAPHY.lineHeight.base,
+  },
+  reminderDisabled: {
+    fontSize: TYPOGRAPHY.size.xs,
+    color: COLORS.warning,
+  },
+  reminderActions: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: SPACING.sm,
+  },
+  reminderAction: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.xs,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
+    borderRadius: RADIUS.full,
+    borderWidth: 1,
+    borderColor: COLORS.accent,
+    backgroundColor: COLORS.surfaceAlt,
+  },
+  reminderActionPressed: {
+    opacity: 0.75,
+  },
+  reminderActionDisabled: {
+    opacity: 0.5,
+  },
+  reminderActionText: {
+    fontSize: TYPOGRAPHY.size.xs,
+    fontWeight: TYPOGRAPHY.weight.semibold,
     color: COLORS.accent,
   },
   synopsisText: {

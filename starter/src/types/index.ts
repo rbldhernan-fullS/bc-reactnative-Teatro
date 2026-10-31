@@ -159,3 +159,49 @@ export interface JwtPayload {
   iat: number;
   exp: number;
 }
+
+// ============================================
+// Semana 12: notificaciones del Teatro
+// ============================================
+
+/** Pantalla a la que lleva el tap de una notificación. */
+export type NotificationScreen = 'HomeDetail' | 'HomeList' | 'Settings';
+
+/** Origen del aviso: cartelera, recordatorio de función o prueba. */
+export type NotificationKind = 'event' | 'reminder' | 'test';
+
+/**
+ * Datos que viajan en `content.data`. Se mantienen pequeños y serializables
+ * porque el sistema operativo los entrega como `Record<string, unknown>`.
+ */
+export interface NotificationPayload {
+  screen: NotificationScreen;
+  kind?: NotificationKind;
+  itemId?: string;
+  name?: string;
+}
+
+/** Tipo de recordatorio local programado para una obra. */
+export type ReminderKind = 'show' | 'demo';
+
+/** Recordatorio activo de una obra (se persiste en MMKV). */
+export interface ShowReminder {
+  itemId: string;
+  playName: string;
+  notificationId: string;
+  /** Marca de tiempo (ms) en la que el sistema dispara el aviso */
+  scheduledAt: number;
+  kind: ReminderKind;
+}
+
+/** Resultado tipado de programar una notificación local. */
+export type ScheduleOutcome =
+  | {
+      ok: true;
+      notificationId: string;
+      scheduledAt: number;
+    }
+  | {
+      ok: false;
+      reason: string;
+    };

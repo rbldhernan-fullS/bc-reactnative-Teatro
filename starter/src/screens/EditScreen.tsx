@@ -1,6 +1,6 @@
 // ============================================
-// SCREEN: EditScreen — Semana 06
-// Edición de una obra con defaultValues cargados desde la API
+// SCREEN: EditScreen — Semanas 06 y 12
+// Edición de una obra con defaultValues desde la API y aviso de actualización
 // ============================================
 
 import React, { useEffect } from 'react';
@@ -18,6 +18,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import { PlayForm } from '../components/PlayForm';
 import { ScreenState } from '../components/ScreenState';
+import { useNotifications } from '../hooks/useNotifications';
 import { usePlayById, useUpdatePlay } from '../hooks/usePlays';
 import {
   EMPTY_PLAY_FORM,
@@ -40,6 +41,7 @@ export function EditScreen(): React.JSX.Element {
 
   const { data: play, isLoading, isError, error, refetch } = usePlayById(id);
   const { mutateAsync: updatePlay, isPending, error: mutationError } = useUpdatePlay();
+  const { scheduleCartelera } = useNotifications();
 
   const {
     control,
@@ -61,7 +63,11 @@ export function EditScreen(): React.JSX.Element {
 
   async function onSubmit(values: PlayFormValues): Promise<void> {
     try {
-      await updatePlay(toUpdatePlayPayload(id, values));
+      const updated = await updatePlay(toUpdatePlayPayload(id, values));
+
+      // Semana 12: aviso inmediato de la ficha actualizada.
+      await scheduleCartelera(updated, 'updated');
+
       navigation.goBack();
     } catch {
       // El mensaje se muestra desde mutationError con getApiErrorMessage.

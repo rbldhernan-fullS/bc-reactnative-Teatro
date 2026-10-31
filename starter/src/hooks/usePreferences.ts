@@ -22,6 +22,7 @@ export const PREF_KEYS = {
   COMPACT_MODE: 'pref_compactMode',
   ITEMS_PER_PAGE: 'pref_itemsPerPage',
   ONLY_AVAILABLE: 'pref_onlyAvailable',
+  REMINDERS_ENABLED: 'pref_remindersEnabled',
 } as const;
 
 export const SORT_ORDERS = ['asc', 'desc'] as const;
@@ -35,11 +36,13 @@ export const DEFAULT_PREFERENCES = {
   compactMode: false,
   itemsPerPage: 12,
   onlyAvailable: false,
+  remindersEnabled: true,
 } as const satisfies {
   sortOrder: SortOrder;
   compactMode: boolean;
   itemsPerPage: ItemsPerPage;
   onlyAvailable: boolean;
+  remindersEnabled: boolean;
 };
 
 // ============================================
@@ -90,13 +93,24 @@ export function usePreferences() {
     PREF_KEYS.ONLY_AVAILABLE,
     storage
   );
+  const [storedRemindersEnabled, setStoredRemindersEnabled] = useMMKVBoolean(
+    PREF_KEYS.REMINDERS_ENABLED,
+    storage
+  );
 
   const resetPreferences = useCallback((): void => {
     setSortOrder(DEFAULT_PREFERENCES.sortOrder);
     setCompactMode(DEFAULT_PREFERENCES.compactMode);
     setItemsPerPage(DEFAULT_PREFERENCES.itemsPerPage);
     setOnlyAvailable(DEFAULT_PREFERENCES.onlyAvailable);
-  }, [setCompactMode, setItemsPerPage, setOnlyAvailable, setSortOrder]);
+    setStoredRemindersEnabled(DEFAULT_PREFERENCES.remindersEnabled);
+  }, [
+    setCompactMode,
+    setItemsPerPage,
+    setOnlyAvailable,
+    setSortOrder,
+    setStoredRemindersEnabled,
+  ]);
 
   return {
     sortOrder: normalizeSortOrder(storedSortOrder),
@@ -110,6 +124,11 @@ export function usePreferences() {
 
     onlyAvailable: storedOnlyAvailable ?? DEFAULT_PREFERENCES.onlyAvailable,
     setOnlyAvailable: (value: boolean): void => setOnlyAvailable(value),
+
+    remindersEnabled:
+      storedRemindersEnabled ?? DEFAULT_PREFERENCES.remindersEnabled,
+    setRemindersEnabled: (value: boolean): void =>
+      setStoredRemindersEnabled(value),
 
     resetPreferences,
   };

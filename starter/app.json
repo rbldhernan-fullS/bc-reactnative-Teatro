@@ -15,7 +15,12 @@
       "bundleIdentifier": "com.hernan.teatro"
     },
     "android": {
-      "package": "com.hernan.teatro"
+      "package": "com.hernan.teatro",
+      "permissions": [
+        "android.permission.POST_NOTIFICATIONS",
+        "android.permission.RECEIVE_BOOT_COMPLETED",
+        "android.permission.VIBRATE"
+      ]
     },
     "plugins": [
       "expo-status-bar",
@@ -39,6 +44,13 @@
         "expo-location",
         {
           "locationWhenInUsePermission": "El Teatro Colón usa tu ubicación para mostrarte la sede y la distancia al teatro."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "color": "#d4a24c",
+          "defaultChannel": "teatro-funciones"
         }
       ]
     ]
