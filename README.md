@@ -234,3 +234,15 @@ Flujo manual sugerido:
 4. Abrir el detalle y tocar el icono de edición del header.
 5. Cambiar el título o el precio, guardar y comprobar la actualización en detalle y lista.
 6. Revisar la persistencia en `api/db.json` y reiniciar la app.
+
+---
+
+## 🌐 Ejecutar en web
+
+```bash
+cd starter
+pnpm install
+pnpm web
+```
+
+La app también corre en el navegador con `react-native-web` y Metro.
