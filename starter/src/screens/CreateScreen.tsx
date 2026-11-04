@@ -1,8 +1,4 @@
-// ============================================
-// SCREEN: CreateScreen — Semana 05
-// Formulario básico para publicar una obra con useMutation
-// ============================================
-
+// ===== SEMANA 01 · INICIO =====
 import React, { useState } from 'react';
 import {
   ActivityIndicator,
@@ -15,10 +11,14 @@ import {
   TextInput,
   View,
 } from 'react-native';
+// ===== SEMANA 01 · FIN =====
+// ===== SEMANA 03 · INICIO =====
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
+// ===== SEMANA 03 · FIN =====
 
+// ===== SEMANA 05 · INICIO =====
 import { useCreatePlay } from '../hooks/usePlays';
 import { getApiErrorMessage } from '../services/api';
 import { COLORS, RADIUS, SIZES, SPACING, TYPOGRAPHY } from '../theme';
@@ -452,3 +452,4 @@ const styles = StyleSheet.create({
     fontWeight: TYPOGRAPHY.weight.semibold,
   },
 });
+// ===== SEMANA 05 · FIN =====
