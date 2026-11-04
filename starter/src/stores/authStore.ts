@@ -1,11 +1,10 @@
-// ============================================
-// STORE: authStore — Semana 08
-// Estado de sesión con Zustand + persist (solo user/isAuthenticated).
-// Los tokens viven en SecureStore y el access token se refleja en memoria.
-// ============================================
-
+// ===== SEMANA 07 · INICIO =====
 import AsyncStorage from '@react-native-async-storage/async-storage';
+// ===== SEMANA 07 · FIN =====
+// ===== SEMANA 04 · INICIO =====
 import { create } from 'zustand';
+// ===== SEMANA 04 · FIN =====
+// ===== SEMANA 08 · INICIO =====
 import { createJSONStorage, persist } from 'zustand/middleware';
 
 import {
@@ -29,53 +28,36 @@ import {
 import type { AuthUser, LoginCredentials, RegisterData } from '../types';
 
 export interface AuthState {
-  /** Perfil del miembro autenticado */
   user: AuthUser | null;
 
-  /**
-   * Copia en memoria del access token. NO se persiste con Zustand:
-   * la fuente de verdad es SecureStore.
-   */
   accessToken: string | null;
 
-  /** Bandera que decide entre AuthNavigator y AppNavigator */
   isAuthenticated: boolean;
 
-  /** Operación de login/registro/logout en curso */
   isLoading: boolean;
 
-  /** Restauración de la sesión al abrir la app */
   isBootstrapping: boolean;
 
-  /** Último error legible para mostrar en Login/Registro */
   error: string | null;
 
-  /** Autentica y guarda los tokens en SecureStore */
   login: (credentials: LoginCredentials) => Promise<void>;
 
-  /** Registro simulado: no autentica, la pantalla redirige al Login */
   register: (data: RegisterData) => Promise<void>;
 
-  /** Cierra sesión y elimina los tokens cifrados */
   logout: () => Promise<void>;
 
-  /** Renueva el access token usando el refresh token guardado */
   refreshTokens: () => Promise<void>;
 
-  /** Restaura la sesión persistida al iniciar la app */
   bootstrap: () => Promise<void>;
 
-  /** Limpia el error de la pantalla actual */
   clearError: () => void;
 }
 
-/** Solo estos campos sobreviven al cierre de la app (nunca los tokens). */
 type PersistedAuthState = Pick<AuthState, 'user' | 'isAuthenticated'>;
 
 export const useAuthStore = create<AuthState>()(
   persist(
     (set, get) => ({
-      // ─── Estado inicial ────────────────────────────────
       user: null,
       accessToken: null,
       isAuthenticated: false,
@@ -83,7 +65,6 @@ export const useAuthStore = create<AuthState>()(
       isBootstrapping: true,
       error: null,
 
-      // ─── login ─────────────────────────────────────────
       login: async (credentials: LoginCredentials): Promise<void> => {
         set({ isLoading: true, error: null });
 
@@ -112,7 +93,6 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
-      // ─── register (simulado) ───────────────────────────
       register: async (data: RegisterData): Promise<void> => {
         set({ isLoading: true, error: null });
 
@@ -129,15 +109,12 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
-      // ─── logout ────────────────────────────────────────
       logout: async (): Promise<void> => {
         set({ isLoading: true });
 
         try {
           await clearTokens();
-        } catch {
-          // Aunque SecureStore falle, la sesión en memoria debe cerrarse.
-        }
+        } catch {}
 
         set({
           user: null,
@@ -148,7 +125,6 @@ export const useAuthStore = create<AuthState>()(
         });
       },
 
-      // ─── refreshTokens ─────────────────────────────────
       refreshTokens: async (): Promise<void> => {
         set({ error: null });
 
@@ -162,7 +138,6 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
-      // ─── bootstrap ─────────────────────────────────────
       bootstrap: async (): Promise<void> => {
         set({ isBootstrapping: true });
 
@@ -191,11 +166,6 @@ export const useAuthStore = create<AuthState>()(
               error: null,
             });
           } catch {
-            /*
-             * Si el refresh falló, el interceptor ya borró los tokens.
-             * Si la red está caída, el refresh token sigue existiendo y
-             * conservamos el perfil persistido para no pedir re-login.
-             */
             const refreshToken = await getRefreshToken();
 
             if (!refreshToken) {
@@ -221,7 +191,6 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
-      // ─── clearError ────────────────────────────────────
       clearError: (): void => {
         set({ error: null });
       },
@@ -229,7 +198,6 @@ export const useAuthStore = create<AuthState>()(
     {
       name: 'teatro-auth',
       storage: createJSONStorage(() => AsyncStorage),
-      // Los tokens NO se persisten aquí: viven en SecureStore.
       partialize: (state): PersistedAuthState => ({
         user: state.user,
         isAuthenticated: state.isAuthenticated,
@@ -237,11 +205,6 @@ export const useAuthStore = create<AuthState>()(
     }
   )
 );
-
-// ============================================================
-// SINCRONIZACIÓN CON EL CLIENTE HTTP
-// Sin importar el store desde authClient evitamos ciclos de módulos.
-// ============================================================
 
 setTokenRefreshListener((tokens) => {
   useAuthStore.setState({ accessToken: tokens.accessToken });
@@ -256,3 +219,4 @@ setAuthFailureListener(() => {
     error: 'Tu sesión expiró. Inicia sesión de nuevo.',
   });
 });
+// ===== SEMANA 08 · FIN =====

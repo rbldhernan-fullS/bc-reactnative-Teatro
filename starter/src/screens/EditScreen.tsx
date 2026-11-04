@@ -1,8 +1,4 @@
-// ============================================
-// SCREEN: EditScreen — Semana 06
-// Edición de una obra con defaultValues cargados desde la API
-// ============================================
-
+// ===== SEMANA 01 · INICIO =====
 import React, { useEffect } from 'react';
 import {
   KeyboardAvoidingView,
@@ -11,8 +7,12 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
+// ===== SEMANA 01 · FIN =====
+// ===== SEMANA 03 · INICIO =====
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+// ===== SEMANA 03 · FIN =====
+// ===== SEMANA 06 · INICIO =====
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -52,7 +52,6 @@ export function EditScreen(): React.JSX.Element {
     mode: 'onBlur',
   });
 
-  // Carga los datos de la obra en el formulario cuando llega la respuesta.
   useEffect(() => {
     if (play) {
       reset(toPlayFormInput(play));
@@ -63,9 +62,7 @@ export function EditScreen(): React.JSX.Element {
     try {
       await updatePlay(toUpdatePlayPayload(id, values));
       navigation.goBack();
-    } catch {
-      // El mensaje se muestra desde mutationError con getApiErrorMessage.
-    }
+    } catch {}
   }
 
   if (isLoading) {
@@ -154,3 +151,4 @@ const styles = StyleSheet.create({
     paddingBottom: SPACING.xxxl,
   },
 });
+// ===== SEMANA 06 · FIN =====

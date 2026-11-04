@@ -1,8 +1,4 @@
-// ============================================
-// APP ENTRY POINT — Semanas 05, 07 y 08
-// QueryClientProvider + restauración de sesión + NavigationContainer
-// ============================================
-
+// ===== SEMANA 01 · INICIO =====
 import React, { useEffect } from 'react';
 import {
   ActivityIndicator,
@@ -10,17 +6,27 @@ import {
   Text,
   View,
 } from 'react-native';
+// ===== SEMANA 01 · FIN =====
+// ===== SEMANA 05 · INICIO =====
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+// ===== SEMANA 05 · FIN =====
+// ===== SEMANA 03 · INICIO =====
 import { NavigationContainer } from '@react-navigation/native';
+// ===== SEMANA 03 · FIN =====
+// ===== SEMANA 01 · INICIO =====
 import { StatusBar } from 'expo-status-bar';
+// ===== SEMANA 01 · FIN =====
+// ===== SEMANA 03 · INICIO =====
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { RootNavigator } from './src/navigation/RootNavigator';
+// ===== SEMANA 03 · FIN =====
+// ===== SEMANA 08 · INICIO =====
 import { useAuthStore } from './src/stores/authStore';
 import { COLORS, SPACING, TYPOGRAPHY } from './src/theme';
+// ===== SEMANA 08 · FIN =====
 
-// Una sola instancia por app: se crea fuera del componente para que no se
-// recree en cada render.
+// ===== SEMANA 05 · INICIO =====
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -30,18 +36,14 @@ const queryClient = new QueryClient({
     },
   },
 });
+// ===== SEMANA 05 · FIN =====
 
-/**
- * Espera la hidratación de Zustand y luego valida/restaura la sesión desde
- * SecureStore antes de montar la navegación. Evita el parpadeo Login → App.
- */
+// ===== SEMANA 08 · INICIO =====
 function BootstrapGate(): React.JSX.Element {
   const isBootstrapping = useAuthStore((state) => state.isBootstrapping);
   const bootstrap = useAuthStore((state) => state.bootstrap);
 
   useEffect(() => {
-    // Nos suscribimos primero para no perder la hidratación si terminó
-    // entre el render y la ejecución del efecto.
     const unsubscribe = useAuthStore.persist.onFinishHydration(() => {
       void bootstrap();
     });
@@ -70,18 +72,24 @@ function BootstrapGate(): React.JSX.Element {
     </NavigationContainer>
   );
 }
+// ===== SEMANA 08 · FIN =====
 
+// ===== SEMANA 01 · INICIO =====
 export default function App(): React.JSX.Element {
   return (
     <QueryClientProvider client={queryClient}>
       <SafeAreaProvider>
+        {/* ===== SEMANA 08 · INICIO ===== */}
         <BootstrapGate />
+        {/* ===== SEMANA 08 · FIN ===== */}
         <StatusBar style="light" />
       </SafeAreaProvider>
     </QueryClientProvider>
   );
 }
+// ===== SEMANA 01 · FIN =====
 
+// ===== SEMANA 08 · INICIO =====
 const styles = StyleSheet.create({
   splash: {
     flex: 1,
@@ -105,3 +113,4 @@ const styles = StyleSheet.create({
     color: COLORS.textSecondary,
   },
 });
+// ===== SEMANA 08 · FIN =====
