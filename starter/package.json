@@ -1,25 +1,25 @@
 {
-    "name":  "semana-01-proyecto",
-    "version":  "1.0.0",
-    "main":  "expo/AppEntry",
-    "scripts":  {
-                    "start":  "expo start",
-                    "android":  "expo start --android",
-                    "ios":  "expo start --ios",
-                    "web":  "expo start --web",
-                    "typecheck":  "tsc --noEmit"
-                },
-    "dependencies":  {
-                         "@expo/metro-runtime":  "57.0.17",
-                         "expo":  "57.0.31",
-                         "react":  "19.2.3",
-                         "react-dom":  "19.2.3",
-                         "react-native":  "0.86.3",
-                         "react-native-web":  "0.21.4"
-                     },
-    "devDependencies":  {
-                            "@babel/core":  "7.29.7",
-                            "@types/react":  "19.2.17",
-                            "typescript":  "6.0.3"
-                        }
+  "name": "semana-01-proyecto",
+  "version": "1.0.0",
+  "main": "expo/AppEntry",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@expo/metro-runtime": "57.0.17",
+    "expo": "57.0.31",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-native": "0.86.3",
+    "react-native-web": "0.21.4"
+  },
+  "devDependencies": {
+    "@babel/core": "7.29.7",
+    "@types/react": "19.2.17",
+    "typescript": "6.0.3"
+  }
 }
