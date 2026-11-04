@@ -16,6 +16,9 @@
     },
     "android": {
       "package": "com.hernan.teatro"
+    },
+    "web": {
+      "bundler": "metro"
     }
   }
 }

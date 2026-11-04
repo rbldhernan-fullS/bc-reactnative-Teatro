@@ -1,8 +1,4 @@
-// ============================================================
-// SCREEN: HomeScreen — Dominio Teatro
-// Pantalla principal con búsqueda en tiempo real y FlatList
-// ============================================================
-
+// ===== SEMANA 01 · INICIO =====
 import React, { useState, useMemo, useCallback, useRef } from 'react';
 import {
   View,
@@ -17,42 +13,41 @@ import {
   Pressable,
 } from 'react-native';
 import type { ListRenderItem } from 'react-native';
+// ===== SEMANA 01 · FIN =====
+// ===== SEMANA 02 · INICIO =====
 import type { Item } from '../types';
 import { ITEMS } from '../data/mockData';
+// ===== SEMANA 02 · FIN =====
+// ===== SEMANA 01 · INICIO =====
 import { ItemCard } from '../components/ItemCard';
+// ===== SEMANA 01 · FIN =====
+// ===== SEMANA 02 · INICIO =====
 import { COLORS, TYPOGRAPHY, SPACING, RADIUS } from '../theme';
 
 const DOMAIN_TITLE = 'Teatro Colón';
 const DOMAIN_SUBTITLE = 'Cartelera oficial de la temporada';
 
-/**
- * Normaliza un texto para búsquedas insensibles a mayúsculas y acentos.
- * Ej.: "Ópera" -> "opera".
- */
 function normalizeText(value: string): string {
   return value
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase();
 }
+// ===== SEMANA 02 · FIN =====
 
+// ===== SEMANA 01 · INICIO =====
 export function HomeScreen(): React.JSX.Element {
-  // Referencia para enfocar el input al hacer click en cualquier parte de la barra
+  // ===== SEMANA 02 · INICIO =====
   const searchInputRef = useRef<TextInput>(null);
 
-  // 1. Estado de búsqueda
   const [query, setQuery] = useState<string>('');
 
-  // 2. Estado de refresco (Pull-to-refresh)
   const [refreshing, setRefreshing] = useState<boolean>(false);
 
-  // Manejador de selección de obra
   const handleItemPress = useCallback((item: Item): void => {
     console.log('Obra seleccionada:', item.name);
   }, []);
 
-  // 3. Filtrado en tiempo real con useMemo
-  // Busca por título, director/compañía, género o sala (insensible a mayúsculas y acentos)
   const filteredItems = useMemo(() => {
     const cleanQuery = normalizeText(query.trim());
     if (!cleanQuery) {
@@ -66,7 +61,6 @@ export function HomeScreen(): React.JSX.Element {
     );
   }, [query]);
 
-  // Manejador de refresco simulado
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     setTimeout(() => {
@@ -74,19 +68,17 @@ export function HomeScreen(): React.JSX.Element {
     }, 800);
   }, []);
 
-  // 4. Render Item memorizado con useCallback
   const renderItem: ListRenderItem<Item> = useCallback(
     ({ item }) => <ItemCard item={item} onPress={handleItemPress} />,
     [handleItemPress],
   );
 
-  // 5. Separador entre elementos con useCallback
   const renderSeparator = useCallback(
     () => <View style={styles.separator} />,
     [],
   );
+  // ===== SEMANA 02 · FIN =====
 
-  // 6. Estado vacío memorizado con useCallback
   const renderEmpty = useCallback(() => {
     return (
       <View style={styles.emptyContainer}>
@@ -120,7 +112,6 @@ export function HomeScreen(): React.JSX.Element {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <View style={styles.container}>
-        {/* Header del Dominio Teatro */}
         <View style={styles.header}>
           <View style={styles.headerTitleRow}>
             <Text style={styles.theaterIcon}>🎭</Text>
@@ -129,7 +120,6 @@ export function HomeScreen(): React.JSX.Element {
           <Text style={styles.headerSubtitle}>{DOMAIN_SUBTITLE}</Text>
         </View>
 
-        {/* Barra de búsqueda (NO envuelta en TouchableWithoutFeedback para no matar el foco) */}
         <View style={styles.searchSection}>
           <Pressable
             style={styles.searchInputWrapper}
@@ -164,7 +154,6 @@ export function HomeScreen(): React.JSX.Element {
             )}
           </Pressable>
 
-          {/* Contador de resultados */}
           <View style={styles.resultsBar}>
             <Text style={styles.resultsCount}>
               {filteredItems.length}{' '}
@@ -176,7 +165,6 @@ export function HomeScreen(): React.JSX.Element {
           </View>
         </View>
 
-        {/* Área de Lista: el tap fuera cierra el teclado sin interferir con el input */}
         <TouchableWithoutFeedback
           onPress={Keyboard.dismiss}
           accessible={false}
@@ -345,3 +333,4 @@ const styles = StyleSheet.create({
     color: COLORS.accent,
   },
 });
+// ===== SEMANA 01 · FIN =====

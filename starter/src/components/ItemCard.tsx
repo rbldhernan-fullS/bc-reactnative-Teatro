@@ -1,13 +1,13 @@
-// ============================================
-// COMPONENT: ItemCard — Dominio Teatro
-// Tarjeta de obra teatral optimizada para listas
-// ============================================
-
+// ===== SEMANA 01 · INICIO =====
 import React from 'react';
 import { View, Text, Image, Pressable, StyleSheet } from 'react-native';
+// ===== SEMANA 01 · FIN =====
+// ===== SEMANA 02 · INICIO =====
 import type { Item } from '../types';
 import { COLORS, TYPOGRAPHY, SPACING, RADIUS, SIZES } from '../theme';
+// ===== SEMANA 02 · FIN =====
 
+// ===== SEMANA 01 · INICIO =====
 interface ItemCardProps {
   item: Item;
   onPress: (item: Item) => void;
@@ -27,54 +27,48 @@ export const ItemCard = React.memo(function ItemCard({
       accessibilityRole="button"
       accessibilityLabel={`Obra ${item.name}, género ${item.genre}, precio ${item.price} pesos`}
     >
-      {/* Afiche / Portada de la obra */}
+      {/* ===== SEMANA 02 · INICIO ===== */}
       <View style={styles.imageWrapper}>
         <Image
           source={{ uri: item.imageUri }}
           style={styles.cardImage}
           resizeMode="cover"
         />
-        {/* Chip flotante de género */}
         <View style={styles.genreBadge}>
           <Text style={styles.genreBadgeText}>{item.genre}</Text>
         </View>
 
-        {/* Chip flotante de calificación */}
         <View style={styles.ratingBadge}>
           <Text style={styles.ratingBadgeText}>★ {item.rating.toFixed(1)}</Text>
         </View>
       </View>
+      {/* ===== SEMANA 02 · FIN ===== */}
 
-      {/* Cuerpo informativo de la obra */}
       <View style={styles.cardBody}>
-        {/* Título de la obra */}
+        {/* ===== SEMANA 02 · INICIO ===== */}
         <Text style={styles.cardTitle} numberOfLines={1}>
           {item.name}
         </Text>
 
-        {/* Director o compañía */}
         <Text style={styles.cardSubtitle} numberOfLines={1}>
           {item.subtitle}
         </Text>
 
-        {/* Sala y duración */}
         <View style={styles.metaRow}>
           <Text style={styles.metaText}>🏛 {item.hall}</Text>
           <Text style={styles.metaDot}>•</Text>
           <Text style={styles.metaText}>⏳ {item.duration}</Text>
         </View>
 
-        {/* Fecha y hora de función */}
         <View style={styles.metaRow}>
           <Text style={styles.metaText}>📅 {item.date}</Text>
           <Text style={styles.metaDot}>•</Text>
           <Text style={styles.metaText}>🕒 {item.time}</Text>
         </View>
 
-        {/* Separador sutil */}
         <View style={styles.divider} />
+        {/* ===== SEMANA 02 · FIN ===== */}
 
-        {/* Pie de tarjeta: Butacas y Precio */}
         <View style={styles.cardFooter}>
           <View style={styles.seatsContainer}>
             <Text style={styles.seatsLabel}>Disponibles</Text>
@@ -213,3 +207,4 @@ const styles = StyleSheet.create({
     color: COLORS.accent,
   },
 });
+// ===== SEMANA 01 · FIN =====

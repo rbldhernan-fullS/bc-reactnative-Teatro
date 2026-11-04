@@ -3,3 +3,12 @@ node_modules/
 dist/
 web-build/
 *.log
+
+# Proyectos nativos generados por `expo prebuild` (Continuous Native Generation)
+android/
+ios/
+
+# Variables de entorno locales (solo se versiona .env.example)
+.env
+.env.local
+.env.*.local

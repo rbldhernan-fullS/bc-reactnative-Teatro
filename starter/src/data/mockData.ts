@@ -1,10 +1,8 @@
-// ============================================
-// MOCK DATA — Semana 02: Dominio Teatro
-// 12 obras en cartelera con datos detallados del teatro
-// ============================================
-
+// ===== SEMANA 02 · INICIO =====
 import type { Item } from '../types';
+// ===== SEMANA 02 · FIN =====
 
+// ===== SEMANA 01 · INICIO =====
 export const ITEMS: Item[] = [
   {
     id: '1',
@@ -175,6 +173,8 @@ export const ITEMS: Item[] = [
     rating: 4.9,
   },
 ];
+// ===== SEMANA 01 · FIN =====
 
-// Alias para compatibilidad con implementaciones previas
+// ===== SEMANA 02 · INICIO =====
 export const MOCK_ITEMS = ITEMS;
+// ===== SEMANA 02 · FIN =====
