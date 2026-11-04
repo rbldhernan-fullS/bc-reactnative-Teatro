@@ -1,8 +1,4 @@
-// ============================================
-// SCREEN: FavoritesScreen — Dominio Teatro
-// Segunda pestaña: Obras teatrales destacadas y favoritas
-// ============================================
-
+// ===== SEMANA 01 · INICIO =====
 import React, { useCallback } from 'react';
 import {
   View,
@@ -13,6 +9,8 @@ import {
   StyleSheet,
 } from 'react-native';
 import type { ListRenderItem } from 'react-native';
+// ===== SEMANA 01 · FIN =====
+// ===== SEMANA 03 · INICIO =====
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { FAVORITES } from '../data/mockData';
@@ -105,7 +103,6 @@ export function FavoritesScreen(): React.JSX.Element {
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <View style={styles.container}>
-        {/* Header de la pestaña Favoritos */}
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Obras Favoritas</Text>
           <Text style={styles.headerSubtitle}>
@@ -113,7 +110,6 @@ export function FavoritesScreen(): React.JSX.Element {
           </Text>
         </View>
 
-        {/* Lista de Favoritos */}
         <FlatList
           data={FAVORITES}
           keyExtractor={(item) => item.id}
@@ -270,3 +266,4 @@ const styles = StyleSheet.create({
     lineHeight: TYPOGRAPHY.lineHeight.base,
   },
 });
+// ===== SEMANA 03 · FIN =====

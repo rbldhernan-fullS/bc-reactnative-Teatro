@@ -1,9 +1,7 @@
-// ============================================
-// NAVIGATION: RootNavigator — Dominio Teatro
-// Tab Navigator raíz con Stack Navigator anidado
-// ============================================
-
+// ===== SEMANA 01 · INICIO =====
 import React from 'react';
+// ===== SEMANA 01 · FIN =====
+// ===== SEMANA 03 · INICIO =====
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -15,9 +13,6 @@ import { HomeScreen } from '../screens/HomeScreen';
 import { COLORS, TYPOGRAPHY, SIZES } from '../theme';
 import type { HomeStackParamList, RootTabParamList } from './types';
 
-// ============================================
-// 1. STACK NAVIGATOR ANIDADO (Pestaña Cartelera)
-// ============================================
 const HomeStack = createNativeStackNavigator<HomeStackParamList>();
 
 function HomeStackNavigator(): React.JSX.Element {
@@ -36,7 +31,6 @@ function HomeStackNavigator(): React.JSX.Element {
         headerShadowVisible: false,
       }}
     >
-      {/* Lista de obras en cartelera */}
       <HomeStack.Screen
         name="HomeList"
         component={HomeScreen}
@@ -45,7 +39,6 @@ function HomeStackNavigator(): React.JSX.Element {
         }}
       />
 
-      {/* Detalle de la obra seleccionada con título dinámico */}
       <HomeStack.Screen
         name="HomeDetail"
         component={DetailScreen}
@@ -59,9 +52,6 @@ function HomeStackNavigator(): React.JSX.Element {
   );
 }
 
-// ============================================
-// 2. TAB NAVIGATOR RAÍZ
-// ============================================
 const Tab = createBottomTabNavigator<RootTabParamList>();
 
 export function RootNavigator(): React.JSX.Element {
@@ -98,7 +88,6 @@ export function RootNavigator(): React.JSX.Element {
         },
       })}
     >
-      {/* Pestaña 1: Cartelera (con Stack anidado para navegar a detalles) */}
       <Tab.Screen
         name="Home"
         component={HomeStackNavigator}
@@ -107,7 +96,6 @@ export function RootNavigator(): React.JSX.Element {
         }}
       />
 
-      {/* Pestaña 2: Obras Favoritas */}
       <Tab.Screen
         name="Favorites"
         component={FavoritesScreen}
@@ -118,3 +106,4 @@ export function RootNavigator(): React.JSX.Element {
     </Tab.Navigator>
   );
 }
+// ===== SEMANA 03 · FIN =====

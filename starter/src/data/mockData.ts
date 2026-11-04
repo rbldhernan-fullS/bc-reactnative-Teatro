@@ -1,10 +1,8 @@
-// ============================================
-// MOCK DATA — Semana 03: Dominio Teatro
-// 12 obras en cartelera con datos detallados y lista de favoritos
-// ============================================
-
+// ===== SEMANA 02 · INICIO =====
 import type { Item } from '../types';
+// ===== SEMANA 02 · FIN =====
 
+// ===== SEMANA 01 · INICIO =====
 export const ITEMS: Item[] = [
   {
     id: '1',
@@ -199,10 +197,12 @@ export const ITEMS: Item[] = [
       'Una hermosa adaptación teatral para toda la familia del clásico de Saint-Exupéry, con títeres gigantes, música en vivo y una profunda reflexión sobre lo esencial que es invisible a los ojos.',
   },
 ];
+// ===== SEMANA 01 · FIN =====
 
-// Obras favoritas guardadas por el usuario (mínimo 3 según la rúbrica)
+// ===== SEMANA 03 · INICIO =====
 const FAVORITE_IDS = ['3', '1', '6', '8'];
 
 export const FAVORITES: Item[] = FAVORITE_IDS.map((id) =>
   ITEMS.find((item) => item.id === id)
 ).filter((item): item is Item => item !== undefined);
+// ===== SEMANA 03 · FIN =====

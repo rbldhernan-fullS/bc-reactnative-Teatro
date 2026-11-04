@@ -1,8 +1,4 @@
-// ============================================
-// SCREEN: DetailScreen — Dominio Teatro
-// Ficha técnica completa y detalles de la obra teatral
-// ============================================
-
+// ===== SEMANA 01 · INICIO =====
 import React from 'react';
 import {
   View,
@@ -14,6 +10,8 @@ import {
   Alert,
   Platform,
 } from 'react-native';
+// ===== SEMANA 01 · FIN =====
+// ===== SEMANA 03 · INICIO =====
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { DetailScreenProps } from '../navigation/types';
@@ -90,7 +88,6 @@ export function DetailScreen(): React.JSX.Element {
         ]}
         showsVerticalScrollIndicator={false}
       >
-        {/* Banner principal / Afiche */}
         <View style={styles.imageContainer}>
           <Image
             source={{ uri: imageUri }}
@@ -99,7 +96,6 @@ export function DetailScreen(): React.JSX.Element {
           />
           <View style={styles.imageOverlay} />
 
-          {/* Badges superiores sobre la imagen */}
           <View style={styles.badgesRow}>
             <View style={styles.genreBadge}>
               <Text style={styles.genreBadgeText}>{genre}</Text>
@@ -110,12 +106,10 @@ export function DetailScreen(): React.JSX.Element {
           </View>
         </View>
 
-        {/* Información Principal */}
         <View style={styles.body}>
           <Text style={styles.title}>{name}</Text>
           <Text style={styles.subtitle}>{subtitle}</Text>
 
-          {/* Barra de metadatos rápidos */}
           <View style={styles.metaGrid}>
             <View style={styles.metaCard}>
               <Text style={styles.metaIcon}>🏛</Text>
@@ -144,7 +138,6 @@ export function DetailScreen(): React.JSX.Element {
             </View>
           </View>
 
-          {/* Disponibilidad de butacas */}
           <View style={styles.availabilityBanner}>
             <Text style={styles.availabilityIcon}>🎭</Text>
             <View style={styles.availabilityTextWrapper}>
@@ -159,13 +152,11 @@ export function DetailScreen(): React.JSX.Element {
             </View>
           </View>
 
-          {/* Sinopsis de la obra */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Sinopsis Argumental</Text>
             <Text style={styles.synopsisText}>{synopsis}</Text>
           </View>
 
-          {/* Ficha Técnica Teatral */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Ficha Artística</Text>
             <View style={styles.specRow}>
@@ -190,7 +181,6 @@ export function DetailScreen(): React.JSX.Element {
         </View>
       </ScrollView>
 
-      {/* Barra de acción inferior fija */}
       <View
         style={[
           styles.bottomBar,
@@ -451,3 +441,4 @@ const styles = StyleSheet.create({
     fontWeight: TYPOGRAPHY.weight.bold,
   },
 });
+// ===== SEMANA 03 · FIN =====
