@@ -110,7 +110,7 @@ git checkout -- api/db.json
 | Tecnología | Versión | Propósito |
 |---|---|---|
 | React Native | 0.86.3 | Framework móvil |
-| Expo SDK | 57 | Runtime y tooling |
+| Expo SDK | 57.0.31 | Runtime y tooling |
 | React | 19.2.3 | Componentes |
 | TypeScript | 6.0.3 | Tipado estricto (sin `any`) |
 | TanStack Query | 5.105 | Estado del servidor y caché |
