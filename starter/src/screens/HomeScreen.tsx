@@ -1,8 +1,4 @@
-// ============================================================
-// SCREEN: HomeScreen — Semana 05: Networking
-// Cartelera cargada desde la API con estados de red y refresco
-// ============================================================
-
+// ===== SEMANA 01 · INICIO =====
 import React, { useState, useMemo, useCallback, useRef } from 'react';
 import {
   View,
@@ -17,56 +13,72 @@ import {
   Pressable,
 } from 'react-native';
 import type { ListRenderItem } from 'react-native';
+// ===== SEMANA 01 · FIN =====
+// ===== SEMANA 03 · INICIO =====
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
+// ===== SEMANA 03 · FIN =====
+// ===== SEMANA 05 · INICIO =====
 import type { Item } from '../types';
 import { ItemCard } from '../components/ItemCard';
 import { ScreenState } from '../components/ScreenState';
 import { usePlays } from '../hooks/usePlays';
+// ===== SEMANA 05 · FIN =====
+// ===== SEMANA 04 · INICIO =====
 import { getApiErrorMessage } from '../services/api';
+// ===== SEMANA 04 · FIN =====
+// ===== SEMANA 05 · INICIO =====
 import { useSavedStore } from '../stores/savedStore';
+// ===== SEMANA 05 · FIN =====
+// ===== SEMANA 04 · INICIO =====
 import { COLORS, TYPOGRAPHY, SPACING, RADIUS, SIZES } from '../theme';
 import type { HomeStackParamList } from '../navigation/types';
+// ===== SEMANA 04 · FIN =====
 
+// ===== SEMANA 03 · INICIO =====
 type HomeScreenNavProp = NativeStackNavigationProp<HomeStackParamList, 'HomeList'>;
+// ===== SEMANA 03 · FIN =====
 
+// ===== SEMANA 04 · INICIO =====
 const DOMAIN_TITLE = 'Teatro Colón';
 const DOMAIN_SUBTITLE = 'Cartelera oficial de la temporada';
 
-/**
- * Normaliza un texto para búsquedas insensibles a mayúsculas y acentos.
- * Ej.: "Ópera" -> "opera".
- */
 function normalizeText(value: string): string {
   return value
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase();
 }
+// ===== SEMANA 04 · FIN =====
 
+// ===== SEMANA 01 · INICIO =====
 export function HomeScreen(): React.JSX.Element {
+  // ===== SEMANA 03 · INICIO =====
   const navigation = useNavigation<HomeScreenNavProp>();
+  // ===== SEMANA 03 · FIN =====
 
-  // Estado del servidor: TanStack Query es la única fuente de las obras.
+  // ===== SEMANA 05 · INICIO =====
   const { data, isLoading, isError, error, refetch, isFetching } = usePlays();
 
-  // Estado de UI: solo los ids guardados viven en Zustand.
   const savedIds = useSavedStore((state) => state.savedIds);
   const toggleSaved = useSavedStore((state) => state.toggleSaved);
 
   const savedIdSet = useMemo(() => new Set(savedIds), [savedIds]);
 
-  // Referencia para enfocar el input al hacer click en cualquier parte de la barra
   const searchInputRef = useRef<TextInput>(null);
+  // ===== SEMANA 05 · FIN =====
 
-  // 1. Estado de búsqueda
+  // ===== SEMANA 04 · INICIO =====
   const [query, setQuery] = useState<string>('');
+  // ===== SEMANA 04 · FIN =====
 
+  // ===== SEMANA 05 · INICIO =====
   const plays = useMemo(() => data ?? [], [data]);
+  // ===== SEMANA 05 · FIN =====
 
-  // Manejador de selección de obra con navegación al detalle tipada
+  // ===== SEMANA 03 · INICIO =====
   const handleItemPress = useCallback(
     (item: Item): void => {
       navigation.navigate('HomeDetail', {
@@ -76,35 +88,43 @@ export function HomeScreen(): React.JSX.Element {
     },
     [navigation]
   );
+  // ===== SEMANA 03 · FIN =====
 
-  // Guarda o quita la obra usando únicamente su identificador.
+  // ===== SEMANA 05 · INICIO =====
   const handleToggleSave = useCallback(
     (item: Item): void => {
       toggleSaved(item.id);
     },
     [toggleSaved]
   );
+  // ===== SEMANA 05 · FIN =====
 
-  // 2. Filtrado en tiempo real con useMemo
+  // ===== SEMANA 02 · INICIO =====
   const filteredItems = useMemo(() => {
+    // ===== SEMANA 04 · INICIO =====
     const cleanQuery = normalizeText(query.trim());
+    // ===== SEMANA 04 · FIN =====
     if (!cleanQuery) {
       return plays;
     }
 
+    // ===== SEMANA 04 · INICIO =====
     return plays.filter((item) =>
       [item.name, item.subtitle, item.genre, item.hall].some((field) =>
         normalizeText(field).includes(cleanQuery)
       )
     );
+    // ===== SEMANA 04 · FIN =====
   }, [plays, query]);
+  // ===== SEMANA 02 · FIN =====
 
-  // 3. Pull-to-refresh delegado a TanStack Query
+  // ===== SEMANA 05 · INICIO =====
   const handleRefresh = useCallback((): void => {
     void refetch();
   }, [refetch]);
+  // ===== SEMANA 05 · FIN =====
 
-  // 4. Render Item memorizado con useCallback
+  // ===== SEMANA 02 · INICIO =====
   const renderItem: ListRenderItem<Item> = useCallback(
     ({ item }) => (
       <ItemCard
@@ -117,14 +137,14 @@ export function HomeScreen(): React.JSX.Element {
     [handleItemPress, savedIdSet, handleToggleSave]
   );
 
-  // 5. Separador entre elementos con useCallback
   const renderSeparator = useCallback(
     () => <View style={styles.separator} />,
     []
   );
+  // ===== SEMANA 02 · FIN =====
 
-  // 6. Estado vacío: distingue cartelera vacía de búsqueda sin resultados
   const renderEmpty = useCallback(() => {
+    // ===== SEMANA 05 · INICIO =====
     if (plays.length === 0) {
       return (
         <ScreenState
@@ -136,15 +156,19 @@ export function HomeScreen(): React.JSX.Element {
         />
       );
     }
+    // ===== SEMANA 05 · FIN =====
 
     return (
       <View style={styles.emptyContainer}>
+        {/* ===== SEMANA 02 · INICIO ===== */}
         <Text style={styles.emptyIcon}>🎭</Text>
         <Text style={styles.emptyTitle}>Sin obras encontradas</Text>
         <Text style={styles.emptySubtitle}>
           No hay funciones que coincidan con "{query}". Prueba buscando por otro
           título, director o género teatral.
         </Text>
+        {/* ===== SEMANA 02 · FIN ===== */}
+        {/* ===== SEMANA 05 · INICIO ===== */}
         <Pressable
           style={({ pressed }) => [
             styles.clearFilterButton,
@@ -157,10 +181,12 @@ export function HomeScreen(): React.JSX.Element {
         >
           <Text style={styles.clearFilterButtonText}>Limpiar búsqueda</Text>
         </Pressable>
+        {/* ===== SEMANA 05 · FIN ===== */}
       </View>
     );
   }, [navigation, plays.length, query]);
 
+  // ===== SEMANA 05 · INICIO =====
   if (isLoading) {
     return (
       <SafeAreaView style={styles.safeArea} edges={['top']}>
@@ -186,6 +212,7 @@ export function HomeScreen(): React.JSX.Element {
       </SafeAreaView>
     );
   }
+  // ===== SEMANA 05 · FIN =====
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
@@ -194,7 +221,6 @@ export function HomeScreen(): React.JSX.Element {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         <View style={styles.container}>
-          {/* Header del Dominio Teatro */}
           <View style={styles.header}>
             <View style={styles.headerTitleRow}>
               <View style={styles.headerTextBlock}>
@@ -224,7 +250,6 @@ export function HomeScreen(): React.JSX.Element {
             </View>
           </View>
 
-          {/* Barra de búsqueda */}
           <View style={styles.searchSection}>
             <Pressable
               style={styles.searchInputWrapper}
@@ -259,7 +284,6 @@ export function HomeScreen(): React.JSX.Element {
               )}
             </Pressable>
 
-            {/* Contador de resultados */}
             <View style={styles.resultsBar}>
               <Text style={styles.resultsCount}>
                 {filteredItems.length}{' '}
@@ -271,7 +295,6 @@ export function HomeScreen(): React.JSX.Element {
             </View>
           </View>
 
-          {/* Área de Lista con dismiss de teclado al tocar fuera */}
           <TouchableWithoutFeedback
             onPress={Keyboard.dismiss}
             accessible={false}
@@ -471,3 +494,4 @@ const styles = StyleSheet.create({
     color: COLORS.accent,
   },
 });
+// ===== SEMANA 01 · FIN =====

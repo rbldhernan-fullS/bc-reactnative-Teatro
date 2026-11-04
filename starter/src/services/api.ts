@@ -1,20 +1,14 @@
-// ============================================
-// API CLIENT — Semana 05: Networking con Axios
-// Instancia centralizada, detección del host de desarrollo y errores legibles
-// ============================================
-
+// ===== SEMANA 05 · INICIO =====
 import axios from 'axios';
 import Constants from 'expo-constants';
+// ===== SEMANA 05 · FIN =====
+// ===== SEMANA 01 · INICIO =====
 import { Platform } from 'react-native';
+// ===== SEMANA 01 · FIN =====
 
+// ===== SEMANA 05 · INICIO =====
 const API_PORT = 3001;
 
-/**
- * En Expo Go el celular no puede resolver `localhost`: ese alias apunta al
- * propio dispositivo. `Constants.expoConfig.hostUri` contiene la IP del equipo
- * que ejecuta Metro (ej. "192.168.1.50:8081"), así que reutilizamos ese host
- * para llegar a json-server en la misma máquina.
- */
 function resolveDevHost(): string {
   const hostUri = Constants.expoConfig?.hostUri;
   const host = hostUri?.split(':')[0];
@@ -23,7 +17,6 @@ function resolveDevHost(): string {
     return host;
   }
 
-  // Fallback para emuladores sin hostUri disponible.
   return Platform.OS === 'android' ? '10.0.2.2' : 'localhost';
 }
 
@@ -43,9 +36,6 @@ export const apiClient = axios.create({
   },
 });
 
-// ============================================================
-// INTERCEPTOR DE RESPUESTA — trazabilidad en desarrollo
-// ============================================================
 apiClient.interceptors.response.use(
   (response) => response,
   (error: unknown) => {
@@ -62,10 +52,6 @@ apiClient.interceptors.response.use(
   }
 );
 
-/**
- * Traduce cualquier fallo de red a un mensaje accionable en español.
- * Se usa en las pantallas de error para no exponer detalles técnicos.
- */
 export function getApiErrorMessage(error: unknown): string {
   if (axios.isAxiosError(error)) {
     if (error.code === 'ECONNABORTED') {
@@ -89,3 +75,4 @@ export function getApiErrorMessage(error: unknown): string {
 
   return 'Ocurrió un error inesperado al consultar la cartelera.';
 }
+// ===== SEMANA 05 · FIN =====

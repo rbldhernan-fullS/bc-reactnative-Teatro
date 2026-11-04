@@ -1,27 +1,34 @@
-// ============================================
-// NAVIGATION: RootNavigator — Semana 06: Formularios
-// Tab Navigator raíz con Stack anidado, badge y rutas de creación/edición
-// ============================================
-
+// ===== SEMANA 01 · INICIO =====
 import React from 'react';
 import { Pressable } from 'react-native';
+// ===== SEMANA 01 · FIN =====
+// ===== SEMANA 03 · INICIO =====
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+// ===== SEMANA 03 · FIN =====
 
+// ===== SEMANA 05 · INICIO =====
 import { DetailScreen } from '../screens/DetailScreen';
+// ===== SEMANA 05 · FIN =====
+// ===== SEMANA 04 · INICIO =====
 import { SavedScreen } from '../screens/SavedScreen';
+// ===== SEMANA 04 · FIN =====
+// ===== SEMANA 05 · INICIO =====
 import { HomeScreen } from '../screens/HomeScreen';
 import { CreateScreen } from '../screens/CreateScreen';
+// ===== SEMANA 05 · FIN =====
+// ===== SEMANA 06 · INICIO =====
 import { EditScreen } from '../screens/EditScreen';
+// ===== SEMANA 06 · FIN =====
+// ===== SEMANA 04 · INICIO =====
 import { COLORS, TYPOGRAPHY, SIZES } from '../theme';
 import { selectSavedCount, useSavedStore } from '../stores/savedStore';
+// ===== SEMANA 04 · FIN =====
+// ===== SEMANA 03 · INICIO =====
 import type { HomeStackParamList, RootTabParamList } from './types';
 
-// ============================================
-// 1. STACK NAVIGATOR ANIDADO (Pestaña Cartelera)
-// ============================================
 const HomeStack = createNativeStackNavigator<HomeStackParamList>();
 
 function HomeStackNavigator(): React.JSX.Element {
@@ -40,7 +47,6 @@ function HomeStackNavigator(): React.JSX.Element {
         headerShadowVisible: false,
       }}
     >
-      {/* Lista de obras en cartelera */}
       <HomeStack.Screen
         name="HomeList"
         component={HomeScreen}
@@ -49,7 +55,6 @@ function HomeStackNavigator(): React.JSX.Element {
         }}
       />
 
-      {/* Detalle de la obra seleccionada con título dinámico */}
       <HomeStack.Screen
         name="HomeDetail"
         component={DetailScreen}
@@ -75,7 +80,7 @@ function HomeStackNavigator(): React.JSX.Element {
         })}
       />
 
-      {/* Formulario de creación de una obra nueva */}
+      {/* ===== SEMANA 05 · INICIO ===== */}
       <HomeStack.Screen
         name="Create"
         component={CreateScreen}
@@ -85,8 +90,9 @@ function HomeStackNavigator(): React.JSX.Element {
           presentation: 'modal',
         }}
       />
+      {/* ===== SEMANA 05 · FIN ===== */}
 
-      {/* Formulario de edición con defaultValues desde la API */}
+      {/* ===== SEMANA 06 · INICIO ===== */}
       <HomeStack.Screen
         name="Edit"
         component={EditScreen}
@@ -95,20 +101,19 @@ function HomeStackNavigator(): React.JSX.Element {
           headerBackTitle: 'Detalle',
         }}
       />
+      {/* ===== SEMANA 06 · FIN ===== */}
     </HomeStack.Navigator>
   );
 }
 
-// ============================================
-// 2. TAB NAVIGATOR RAÍZ
-// ============================================
 const Tab = createBottomTabNavigator<RootTabParamList>();
 
 export function RootNavigator(): React.JSX.Element {
+  // ===== SEMANA 04 · INICIO =====
   const insets = useSafeAreaInsets();
 
-  // Selector: el navigator solo se vuelve a renderizar si cambia el conteo.
   const savedCount = useSavedStore(selectSavedCount);
+  // ===== SEMANA 04 · FIN =====
 
   return (
     <Tab.Navigator
@@ -141,7 +146,6 @@ export function RootNavigator(): React.JSX.Element {
         },
       })}
     >
-      {/* Pestaña 1: Cartelera (con Stack anidado para navegar a detalles) */}
       <Tab.Screen
         name="Home"
         component={HomeStackNavigator}
@@ -150,7 +154,6 @@ export function RootNavigator(): React.JSX.Element {
         }}
       />
 
-      {/* Pestaña 2: Obras Guardadas (conteo en vivo desde Zustand) */}
       <Tab.Screen
         name="Saved"
         component={SavedScreen}
@@ -168,3 +171,4 @@ export function RootNavigator(): React.JSX.Element {
     </Tab.Navigator>
   );
 }
+// ===== SEMANA 03 · FIN =====
