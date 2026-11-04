@@ -1,8 +1,4 @@
-// ============================================
-// SCREEN: DetailScreen — Semana 04: Estado Global
-// Ficha técnica completa y acción de guardar conectada a Zustand
-// ============================================
-
+// ===== SEMANA 01 · INICIO =====
 import React from 'react';
 import {
   View,
@@ -14,23 +10,29 @@ import {
   Alert,
   Platform,
 } from 'react-native';
+// ===== SEMANA 01 · FIN =====
+// ===== SEMANA 03 · INICIO =====
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+// ===== SEMANA 03 · FIN =====
+// ===== SEMANA 04 · INICIO =====
 import type { DetailScreenProps } from '../navigation/types';
 import { ITEMS } from '../data/mockData';
 import { COLORS, TYPOGRAPHY, SPACING, RADIUS, SIZES } from '../theme';
 import { selectIsSaved, useSavedStore } from '../stores/savedStore';
+// ===== SEMANA 04 · FIN =====
 
+// ===== SEMANA 03 · INICIO =====
 export function DetailScreen(): React.JSX.Element {
   const route = useRoute<DetailScreenProps['route']>();
   const navigation = useNavigation<DetailScreenProps['navigation']>();
+  // ===== SEMANA 04 · INICIO =====
   const insets = useSafeAreaInsets();
 
   const { id } = route.params;
   const item = ITEMS.find((play) => play.id === id);
 
-  // Estado global: el botón lee y escribe el mismo store que la cartelera.
   const isSaved = useSavedStore(selectIsSaved(id));
   const toggleItem = useSavedStore((state) => state.toggleItem);
 
@@ -52,6 +54,7 @@ export function DetailScreen(): React.JSX.Element {
       </View>
     );
   }
+  // ===== SEMANA 04 · FIN =====
 
   const {
     name,
@@ -96,7 +99,6 @@ export function DetailScreen(): React.JSX.Element {
         ]}
         showsVerticalScrollIndicator={false}
       >
-        {/* Banner principal / Afiche */}
         <View style={styles.imageContainer}>
           <Image
             source={{ uri: imageUri }}
@@ -105,7 +107,6 @@ export function DetailScreen(): React.JSX.Element {
           />
           <View style={styles.imageOverlay} />
 
-          {/* Badges superiores sobre la imagen */}
           <View style={styles.badgesRow}>
             <View style={styles.genreBadge}>
               <Text style={styles.genreBadgeText}>{genre}</Text>
@@ -115,7 +116,7 @@ export function DetailScreen(): React.JSX.Element {
             </View>
           </View>
 
-          {/* Acción Guardar / Quitar conectada al store */}
+          {/* ===== SEMANA 04 · INICIO ===== */}
           <Pressable
             style={({ pressed }) => [
               styles.savePill,
@@ -145,14 +146,13 @@ export function DetailScreen(): React.JSX.Element {
               {isSaved ? 'Guardada' : 'Guardar'}
             </Text>
           </Pressable>
+          {/* ===== SEMANA 04 · FIN ===== */}
         </View>
 
-        {/* Información Principal */}
         <View style={styles.body}>
           <Text style={styles.title}>{name}</Text>
           <Text style={styles.subtitle}>{subtitle}</Text>
 
-          {/* Barra de metadatos rápidos */}
           <View style={styles.metaGrid}>
             <View style={styles.metaCard}>
               <Text style={styles.metaIcon}>🏛</Text>
@@ -181,7 +181,6 @@ export function DetailScreen(): React.JSX.Element {
             </View>
           </View>
 
-          {/* Disponibilidad de butacas */}
           <View style={styles.availabilityBanner}>
             <Text style={styles.availabilityIcon}>🎭</Text>
             <View style={styles.availabilityTextWrapper}>
@@ -196,13 +195,11 @@ export function DetailScreen(): React.JSX.Element {
             </View>
           </View>
 
-          {/* Sinopsis de la obra */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Sinopsis Argumental</Text>
             <Text style={styles.synopsisText}>{synopsis}</Text>
           </View>
 
-          {/* Ficha Técnica Teatral */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Ficha Artística</Text>
             <View style={styles.specRow}>
@@ -227,7 +224,6 @@ export function DetailScreen(): React.JSX.Element {
         </View>
       </ScrollView>
 
-      {/* Barra de acción inferior fija */}
       <View
         style={[
           styles.bottomBar,
@@ -516,3 +512,4 @@ const styles = StyleSheet.create({
     fontWeight: TYPOGRAPHY.weight.bold,
   },
 });
+// ===== SEMANA 03 · FIN =====

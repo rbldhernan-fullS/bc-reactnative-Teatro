@@ -1,8 +1,4 @@
-// ============================================================
-// SCREEN: HomeScreen — Semana 04: Estado Global
-// Cartelera con búsqueda en tiempo real y guardado desde Zustand
-// ============================================================
-
+// ===== SEMANA 01 · INICIO =====
 import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import {
   View,
@@ -17,57 +13,78 @@ import {
   Pressable,
 } from 'react-native';
 import type { ListRenderItem } from 'react-native';
+// ===== SEMANA 01 · FIN =====
+// ===== SEMANA 03 · INICIO =====
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+// ===== SEMANA 03 · FIN =====
+// ===== SEMANA 04 · INICIO =====
 import type { Item } from '../types';
+// ===== SEMANA 04 · FIN =====
+// ===== SEMANA 02 · INICIO =====
 import { ITEMS } from '../data/mockData';
 import { ItemCard } from '../components/ItemCard';
+// ===== SEMANA 02 · FIN =====
+// ===== SEMANA 04 · INICIO =====
 import { useSavedStore } from '../stores/savedStore';
+// ===== SEMANA 04 · FIN =====
+// ===== SEMANA 02 · INICIO =====
 import { COLORS, TYPOGRAPHY, SPACING, RADIUS } from '../theme';
+// ===== SEMANA 02 · FIN =====
+// ===== SEMANA 04 · INICIO =====
 import type { HomeStackParamList } from '../navigation/types';
+// ===== SEMANA 04 · FIN =====
 
+// ===== SEMANA 03 · INICIO =====
 type HomeScreenNavProp = NativeStackNavigationProp<HomeStackParamList, 'HomeList'>;
+// ===== SEMANA 03 · FIN =====
 
+// ===== SEMANA 04 · INICIO =====
 const DOMAIN_TITLE = 'Teatro Colón';
 const DOMAIN_SUBTITLE = 'Cartelera oficial de la temporada';
 
-/**
- * Normaliza un texto para búsquedas insensibles a mayúsculas y acentos.
- * Ej.: "Ópera" -> "opera".
- */
 function normalizeText(value: string): string {
   return value
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase();
 }
+// ===== SEMANA 04 · FIN =====
 
+// ===== SEMANA 01 · INICIO =====
 export function HomeScreen(): React.JSX.Element {
+  // ===== SEMANA 03 · INICIO =====
   const navigation = useNavigation<HomeScreenNavProp>();
+  // ===== SEMANA 03 · FIN =====
 
-  // Estado global de guardados (Zustand) leído con selectores específicos
+  // ===== SEMANA 04 · INICIO =====
   const savedItems = useSavedStore((state) => state.savedItems);
   const toggleItem = useSavedStore((state) => state.toggleItem);
 
-  // Set de ids para consultar si una obra está guardada sin recorrer el arreglo por cada tarjeta
   const savedIds = useMemo(
     () => new Set(savedItems.map((saved) => saved.id)),
     [savedItems]
   );
+  // ===== SEMANA 04 · FIN =====
 
-  // Referencia para enfocar el input al hacer click en cualquier parte de la barra
+  // ===== SEMANA 02 · INICIO =====
   const searchInputRef = useRef<TextInput>(null);
+  // ===== SEMANA 02 · FIN =====
 
-  // Referencia para limpiar el timer de refresco al desmontar
+  // ===== SEMANA 04 · INICIO =====
   const refreshTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // ===== SEMANA 04 · FIN =====
 
-  // 1. Estado de búsqueda
+  // ===== SEMANA 02 · INICIO =====
   const [query, setQuery] = useState<string>('');
+  // ===== SEMANA 02 · FIN =====
 
-  // 2. Estado de refresco (Pull-to-refresh)
+  // ===== SEMANA 03 · INICIO =====
   const [refreshing, setRefreshing] = useState<boolean>(false);
+  // ===== SEMANA 03 · FIN =====
 
+  // ===== SEMANA 04 · INICIO =====
   useEffect(() => {
     return () => {
       if (refreshTimeoutRef.current) {
@@ -75,8 +92,9 @@ export function HomeScreen(): React.JSX.Element {
       }
     };
   }, []);
+  // ===== SEMANA 04 · FIN =====
 
-  // Manejador de selección de obra con navegación al detalle tipada
+  // ===== SEMANA 03 · INICIO =====
   const handleItemPress = useCallback(
     (item: Item): void => {
       navigation.navigate('HomeDetail', {
@@ -86,23 +104,26 @@ export function HomeScreen(): React.JSX.Element {
     },
     [navigation]
   );
+  // ===== SEMANA 03 · FIN =====
 
-  // 3. Filtrado en tiempo real con useMemo
-  // Busca por título, director/compañía, género o sala (insensible a mayúsculas y acentos)
+  // ===== SEMANA 02 · INICIO =====
   const filteredItems = useMemo(() => {
+    // ===== SEMANA 04 · INICIO =====
     const cleanQuery = normalizeText(query.trim());
+    // ===== SEMANA 04 · FIN =====
     if (!cleanQuery) {
       return ITEMS;
     }
 
+    // ===== SEMANA 04 · INICIO =====
     return ITEMS.filter((item) =>
       [item.name, item.subtitle, item.genre, item.hall].some((field) =>
         normalizeText(field).includes(cleanQuery)
       )
     );
+    // ===== SEMANA 04 · FIN =====
   }, [query]);
 
-  // Manejador de refresco simulado
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     refreshTimeoutRef.current = setTimeout(() => {
@@ -110,7 +131,6 @@ export function HomeScreen(): React.JSX.Element {
     }, 800);
   }, []);
 
-  // 4. Render Item memorizado con useCallback
   const renderItem: ListRenderItem<Item> = useCallback(
     ({ item }) => (
       <ItemCard
@@ -123,13 +143,12 @@ export function HomeScreen(): React.JSX.Element {
     [handleItemPress, savedIds, toggleItem]
   );
 
-  // 5. Separador entre elementos con useCallback
   const renderSeparator = useCallback(
     () => <View style={styles.separator} />,
     []
   );
+  // ===== SEMANA 02 · FIN =====
 
-  // 6. Estado vacío memorizado con useCallback
   const renderEmpty = useCallback(() => {
     return (
       <View style={styles.emptyContainer}>
@@ -164,7 +183,6 @@ export function HomeScreen(): React.JSX.Element {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         <View style={styles.container}>
-          {/* Header del Dominio Teatro */}
           <View style={styles.header}>
             <View style={styles.headerTitleRow}>
               <Text style={styles.theaterIcon}>🎭</Text>
@@ -173,7 +191,6 @@ export function HomeScreen(): React.JSX.Element {
             <Text style={styles.headerSubtitle}>{DOMAIN_SUBTITLE}</Text>
           </View>
 
-          {/* Barra de búsqueda */}
           <View style={styles.searchSection}>
             <Pressable
               style={styles.searchInputWrapper}
@@ -208,7 +225,6 @@ export function HomeScreen(): React.JSX.Element {
               )}
             </Pressable>
 
-            {/* Contador de resultados */}
             <View style={styles.resultsBar}>
               <Text style={styles.resultsCount}>
                 {filteredItems.length}{' '}
@@ -220,7 +236,6 @@ export function HomeScreen(): React.JSX.Element {
             </View>
           </View>
 
-          {/* Área de Lista con dismiss de teclado al tocar fuera */}
           <TouchableWithoutFeedback
             onPress={Keyboard.dismiss}
             accessible={false}
@@ -394,3 +409,4 @@ const styles = StyleSheet.create({
     color: COLORS.accent,
   },
 });
+// ===== SEMANA 01 · FIN =====

@@ -1,8 +1,4 @@
-// ============================================
-// SCREEN: SavedScreen — Semana 04: Estado Global
-// Segunda pestaña: obras guardadas leídas desde el store de Zustand
-// ============================================
-
+// ===== SEMANA 01 · INICIO =====
 import React, { useCallback } from 'react';
 import {
   View,
@@ -13,9 +9,13 @@ import {
   StyleSheet,
 } from 'react-native';
 import type { GestureResponderEvent, ListRenderItem } from 'react-native';
+// ===== SEMANA 01 · FIN =====
+// ===== SEMANA 03 · INICIO =====
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
+// ===== SEMANA 03 · FIN =====
+// ===== SEMANA 04 · INICIO =====
 import type { Item } from '../types';
 import { COLORS, TYPOGRAPHY, SPACING, RADIUS, SIZES } from '../theme';
 import type { SavedScreenNavigationProp } from '../navigation/types';
@@ -24,7 +24,6 @@ import { useSavedStore } from '../stores/savedStore';
 export function SavedScreen(): React.JSX.Element {
   const navigation = useNavigation<SavedScreenNavigationProp>();
 
-  // Selectores específicos: el componente solo reacciona a lo que usa.
   const savedItems = useSavedStore((state) => state.savedItems);
   const removeItem = useSavedStore((state) => state.removeItem);
   const clearSaved = useSavedStore((state) => state.clearSaved);
@@ -44,7 +43,6 @@ export function SavedScreen(): React.JSX.Element {
 
   const handleRemovePress = useCallback(
     (event: GestureResponderEvent, id: string): void => {
-      // Evita que el toque del bookmark abra el detalle de la obra.
       event.stopPropagation();
       removeItem(id);
     },
@@ -140,7 +138,6 @@ export function SavedScreen(): React.JSX.Element {
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <View style={styles.container}>
-        {/* Header de la pestaña Guardados */}
         <View style={styles.header}>
           <View style={styles.headerRow}>
             <View style={styles.headerTextBlock}>
@@ -169,7 +166,6 @@ export function SavedScreen(): React.JSX.Element {
           </View>
         </View>
 
-        {/* Lista de Guardados desde Zustand */}
         <FlatList
           data={savedItems}
           keyExtractor={(item) => item.id}
@@ -351,3 +347,4 @@ const styles = StyleSheet.create({
     lineHeight: TYPOGRAPHY.lineHeight.base,
   },
 });
+// ===== SEMANA 04 · FIN =====

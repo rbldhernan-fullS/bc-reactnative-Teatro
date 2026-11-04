@@ -1,10 +1,8 @@
-// ============================================
-// MOCK DATA — Semana 04: Dominio Teatro
-// 12 obras en cartelera con datos detallados del dominio teatro
-// ============================================
-
+// ===== SEMANA 04 · INICIO =====
 import type { Item } from '../types';
+// ===== SEMANA 04 · FIN =====
 
+// ===== SEMANA 01 · INICIO =====
 export const ITEMS: Item[] = [
   {
     id: '1',
@@ -199,6 +197,4 @@ export const ITEMS: Item[] = [
       'Una hermosa adaptación teatral para toda la familia del clásico de Saint-Exupéry, con títeres gigantes, música en vivo y una profunda reflexión sobre lo esencial que es invisible a los ojos.',
   },
 ];
-
-// Las obras guardadas ahora viven en el store global de Zustand
-// (src/stores/savedStore.ts), no en los datos mock.
+// ===== SEMANA 01 · FIN =====

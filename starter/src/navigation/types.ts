@@ -1,48 +1,33 @@
-// ============================================
-// NAVIGATION TYPES — Semana 04: Dominio Teatro
-// Tipado estricto de parámetros para Tab y Stack Navigators (Sin tipos dinámicos)
-// ============================================
-
+// ===== SEMANA 03 · INICIO =====
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import type { NavigatorScreenParams } from '@react-navigation/native';
 
-// ============================================
-// 1. STACK NAVIGATOR — Anidado en la pestaña Home
-// ============================================
 export type HomeStackParamList = {
-  /** Pantalla de catálogo de obras con FlatList y búsqueda */
   HomeList: undefined;
 
-  /** Pantalla de detalle de la obra seleccionada */
   HomeDetail: {
     id: string;
     name: string;
   };
 };
 
-// ============================================
-// 2. TAB NAVIGATOR — Pantallas de nivel raíz
-// ============================================
 export type RootTabParamList = {
-  /** Pestaña principal con Stack anidado tipado con NavigatorScreenParams */
   Home: NavigatorScreenParams<HomeStackParamList>;
-  /** Pestaña de obras guardadas (su estado vive en Zustand) */
   Saved: undefined;
 };
+// ===== SEMANA 03 · FIN =====
 
-// ============================================
-// 3. HELPERS DE TIPADO PARA PANTALLAS
-// ============================================
-
-// Props para DetailScreen
+// ===== SEMANA 04 · INICIO =====
 export type DetailScreenProps = NativeStackScreenProps<
   HomeStackParamList,
   'HomeDetail'
 >;
+// ===== SEMANA 04 · FIN =====
 
-// Props para SavedScreen
+// ===== SEMANA 03 · INICIO =====
 export type SavedScreenNavigationProp = BottomTabNavigationProp<
   RootTabParamList,
   'Saved'
 >;
+// ===== SEMANA 03 · FIN =====
