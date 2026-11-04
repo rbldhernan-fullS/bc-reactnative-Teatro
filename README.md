@@ -146,7 +146,7 @@ Flujo manual sugerido:
 | Tecnología | Versión | Propósito |
 |---|---|---|
 | React Native | 0.86.3 | Framework móvil |
-| Expo SDK | 57 | Runtime y tooling |
+| Expo SDK | 57.0.31 | Runtime y tooling |
 | React | 19.2.3 | Componentes |
 | TypeScript | 6.0.3 | Tipado estricto (sin `any`) |
 | React Native Reanimated | 4.5.1 | Animaciones en el hilo de UI |
