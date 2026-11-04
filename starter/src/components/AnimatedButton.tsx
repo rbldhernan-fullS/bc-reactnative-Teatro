@@ -1,29 +1,22 @@
-// ============================================
-// COMPONENT: AnimatedButton — Semana 09
-// Feedback táctil con Animated.timing (press in) y Animated.spring (press out)
-// ============================================
-
+// ===== SEMANA 01 · INICIO =====
 import React, { useRef } from 'react';
 import { Animated, Pressable, StyleSheet, Text } from 'react-native';
+// ===== SEMANA 01 · FIN =====
+// ===== SEMANA 03 · INICIO =====
 import { Ionicons } from '@expo/vector-icons';
+// ===== SEMANA 03 · FIN =====
+// ===== SEMANA 09 · INICIO =====
 import { COLORS, TYPOGRAPHY, SPACING, RADIUS, SIZES } from '../theme';
 
 type ButtonVariant = 'primary' | 'outline';
 
 interface AnimatedButtonProps {
-  /** Texto visible del botón */
   label: string;
-  /** Acción ejecutada al soltar el botón */
   onPress: () => void;
-  /** Estilo visual: relleno dorado u contorno sobre fondo vino */
   variant?: ButtonVariant;
-  /** Icono opcional de Ionicons */
   icon?: keyof typeof Ionicons.glyphMap;
-  /** Reduce paddings y tipografía para cabeceras */
   compact?: boolean;
-  /** Bloquea la interacción y atenúa el botón */
   disabled?: boolean;
-  /** Etiqueta accesible cuando el texto visible no basta */
   accessibilityLabel?: string;
 }
 
@@ -138,3 +131,4 @@ const styles = StyleSheet.create({
     color: COLORS.accent,
   },
 });
+// ===== SEMANA 09 · FIN =====

@@ -1,8 +1,4 @@
-// ============================================
-// SCREEN: CreateScreen — Semana 06
-// Formulario validado con React Hook Form + Zod
-// ============================================
-
+// ===== SEMANA 01 · INICIO =====
 import React from 'react';
 import {
   KeyboardAvoidingView,
@@ -10,13 +6,21 @@ import {
   ScrollView,
   StyleSheet,
 } from 'react-native';
+// ===== SEMANA 01 · FIN =====
+// ===== SEMANA 03 · INICIO =====
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+// ===== SEMANA 03 · FIN =====
+// ===== SEMANA 06 · INICIO =====
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+// ===== SEMANA 06 · FIN =====
 
+// ===== SEMANA 08 · INICIO =====
 import { PlayForm } from '../components/PlayForm';
 import { useCreatePlay } from '../hooks/usePlays';
+// ===== SEMANA 08 · FIN =====
+// ===== SEMANA 06 · INICIO =====
 import {
   EMPTY_PLAY_FORM,
   playSchema,
@@ -26,6 +30,8 @@ import {
 } from '../schemas/playSchema';
 import { getApiErrorMessage } from '../services/api';
 import { COLORS, SPACING } from '../theme';
+// ===== SEMANA 06 · FIN =====
+// ===== SEMANA 05 · INICIO =====
 import type { HomeStackParamList } from '../navigation/types';
 
 type CreateNavProp = NativeStackNavigationProp<HomeStackParamList, 'Create'>;
@@ -33,6 +39,7 @@ type CreateNavProp = NativeStackNavigationProp<HomeStackParamList, 'Create'>;
 export function CreateScreen(): React.JSX.Element {
   const navigation = useNavigation<CreateNavProp>();
 
+  // ===== SEMANA 06 · INICIO =====
   const { mutateAsync: createPlay, isPending, error: mutationError } = useCreatePlay();
 
   const {
@@ -44,17 +51,18 @@ export function CreateScreen(): React.JSX.Element {
     defaultValues: EMPTY_PLAY_FORM,
     mode: 'onBlur',
   });
+  // ===== SEMANA 06 · FIN =====
 
   async function onSubmit(values: PlayFormValues): Promise<void> {
     try {
       await createPlay(toCreatePlayPayload(values));
       navigation.goBack();
-    } catch {
-      // El mensaje se muestra desde mutationError con getApiErrorMessage.
-    }
+    } catch {}
   }
 
+  // ===== SEMANA 06 · INICIO =====
   const submitting = isSubmitting || isPending;
+  // ===== SEMANA 06 · FIN =====
 
   return (
     <KeyboardAvoidingView
@@ -98,3 +106,4 @@ const styles = StyleSheet.create({
     paddingBottom: SPACING.xxxl,
   },
 });
+// ===== SEMANA 05 · FIN =====

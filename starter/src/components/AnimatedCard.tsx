@@ -1,10 +1,8 @@
-// ============================================
-// COMPONENT: AnimatedCard — Semana 09
-// Envoltorio táctil de ItemCard con feedback de escala (Animated.spring)
-// ============================================
-
+// ===== SEMANA 01 · INICIO =====
 import React, { useRef } from 'react';
 import { Animated, Pressable } from 'react-native';
+// ===== SEMANA 01 · FIN =====
+// ===== SEMANA 09 · INICIO =====
 import type { Item } from '../types';
 import { SIZES } from '../theme';
 import { ItemCard } from './ItemCard';
@@ -67,3 +65,4 @@ export const AnimatedCard = React.memo(function AnimatedCard({
     </Animated.View>
   );
 });
+// ===== SEMANA 09 · FIN =====

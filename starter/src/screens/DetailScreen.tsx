@@ -1,9 +1,4 @@
-// ============================================
-// SCREEN: DetailScreen — Semanas 05 y 09
-// Ficha técnica con entrada fade + slide (Animated.parallel),
-// barra de ocupación y botón con feedback táctil.
-// ============================================
-
+// ===== SEMANA 01 · INICIO =====
 import React, { useEffect, useRef } from 'react';
 import {
   View,
@@ -15,30 +10,51 @@ import {
   Alert,
   Platform,
 } from 'react-native';
+// ===== SEMANA 01 · FIN =====
+// ===== SEMANA 03 · INICIO =====
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+// ===== SEMANA 03 · FIN =====
+// ===== SEMANA 06 · INICIO =====
 import type { DetailScreenProps } from '../navigation/types';
+// ===== SEMANA 06 · FIN =====
+// ===== SEMANA 09 · INICIO =====
 import { AnimatedButton } from '../components/AnimatedButton';
 import { ProgressBar } from '../components/ProgressBar';
+// ===== SEMANA 09 · FIN =====
+// ===== SEMANA 05 · INICIO =====
 import { ScreenState } from '../components/ScreenState';
 import { usePlayById } from '../hooks/usePlays';
 import { getApiErrorMessage } from '../services/api';
+// ===== SEMANA 05 · FIN =====
+// ===== SEMANA 04 · INICIO =====
 import { COLORS, TYPOGRAPHY, SPACING, RADIUS, SIZES } from '../theme';
 import { selectIsSaved, useSavedStore } from '../stores/savedStore';
+// ===== SEMANA 04 · FIN =====
+// ===== SEMANA 09 · INICIO =====
 import { getHallCapacity, getHallOccupancy } from '../utils/theatre';
+// ===== SEMANA 09 · FIN =====
 
+// ===== SEMANA 03 · INICIO =====
 export function DetailScreen(): React.JSX.Element {
+  // ===== SEMANA 08 · INICIO =====
   const route = useRoute<DetailScreenProps['route']>();
   const navigation = useNavigation<DetailScreenProps['navigation']>();
+  // ===== SEMANA 08 · FIN =====
+  // ===== SEMANA 07 · INICIO =====
   const insets = useSafeAreaInsets();
+  // ===== SEMANA 07 · FIN =====
 
+  // ===== SEMANA 08 · INICIO =====
   const { id } = route.params;
+  // ===== SEMANA 08 · FIN =====
 
-  // Estado del servidor: la ficha viene de la caché de TanStack Query.
+  // ===== SEMANA 05 · INICIO =====
   const { data: item, isLoading, isError, error, refetch } = usePlayById(id);
+  // ===== SEMANA 05 · FIN =====
 
-  // Entrada del contenido: fade in + slide up de 500 ms con Animated.parallel.
+  // ===== SEMANA 09 · INICIO =====
   const contentOpacity = useRef(new Animated.Value(0)).current;
   const contentOffset = useRef(new Animated.Value(30)).current;
   const itemId = item?.id;
@@ -67,18 +83,22 @@ export function DetailScreen(): React.JSX.Element {
     entrance.start();
     return () => entrance.stop();
   }, [contentOffset, contentOpacity, itemId]);
+  // ===== SEMANA 09 · FIN =====
 
-  // Estado de UI: el botón lee y escribe solo el id en el store.
+  // ===== SEMANA 08 · INICIO =====
   const isSaved = useSavedStore(selectIsSaved(id));
   const toggleSaved = useSavedStore((state) => state.toggleSaved);
+  // ===== SEMANA 08 · FIN =====
 
-  // Mantiene el título del header sincronizado después de editar la obra.
+  // ===== SEMANA 06 · INICIO =====
   useEffect(() => {
     if (item) {
       navigation.setOptions({ title: item.name });
     }
   }, [item, navigation]);
+  // ===== SEMANA 06 · FIN =====
 
+  // ===== SEMANA 05 · INICIO =====
   if (isLoading) {
     return (
       <View style={styles.screenWrapper}>
@@ -106,7 +126,9 @@ export function DetailScreen(): React.JSX.Element {
       </View>
     );
   }
+  // ===== SEMANA 05 · FIN =====
 
+  // ===== SEMANA 04 · INICIO =====
   if (!item) {
     return (
       <View style={[styles.screenWrapper, styles.notFoundContainer]}>
@@ -125,6 +147,7 @@ export function DetailScreen(): React.JSX.Element {
       </View>
     );
   }
+  // ===== SEMANA 04 · FIN =====
 
   const {
     name,
@@ -141,9 +164,11 @@ export function DetailScreen(): React.JSX.Element {
     synopsis,
   } = item;
 
+  // ===== SEMANA 09 · INICIO =====
   const hallCapacity = getHallCapacity(hall);
   const occupiedSeats = Math.max(0, hallCapacity - availableSeats);
   const occupancy = getHallOccupancy(hall, availableSeats);
+  // ===== SEMANA 09 · FIN =====
 
   function handleBookingPress(): void {
     const message = `¿Deseas iniciar la selección de butacas para "${name}" en la ${hall} (${date} · ${time})?`;
@@ -179,7 +204,6 @@ export function DetailScreen(): React.JSX.Element {
         ]}
         showsVerticalScrollIndicator={false}
       >
-        {/* Banner principal / Afiche */}
         <View style={styles.imageContainer}>
           <Image
             source={{ uri: imageUri }}
@@ -188,7 +212,6 @@ export function DetailScreen(): React.JSX.Element {
           />
           <View style={styles.imageOverlay} />
 
-          {/* Badges superiores sobre la imagen */}
           <View style={styles.badgesRow}>
             <View style={styles.genreBadge}>
               <Text style={styles.genreBadgeText}>{genre}</Text>
@@ -198,7 +221,7 @@ export function DetailScreen(): React.JSX.Element {
             </View>
           </View>
 
-          {/* Acción Guardar / Quitar conectada al store */}
+          {/* ===== SEMANA 04 · INICIO ===== */}
           <Pressable
             style={({ pressed }) => [
               styles.savePill,
@@ -228,14 +251,13 @@ export function DetailScreen(): React.JSX.Element {
               {isSaved ? 'Guardada' : 'Guardar'}
             </Text>
           </Pressable>
+          {/* ===== SEMANA 04 · FIN ===== */}
         </View>
 
-        {/* Información Principal */}
         <View style={styles.body}>
           <Text style={styles.title}>{name}</Text>
           <Text style={styles.subtitle}>{subtitle}</Text>
 
-          {/* Barra de metadatos rápidos */}
           <View style={styles.metaGrid}>
             <View style={styles.metaCard}>
               <Text style={styles.metaIcon}>🏛</Text>
@@ -264,7 +286,6 @@ export function DetailScreen(): React.JSX.Element {
             </View>
           </View>
 
-          {/* Disponibilidad de butacas */}
           <View style={styles.availabilityBanner}>
             <Text style={styles.availabilityIcon}>🎭</Text>
             <View style={styles.availabilityTextWrapper}>
@@ -279,7 +300,7 @@ export function DetailScreen(): React.JSX.Element {
             </View>
           </View>
 
-          {/* Ocupación de la sala: ancho y color interpolados */}
+          {/* ===== SEMANA 09 · INICIO ===== */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Estado del aforo</Text>
             <ProgressBar
@@ -288,14 +309,13 @@ export function DetailScreen(): React.JSX.Element {
               caption={`${occupiedSeats} de ${hallCapacity} butacas ocupadas en la ${hall}`}
             />
           </View>
+          {/* ===== SEMANA 09 · FIN ===== */}
 
-          {/* Sinopsis de la obra */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Sinopsis Argumental</Text>
             <Text style={styles.synopsisText}>{synopsis}</Text>
           </View>
 
-          {/* Ficha Técnica Teatral */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Ficha Artística</Text>
             <View style={styles.specRow}>
@@ -320,7 +340,6 @@ export function DetailScreen(): React.JSX.Element {
         </View>
       </Animated.ScrollView>
 
-      {/* Barra de acción inferior fija */}
       <View
         style={[
           styles.bottomBar,
@@ -601,3 +620,4 @@ const styles = StyleSheet.create({
     fontWeight: TYPOGRAPHY.weight.bold,
   },
 });
+// ===== SEMANA 03 · FIN =====

@@ -1,8 +1,4 @@
-// ============================================
-// SCREEN: ProfileScreen — Semana 08
-// Perfil del socio autenticado + acceso a sus obras guardadas y logout
-// ============================================
-
+// ===== SEMANA 01 · INICIO =====
 import React, { useCallback } from 'react';
 import {
   Alert,
@@ -13,16 +9,19 @@ import {
   Text,
   View,
 } from 'react-native';
+// ===== SEMANA 01 · FIN =====
+// ===== SEMANA 03 · INICIO =====
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
+// ===== SEMANA 03 · FIN =====
 
+// ===== SEMANA 08 · INICIO =====
 import { selectSavedCount, useSavedStore } from '../stores/savedStore';
 import { useAuthStore } from '../stores/authStore';
 import { COLORS, RADIUS, SIZES, SPACING, TYPOGRAPHY } from '../theme';
 import type { ProfileScreenNavigationProp } from '../navigation/types';
 
-/** Convierte el id numérico en un número de socio legible. */
 function formatMemberNumber(id: number | undefined): string {
   if (id === undefined) {
     return '—';
@@ -86,7 +85,6 @@ export function ProfileScreen(): React.JSX.Element {
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
-        {/* Tarjeta de identidad */}
         <View style={styles.identityCard}>
           <View style={styles.avatarWrapper}>
             {user?.image ? (
@@ -117,7 +115,6 @@ export function ProfileScreen(): React.JSX.Element {
           </View>
         </View>
 
-        {/* Información de la cuenta */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Información del socio</Text>
 
@@ -146,7 +143,6 @@ export function ProfileScreen(): React.JSX.Element {
           </View>
         </View>
 
-        {/* Acción de dominio: ir a guardados */}
         <Pressable
           style={({ pressed }) => [
             styles.savedButton,
@@ -165,7 +161,6 @@ export function ProfileScreen(): React.JSX.Element {
           />
         </Pressable>
 
-        {/* Seguridad de la sesión */}
         <View style={styles.securityCard}>
           <View style={styles.securityHeader}>
             <Ionicons
@@ -181,7 +176,6 @@ export function ProfileScreen(): React.JSX.Element {
           </Text>
         </View>
 
-        {/* Logout */}
         <Pressable
           style={({ pressed }) => [
             styles.logoutButton,
@@ -412,3 +406,4 @@ const styles = StyleSheet.create({
     color: COLORS.error,
   },
 });
+// ===== SEMANA 08 · FIN =====

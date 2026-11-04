@@ -1,23 +1,21 @@
-// ============================================
-// COMPONENT: ItemCard — Semanas 04, 05, 07 y 09
-// Cuerpo visual de la tarjeta de obra. La interacción (tap, swipe y escala)
-// vive en los envoltorios AnimatedCard / SwipeableCard.
-// ============================================
-
+// ===== SEMANA 01 · INICIO =====
 import React from 'react';
 import { View, Text, Image, Pressable, StyleSheet } from 'react-native';
 import type { GestureResponderEvent } from 'react-native';
+// ===== SEMANA 01 · FIN =====
+// ===== SEMANA 03 · INICIO =====
 import { Ionicons } from '@expo/vector-icons';
+// ===== SEMANA 03 · FIN =====
+// ===== SEMANA 04 · INICIO =====
 import type { Item } from '../types';
 import { COLORS, TYPOGRAPHY, SPACING, RADIUS, SIZES } from '../theme';
+// ===== SEMANA 04 · FIN =====
 
+// ===== SEMANA 01 · INICIO =====
 interface ItemCardProps {
   item: Item;
-  /** Indica si la obra ya está en el store de guardados */
   saved: boolean;
-  /** Guarda o quita la obra del store */
   onToggleSave: (item: Item) => void;
-  /** Variante compacta: afiche más bajo y menos metadatos */
   compact?: boolean;
 }
 
@@ -27,15 +25,16 @@ export const ItemCard = React.memo(function ItemCard({
   onToggleSave,
   compact = false,
 }: ItemCardProps): React.JSX.Element {
+  // ===== SEMANA 04 · INICIO =====
   function handleSavePress(event: GestureResponderEvent): void {
-    // Evita que el toque del bookmark abra el detalle de la obra.
     event.stopPropagation();
     onToggleSave(item);
   }
+  // ===== SEMANA 04 · FIN =====
 
   return (
     <View style={styles.card}>
-      {/* Afiche / Portada de la obra */}
+      {/* ===== SEMANA 02 · INICIO ===== */}
       <View
         style={[styles.imageWrapper, compact && styles.imageWrapperCompact]}
       >
@@ -44,17 +43,15 @@ export const ItemCard = React.memo(function ItemCard({
           style={styles.cardImage}
           resizeMode="cover"
         />
-        {/* Chip flotante de género */}
         <View style={styles.genreBadge}>
           <Text style={styles.genreBadgeText}>{item.genre}</Text>
         </View>
 
-        {/* Chip flotante de calificación */}
         <View style={styles.ratingBadge}>
           <Text style={styles.ratingBadgeText}>★ {item.rating.toFixed(1)}</Text>
         </View>
 
-        {/* Acción de guardar/quitar desde la cartelera */}
+        {/* ===== SEMANA 04 · INICIO ===== */}
         <Pressable
           onPress={handleSavePress}
           style={({ pressed }) => [
@@ -76,26 +73,29 @@ export const ItemCard = React.memo(function ItemCard({
             color={saved ? COLORS.accent : COLORS.textPrimary}
           />
         </Pressable>
+        {/* ===== SEMANA 04 · FIN ===== */}
       </View>
+      {/* ===== SEMANA 02 · FIN ===== */}
 
-      {/* Cuerpo informativo de la obra */}
       <View style={[styles.cardBody, compact && styles.cardBodyCompact]}>
-        {/* Título de la obra */}
+        {/* ===== SEMANA 02 · INICIO ===== */}
         <Text
           style={[styles.cardTitle, compact && styles.cardTitleCompact]}
           numberOfLines={1}
         >
           {item.name}
         </Text>
+        {/* ===== SEMANA 02 · FIN ===== */}
 
-        {/* Director o compañía (se oculta en modo compacto) */}
+        {/* ===== SEMANA 07 · INICIO ===== */}
         {!compact && (
           <Text style={styles.cardSubtitle} numberOfLines={1}>
             {item.subtitle}
           </Text>
         )}
+        {/* ===== SEMANA 07 · FIN ===== */}
 
-        {/* Sala y función */}
+        {/* ===== SEMANA 02 · INICIO ===== */}
         <View style={styles.metaRow}>
           <Text style={styles.metaText}>🏛 {item.hall}</Text>
           <Text style={styles.metaDot}>•</Text>
@@ -103,28 +103,26 @@ export const ItemCard = React.memo(function ItemCard({
         </View>
 
         {compact ? (
-          /* Modo compacto: solo precio y butacas en una línea */
           <View style={styles.compactFooter}>
+            {/* ===== SEMANA 07 · INICIO ===== */}
             <Text style={styles.compactSeats}>
               {item.availableSeats} butacas
             </Text>
+            {/* ===== SEMANA 07 · FIN ===== */}
             <Text style={styles.priceValue}>
               ${item.price.toLocaleString('es-CO')} COP
             </Text>
           </View>
         ) : (
           <>
-            {/* Hora y duración */}
             <View style={styles.metaRow}>
               <Text style={styles.metaText}>🕒 {item.time}</Text>
               <Text style={styles.metaDot}>•</Text>
               <Text style={styles.metaText}>⏳ {item.duration}</Text>
             </View>
 
-            {/* Separador sutil */}
             <View style={styles.divider} />
 
-            {/* Pie de tarjeta: Butacas y Precio */}
             <View style={styles.cardFooter}>
               <View style={styles.seatsContainer}>
                 <Text style={styles.seatsLabel}>Disponibles</Text>
@@ -142,6 +140,7 @@ export const ItemCard = React.memo(function ItemCard({
             </View>
           </>
         )}
+        {/* ===== SEMANA 02 · FIN ===== */}
       </View>
     </View>
   );
@@ -299,3 +298,4 @@ const styles = StyleSheet.create({
     color: COLORS.accent,
   },
 });
+// ===== SEMANA 01 · FIN =====

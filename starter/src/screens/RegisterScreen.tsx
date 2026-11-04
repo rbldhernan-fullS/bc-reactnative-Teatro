@@ -1,8 +1,4 @@
-// ============================================
-// SCREEN: RegisterScreen — Semana 08
-// Registro simulado con RHF + Zod; al finalizar redirige al Login
-// ============================================
-
+// ===== SEMANA 01 · INICIO =====
 import React, { useEffect } from 'react';
 import {
   ActivityIndicator,
@@ -15,11 +11,21 @@ import {
   Text,
   View,
 } from 'react-native';
+// ===== SEMANA 01 · FIN =====
+// ===== SEMANA 03 · INICIO =====
 import { SafeAreaView } from 'react-native-safe-area-context';
+// ===== SEMANA 03 · FIN =====
+// ===== SEMANA 06 · INICIO =====
 import { useForm } from 'react-hook-form';
+// ===== SEMANA 06 · FIN =====
+// ===== SEMANA 08 · INICIO =====
 import { zodResolver } from '@hookform/resolvers/zod';
+// ===== SEMANA 08 · FIN =====
+// ===== SEMANA 03 · INICIO =====
 import { Ionicons } from '@expo/vector-icons';
+// ===== SEMANA 03 · FIN =====
 
+// ===== SEMANA 08 · INICIO =====
 import { FormField } from '../components/FormField';
 import { registerSchema } from '../schemas/authSchema';
 import type { RegisterFormValues } from '../schemas/authSchema';
@@ -51,7 +57,6 @@ export function RegisterScreen({
     },
   });
 
-  // Limpia el error compartido al salir del registro.
   useEffect(() => clearError, [clearError]);
 
   const onSubmit = async (values: RegisterFormValues): Promise<void> => {
@@ -75,9 +80,7 @@ export function RegisterScreen({
         ],
         { cancelable: false }
       );
-    } catch {
-      // El store ya tradujo el error; se muestra en el banner.
-    }
+    } catch {}
   };
 
   const isBusy = isLoading || isSubmitting;
@@ -94,7 +97,6 @@ export function RegisterScreen({
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          {/* Encabezado */}
           <View style={styles.header}>
             <Pressable
               style={styles.backButton}
@@ -120,7 +122,6 @@ export function RegisterScreen({
             </View>
           </View>
 
-          {/* Formulario */}
           <View style={styles.formCard}>
             <View style={styles.rowFields}>
               <View style={styles.halfField}>
@@ -229,7 +230,6 @@ export function RegisterScreen({
             </Pressable>
           </View>
 
-          {/* Aviso de simulación */}
           <View style={styles.infoCard}>
             <Ionicons
               name="information-circle-outline"
@@ -399,3 +399,4 @@ const styles = StyleSheet.create({
     fontWeight: TYPOGRAPHY.weight.bold,
   },
 });
+// ===== SEMANA 08 · FIN =====

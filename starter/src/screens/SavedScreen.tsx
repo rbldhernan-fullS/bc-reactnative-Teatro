@@ -1,9 +1,4 @@
-// ============================================
-// SCREEN: SavedScreen — Semanas 05 y 07
-// Segunda pestaña: obras guardadas por id, resueltas desde TanStack Query
-// y visibles también cuando la cartelera viene de la caché offline
-// ============================================
-
+// ===== SEMANA 01 · INICIO =====
 import React, { useCallback, useMemo } from 'react';
 import {
   View,
@@ -14,13 +9,21 @@ import {
   StyleSheet,
 } from 'react-native';
 import type { GestureResponderEvent, ListRenderItem } from 'react-native';
+// ===== SEMANA 01 · FIN =====
+// ===== SEMANA 03 · INICIO =====
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
+// ===== SEMANA 03 · FIN =====
+// ===== SEMANA 07 · INICIO =====
 import type { Item } from '../types';
+// ===== SEMANA 07 · FIN =====
+// ===== SEMANA 05 · INICIO =====
 import { ScreenState } from '../components/ScreenState';
 import { usePlays } from '../hooks/usePlays';
 import { getApiErrorMessage } from '../services/api';
+// ===== SEMANA 05 · FIN =====
+// ===== SEMANA 04 · INICIO =====
 import { COLORS, TYPOGRAPHY, SPACING, RADIUS, SIZES } from '../theme';
 import type { SavedScreenNavigationProp } from '../navigation/types';
 import { useSavedStore } from '../stores/savedStore';
@@ -28,19 +31,26 @@ import { useSavedStore } from '../stores/savedStore';
 export function SavedScreen(): React.JSX.Element {
   const navigation = useNavigation<SavedScreenNavigationProp>();
 
-  // Estado de UI: solo ids en Zustand.
+  // ===== SEMANA 05 · INICIO =====
   const savedIds = useSavedStore((state) => state.savedIds);
   const removeId = useSavedStore((state) => state.removeId);
+  // ===== SEMANA 05 · FIN =====
   const clearSaved = useSavedStore((state) => state.clearSaved);
 
-  // Estado del servidor: la cartelera completa vive en TanStack Query.
+  // ===== SEMANA 07 · INICIO =====
   const { data, isLoading, isError, error, refetch, isFetching } = usePlays();
+  // ===== SEMANA 07 · FIN =====
 
+  // ===== SEMANA 08 · INICIO =====
   const savedIdSet = useMemo(() => new Set(savedIds), [savedIds]);
+  // ===== SEMANA 08 · FIN =====
 
+  // ===== SEMANA 07 · INICIO =====
   const plays = useMemo(() => data?.plays ?? [], [data]);
   const isOffline = data?.source === 'cache';
+  // ===== SEMANA 07 · FIN =====
 
+  // ===== SEMANA 05 · INICIO =====
   const savedItems = useMemo(
     () => plays.filter((item) => savedIdSet.has(item.id)),
     [plays, savedIdSet]
@@ -49,6 +59,7 @@ export function SavedScreen(): React.JSX.Element {
   const handleRefresh = useCallback((): void => {
     void refetch();
   }, [refetch]);
+  // ===== SEMANA 05 · FIN =====
 
   const handleItemPress = useCallback(
     (item: Item): void => {
@@ -65,7 +76,6 @@ export function SavedScreen(): React.JSX.Element {
 
   const handleRemovePress = useCallback(
     (event: GestureResponderEvent, id: string): void => {
-      // Evita que el toque del bookmark abra el detalle de la obra.
       event.stopPropagation();
       removeId(id);
     },
@@ -80,17 +90,21 @@ export function SavedScreen(): React.JSX.Element {
         accessibilityRole="button"
         accessibilityLabel={`Ver detalles de ${item.name}`}
       >
+        {/* ===== SEMANA 05 · INICIO ===== */}
         <Image
           source={{ uri: item.imageUri }}
           style={styles.cardImage}
           resizeMode="cover"
         />
+        {/* ===== SEMANA 05 · FIN ===== */}
 
         <View style={styles.cardContent}>
           <View style={styles.cardHeaderRow}>
+            {/* ===== SEMANA 05 · INICIO ===== */}
             <View style={styles.genreBadge}>
               <Text style={styles.genreBadgeText}>{item.genre}</Text>
             </View>
+            {/* ===== SEMANA 05 · FIN ===== */}
 
             <Pressable
               onPress={(event) => handleRemovePress(event, item.id)}
@@ -110,25 +124,33 @@ export function SavedScreen(): React.JSX.Element {
             </Pressable>
           </View>
 
+          {/* ===== SEMANA 08 · INICIO ===== */}
           <Text style={styles.itemName} numberOfLines={1}>
             {item.name}
           </Text>
+          {/* ===== SEMANA 08 · FIN ===== */}
+          {/* ===== SEMANA 07 · INICIO ===== */}
           <Text style={styles.itemSubtitle} numberOfLines={1}>
             {item.subtitle}
           </Text>
+          {/* ===== SEMANA 07 · FIN ===== */}
 
+          {/* ===== SEMANA 06 · INICIO ===== */}
           <View style={styles.metaRow}>
             <Text style={styles.metaText}>🏛 {item.hall}</Text>
             <Text style={styles.metaDot}>•</Text>
             <Text style={styles.metaText}>📅 {item.date}</Text>
           </View>
+          {/* ===== SEMANA 06 · FIN ===== */}
 
+          {/* ===== SEMANA 05 · INICIO ===== */}
           <View style={styles.cardFooter}>
             <Text style={styles.ratingText}>★ {item.rating.toFixed(1)}</Text>
             <Text style={styles.priceText}>
               ${item.price.toLocaleString('es-CO')} COP
             </Text>
           </View>
+          {/* ===== SEMANA 05 · FIN ===== */}
         </View>
       </Pressable>
     ),
@@ -158,6 +180,7 @@ export function SavedScreen(): React.JSX.Element {
     []
   );
 
+  // ===== SEMANA 05 · INICIO =====
   if (savedIds.length > 0 && isLoading) {
     return (
       <SafeAreaView style={styles.safeArea} edges={['top']}>
@@ -183,17 +206,19 @@ export function SavedScreen(): React.JSX.Element {
       </SafeAreaView>
     );
   }
+  // ===== SEMANA 05 · FIN =====
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <View style={styles.container}>
-        {/* Header de la pestaña Guardados */}
         <View style={styles.header}>
           <View style={styles.headerRow}>
             <View style={styles.headerTextBlock}>
               <Text style={styles.headerTitle}>Obras Guardadas</Text>
               <Text style={styles.headerSubtitle}>
+                {/* ===== SEMANA 05 · INICIO ===== */}
                 {savedIds.length}{' '}
+                {/* ===== SEMANA 05 · FIN ===== */}
                 {savedIds.length === 1
                   ? 'obra guardada en tu lista'
                   : 'obras guardadas en tu lista'}
@@ -216,7 +241,7 @@ export function SavedScreen(): React.JSX.Element {
           </View>
         </View>
 
-        {/* Aviso de caché: las obras guardadas se resolvieron sin red */}
+        {/* ===== SEMANA 07 · INICIO ===== */}
         {isOffline && (
           <View style={styles.offlineBanner}>
             <Text style={styles.offlineText}>
@@ -224,8 +249,8 @@ export function SavedScreen(): React.JSX.Element {
             </Text>
           </View>
         )}
+        {/* ===== SEMANA 07 · FIN ===== */}
 
-        {/* Lista de Guardados resuelta desde TanStack Query */}
         <FlatList
           data={savedItems}
           keyExtractor={(item) => item.id}
@@ -421,3 +446,4 @@ const styles = StyleSheet.create({
     lineHeight: TYPOGRAPHY.lineHeight.base,
   },
 });
+// ===== SEMANA 04 · FIN =====

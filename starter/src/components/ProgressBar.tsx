@@ -1,18 +1,13 @@
-// ============================================
-// COMPONENT: ProgressBar — Semana 09
-// Ancho y color interpolados según la ocupación de la sala
-// ============================================
-
+// ===== SEMANA 01 · INICIO =====
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, StyleSheet, Text, View } from 'react-native';
+// ===== SEMANA 01 · FIN =====
+// ===== SEMANA 09 · INICIO =====
 import { COLORS, TYPOGRAPHY, SPACING, RADIUS } from '../theme';
 
 interface ProgressBarProps {
-  /** Progreso normalizado entre 0 y 1 */
   progress: number;
-  /** Título corto de la métrica */
   label: string;
-  /** Detalle numérico bajo la barra */
   caption?: string;
 }
 
@@ -32,7 +27,6 @@ export function ProgressBar({
     const animation = Animated.timing(animatedProgress, {
       toValue: clampedProgress,
       duration: ANIMATION_DURATION,
-      // El ancho y el color no son propiedades nativas: deben animarse en JS.
       useNativeDriver: false,
     });
 
@@ -111,3 +105,4 @@ const styles = StyleSheet.create({
     color: COLORS.textMuted,
   },
 });
+// ===== SEMANA 09 · FIN =====
