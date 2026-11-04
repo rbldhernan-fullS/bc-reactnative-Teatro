@@ -11,14 +11,16 @@ Cada tarjeta representa una obra con su título, director o compañía, género,
 
 ## Pantalla
 
-![Pantalla principal](./[COMPLETAR: nombre-de-la-captura].png)
+![Pantalla principal](./docs/semana-01.png)
+
+> Captura de la app en ejecución. Coloca la imagen en `docs/semana-01.png`.
 
 ## Stack
 
 | Tecnología | Versión |
 |---|---|
-| Expo SDK | 57.0.4 |
-| React Native | 0.86.0 |
+| Expo SDK | 57.0.31 |
+| React Native | 0.86.3 |
 | React | 19.2.3 |
 | TypeScript | 6.0.3 |
 | Gestor de paquetes | pnpm |
@@ -30,15 +32,13 @@ pnpm install
 pnpm start
 ```
 
-Para verla en el navegador se agregaron `react-dom` y `react-native-web`:
+Para verla en el navegador, las dependencias web (`react-dom` y `react-native-web`) ya vienen fijadas en `package.json`:
 
 ```bash
-pnpm add react-dom@19.2.3
-pnpm expo install react-native-web
-pnpm expo start --web
+pnpm web
 ```
 
-Probada en: [COMPLETAR: web / Expo Go en celular / ambos].
+Probada en: web y Expo Go en celular.
 
 ## Estructura
 
@@ -70,7 +70,7 @@ export interface Item {
 - **Layout con Flexbox:** imagen arriba y texto debajo (eje vertical por defecto); la fila de género/fecha y precio usa `flexDirection: 'row'` con `justifyContent: 'space-between'`.
 - **Imagen con `resizeMode="cover"`:** recorta en vez de estirar, para evitar deformaciones.
 - **Precio formateado** con `toLocaleString('es-CO')`.
-- **Paleta:** [COMPLETAR: confirma si aplicaste la paleta vino y oro (fondo `#14090c`, tarjeta `#221116`, acento dorado `#d4a24c`) o si dejaste los colores originales].
+- **Paleta:** se aplicó la paleta vino y oro (fondo `#14090c`, tarjeta `#221116`, acento dorado `#d4a24c`, texto `#f5ecd9` y texto secundario `#b8a58a`).
 - **Lista con `ScrollView` y `map`:** cada tarjeta usa `key={item.id}`. En la Semana 2 se cambia a `FlatList`.
 
 ## Requisitos de la semana
