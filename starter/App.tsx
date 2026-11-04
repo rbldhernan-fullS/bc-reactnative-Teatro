@@ -27,7 +27,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 // ===== SEMANA 10 · FIN =====
 // ===== SEMANA 12 · INICIO =====
-import * as Notifications from 'expo-notifications';
+import * as Notifications from './src/services/notificationScheduler';
 
 import { NotificationCenter } from './src/components/NotificationCenter';
 import {

@@ -19,8 +19,15 @@
       "permissions": [
         "android.permission.POST_NOTIFICATIONS",
         "android.permission.RECEIVE_BOOT_COMPLETED",
-        "android.permission.VIBRATE"
+        "android.permission.VIBRATE",
+        "android.permission.CAMERA",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.READ_MEDIA_IMAGES"
       ]
+    },
+    "web": {
+      "bundler": "metro"
     },
     "plugins": [
       "expo-status-bar",
@@ -53,6 +60,11 @@
           "defaultChannel": "teatro-funciones"
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "11111111-1111-4111-8111-111111111111"
+      }
+    }
   }
 }

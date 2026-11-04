@@ -15,7 +15,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 // ===== SEMANA 03 · FIN =====
 // ===== SEMANA 07 · INICIO =====
-import * as SecureStore from 'expo-secure-store';
+import * as SecureStore from '../services/secureStore';
 // ===== SEMANA 07 · FIN =====
 // ===== SEMANA 03 · INICIO =====
 import { Ionicons } from '@expo/vector-icons';

@@ -38,4 +38,8 @@ export async function updatePlay({
   const { data } = await apiClient.put<PlayDto>(`/plays/${id}`, payload);
   return normalizePlay(data);
 }
+
+export async function deletePlay(id: string): Promise<void> {
+  await apiClient.delete(`/plays/${id}`);
+}
 // ===== SEMANA 05 · FIN =====

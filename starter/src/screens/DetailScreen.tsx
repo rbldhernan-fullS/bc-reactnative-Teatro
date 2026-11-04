@@ -8,6 +8,7 @@ import {
   Pressable,
   Alert,
   ActivityIndicator,
+  Platform,
 } from 'react-native';
 // ===== SEMANA 01 · FIN =====
 // ===== SEMANA 03 · INICIO =====
@@ -50,6 +51,7 @@ import { usePlayById } from '../hooks/usePlays';
 // ===== SEMANA 05 · FIN =====
 // ===== SEMANA 12 · INICIO =====
 import { useNotifications } from '../hooks/useNotifications';
+import { useDeletePlay } from '../hooks/usePlays';
 import { usePreferences } from '../hooks/usePreferences';
 // ===== SEMANA 12 · FIN =====
 // ===== SEMANA 05 · INICIO =====
@@ -129,6 +131,7 @@ export function DetailScreen(): React.JSX.Element {
   // ===== SEMANA 12 · INICIO =====
   const { reminders, scheduleReminder, cancelReminder } = useNotifications();
   const { remindersEnabled } = usePreferences();
+  const deletePlayMutation = useDeletePlay();
   const [isScheduling, setIsScheduling] = useState(false);
   const reminder = reminders[id];
   // ===== SEMANA 12 · FIN =====
@@ -272,6 +275,42 @@ export function DetailScreen(): React.JSX.Element {
         ? `Ya no recibirás el aviso de "${name}".`
         : 'El aviso ya no estaba programado en el sistema; el registro local quedó limpio.'
     );
+  }
+
+  async function handleDeletePlay(): Promise<void> {
+    if (reminder) {
+      await cancelReminder(id);
+    }
+
+    try {
+      await deletePlayMutation.mutateAsync(id);
+      Alert.alert('Obra eliminada', `"${name}" salió de la cartelera.`);
+      navigation.goBack();
+    } catch (error) {
+      Alert.alert('No se pudo eliminar la obra', getApiErrorMessage(error));
+    }
+  }
+
+  function confirmDeletePlay(): void {
+    const message = `¿Seguro que quieres eliminar "${name}"? También se cancelará el recordatorio programado.`;
+
+    if (Platform.OS === 'web') {
+      if (globalThis.confirm(message)) {
+        void handleDeletePlay();
+      }
+      return;
+    }
+
+    Alert.alert('Eliminar obra', message, [
+      { text: 'Cancelar', style: 'cancel' },
+      {
+        text: 'Eliminar',
+        style: 'destructive',
+        onPress: () => {
+          void handleDeletePlay();
+        },
+      },
+    ]);
   }
   // ===== SEMANA 12 · FIN =====
 
@@ -561,6 +600,32 @@ export function DetailScreen(): React.JSX.Element {
               <Text style={styles.specLabel}>Idioma</Text>
               <Text style={styles.specValue}>Español</Text>
             </View>
+
+            {/* ===== SEMANA 12 · INICIO ===== */}
+            <Pressable
+              style={({ pressed }) => [
+                styles.deletePlayButton,
+                pressed && styles.deletePlayButtonPressed,
+              ]}
+              onPress={confirmDeletePlay}
+              disabled={deletePlayMutation.isPending}
+              accessibilityRole="button"
+              accessibilityLabel={`Eliminar la obra ${name}`}
+            >
+              {deletePlayMutation.isPending ? (
+                <ActivityIndicator color={COLORS.error} />
+              ) : (
+                <>
+                  <Ionicons
+                    name="trash-outline"
+                    size={16}
+                    color={COLORS.error}
+                  />
+                  <Text style={styles.deletePlayText}>Eliminar obra</Text>
+                </>
+              )}
+            </Pressable>
+            {/* ===== SEMANA 12 · FIN */}
           </View>
         </View>
       </Animated.ScrollView>
@@ -875,6 +940,25 @@ const styles = StyleSheet.create({
     fontSize: TYPOGRAPHY.size.sm,
     fontWeight: TYPOGRAPHY.weight.semibold,
     color: COLORS.textPrimary,
+  },
+  deletePlayButton: {
+    marginTop: SPACING.md,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: SPACING.xs,
+    paddingVertical: SPACING.sm,
+    borderRadius: RADIUS.md,
+    borderWidth: 1,
+    borderColor: COLORS.error,
+  },
+  deletePlayButtonPressed: {
+    opacity: 0.7,
+  },
+  deletePlayText: {
+    fontSize: TYPOGRAPHY.size.sm,
+    fontWeight: TYPOGRAPHY.weight.semibold,
+    color: COLORS.error,
   },
   bottomBar: {
     position: 'absolute',

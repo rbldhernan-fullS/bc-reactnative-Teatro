@@ -6,7 +6,7 @@ import {
   useMMKVBoolean,
   useMMKVNumber,
   useMMKVString,
-} from 'react-native-mmkv';
+} from '../storage/mmkvHooks';
 
 import { storage } from '../storage/mmkv';
 

@@ -5,7 +5,7 @@ import { Platform } from 'react-native';
 import Constants from 'expo-constants';
 // ===== SEMANA 05 · FIN =====
 // ===== SEMANA 12 · INICIO =====
-import * as Notifications from 'expo-notifications';
+import * as Notifications from './notificationScheduler';
 
 import type {
   Item,

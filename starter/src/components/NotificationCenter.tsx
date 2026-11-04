@@ -2,7 +2,7 @@
 import { useEffect } from 'react';
 // ===== SEMANA 01 · FIN =====
 // ===== SEMANA 12 · INICIO =====
-import * as Notifications from 'expo-notifications';
+import * as Notifications from '../services/notificationScheduler';
 
 import {
   configureNotificationChannel,

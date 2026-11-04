@@ -7,6 +7,7 @@ import {
 
 import {
   createPlay,
+  deletePlay,
   fetchPlayById,
   fetchPlays,
   updatePlay,
@@ -79,6 +80,18 @@ export function useUpdatePlay() {
       queryClient.invalidateQueries({
         queryKey: [...PLAYS_QUERY_KEY, variables.id],
       });
+    },
+  });
+}
+
+export function useDeletePlay() {
+  const queryClient = useQueryClient();
+
+  return useMutation<void, Error, string>({
+    mutationFn: deletePlay,
+    onSuccess: (_result, id) => {
+      queryClient.invalidateQueries({ queryKey: PLAYS_QUERY_KEY });
+      queryClient.removeQueries({ queryKey: [...PLAYS_QUERY_KEY, id] });
     },
   });
 }

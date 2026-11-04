@@ -1,10 +1,6 @@
 packages:
   - '.'
 
-# @hookform/resolvers importa los tipos de Zod 4 desde `zod/v4/core`.
-# Expo trae Zod 3 de forma transitiva, así que declaramos el peer para que
-# pnpm enlace la versión 4 del proyecto dentro del resolver y TypeScript
-# resuelva exactamente la misma instancia.
 packageExtensions:
   '@hookform/resolvers':
     peerDependencies:

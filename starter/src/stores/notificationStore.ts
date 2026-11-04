@@ -2,8 +2,8 @@
 import { Linking } from 'react-native';
 // ===== SEMANA 01 · FIN =====
 // ===== SEMANA 12 · INICIO =====
-import * as Device from 'expo-device';
-import * as Notifications from 'expo-notifications';
+import { isDevice } from '../services/deviceInfo';
+import * as Notifications from '../services/notificationScheduler';
 // ===== SEMANA 12 · FIN =====
 // ===== SEMANA 04 · INICIO =====
 import { create } from 'zustand';
@@ -60,7 +60,7 @@ export const useNotificationStore = create<NotificationState>()((set) => ({
   canAskAgain: true,
   pushToken: null,
   projectId: getEasProjectId(),
-  isPhysicalDevice: Device.isDevice,
+  isPhysicalDevice: isDevice,
   isRegistering: false,
   error: null,
   lastReceived: null,
@@ -80,7 +80,7 @@ export const useNotificationStore = create<NotificationState>()((set) => ({
   registerForPush: async (): Promise<RegisterPushResult> => {
     set({ isRegistering: true, error: null });
 
-    if (!Device.isDevice) {
+    if (!isDevice) {
       const message =
         'Los push tokens solo funcionan en dispositivos físicos. En el emulador puedes probar las notificaciones locales.';
       set({ isRegistering: false, error: message });
