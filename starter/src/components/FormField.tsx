@@ -1,8 +1,4 @@
-// ============================================
-// COMPONENT: FormField — Semana 06
-// Controller + TextInput + label + mensaje de error reutilizable
-// ============================================
-
+// ===== SEMANA 01 · INICIO =====
 import React from 'react';
 import {
   StyleSheet,
@@ -11,6 +7,8 @@ import {
   View,
 } from 'react-native';
 import type { StyleProp, TextInputProps, TextStyle, ViewStyle } from 'react-native';
+// ===== SEMANA 01 · FIN =====
+// ===== SEMANA 06 · INICIO =====
 import {
   Controller,
   type Control,
@@ -85,7 +83,6 @@ export function FormField<T extends FieldValues>({
                 {...textInputProps}
               />
 
-              {/* Altura reservada para que el layout no salte al aparecer el error */}
               <Text style={styles.error}>{message ?? ' '}</Text>
             </>
           );
@@ -130,3 +127,4 @@ const styles = StyleSheet.create({
     color: COLORS.error,
   },
 });
+// ===== SEMANA 06 · FIN =====

@@ -1,8 +1,4 @@
-// ============================================
-// COMPONENT: PlayForm — Semana 06
-// Formulario compartido por Create y Edit (RHF + Zod)
-// ============================================
-
+// ===== SEMANA 01 · INICIO =====
 import React from 'react';
 import {
   ActivityIndicator,
@@ -11,9 +7,15 @@ import {
   Text,
   View,
 } from 'react-native';
+// ===== SEMANA 01 · FIN =====
+// ===== SEMANA 06 · INICIO =====
 import type { Control, FieldErrors } from 'react-hook-form';
+// ===== SEMANA 06 · FIN =====
+// ===== SEMANA 03 · INICIO =====
 import { Ionicons } from '@expo/vector-icons';
+// ===== SEMANA 03 · FIN =====
 
+// ===== SEMANA 06 · INICIO =====
 import { FormChips } from './FormChips';
 import { FormField } from './FormField';
 import type { PlayFormInput } from '../schemas/playSchema';
@@ -260,3 +262,4 @@ const styles = StyleSheet.create({
     fontWeight: TYPOGRAPHY.weight.semibold,
   },
 });
+// ===== SEMANA 06 · FIN =====

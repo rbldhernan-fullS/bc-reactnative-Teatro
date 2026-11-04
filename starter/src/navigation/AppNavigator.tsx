@@ -1,30 +1,31 @@
-// ============================================
-// NAVIGATION: AppNavigator — Semanas 06, 07 y 08
-// Tab Navigator autenticado: Cartelera, Guardados, Perfil y Ajustes
-// ============================================
-
+// ===== SEMANA 01 · INICIO =====
 import React from 'react';
 import { Pressable } from 'react-native';
+// ===== SEMANA 01 · FIN =====
+// ===== SEMANA 03 · INICIO =====
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+// ===== SEMANA 03 · FIN =====
 
+// ===== SEMANA 08 · INICIO =====
 import { DetailScreen } from '../screens/DetailScreen';
 import { SavedScreen } from '../screens/SavedScreen';
 import { HomeScreen } from '../screens/HomeScreen';
 import { CreateScreen } from '../screens/CreateScreen';
 import { EditScreen } from '../screens/EditScreen';
+// ===== SEMANA 08 · FIN =====
+// ===== SEMANA 10 · INICIO =====
 import { SeatMapScreen } from '../screens/SeatMapScreen';
+// ===== SEMANA 10 · FIN =====
+// ===== SEMANA 08 · INICIO =====
 import { SettingsScreen } from '../screens/SettingsScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
 import { COLORS, TYPOGRAPHY, SIZES } from '../theme';
 import { selectSavedCount, useSavedStore } from '../stores/savedStore';
 import type { HomeStackParamList, RootTabParamList } from './types';
 
-// ============================================
-// 1. STACK NAVIGATOR ANIDADO (Pestaña Cartelera)
-// ============================================
 const HomeStack = createNativeStackNavigator<HomeStackParamList>();
 
 function HomeStackNavigator(): React.JSX.Element {
@@ -43,7 +44,6 @@ function HomeStackNavigator(): React.JSX.Element {
         headerShadowVisible: false,
       }}
     >
-      {/* Lista de obras en cartelera */}
       <HomeStack.Screen
         name="HomeList"
         component={HomeScreen}
@@ -52,7 +52,6 @@ function HomeStackNavigator(): React.JSX.Element {
         }}
       />
 
-      {/* Detalle de la obra seleccionada con título dinámico */}
       <HomeStack.Screen
         name="HomeDetail"
         component={DetailScreen}
@@ -78,7 +77,7 @@ function HomeStackNavigator(): React.JSX.Element {
         })}
       />
 
-      {/* Mapa interactivo de butacas (Reanimated + Gesture Handler) */}
+      {/* ===== SEMANA 10 · INICIO ===== */}
       <HomeStack.Screen
         name="SeatMap"
         component={SeatMapScreen}
@@ -87,8 +86,8 @@ function HomeStackNavigator(): React.JSX.Element {
           headerBackTitle: 'Detalle',
         }}
       />
+      {/* ===== SEMANA 10 · FIN ===== */}
 
-      {/* Formulario de creación de una obra nueva */}
       <HomeStack.Screen
         name="Create"
         component={CreateScreen}
@@ -99,7 +98,6 @@ function HomeStackNavigator(): React.JSX.Element {
         }}
       />
 
-      {/* Formulario de edición con defaultValues desde la API */}
       <HomeStack.Screen
         name="Edit"
         component={EditScreen}
@@ -112,15 +110,11 @@ function HomeStackNavigator(): React.JSX.Element {
   );
 }
 
-// ============================================
-// 2. TAB NAVIGATOR AUTENTICADO
-// ============================================
 const Tab = createBottomTabNavigator<RootTabParamList>();
 
 export function AppNavigator(): React.JSX.Element {
   const insets = useSafeAreaInsets();
 
-  // Selector: el navigator solo se vuelve a renderizar si cambia el conteo.
   const savedCount = useSavedStore(selectSavedCount);
 
   return (
@@ -158,7 +152,6 @@ export function AppNavigator(): React.JSX.Element {
         },
       })}
     >
-      {/* Pestaña 1: Cartelera (con Stack anidado para navegar a detalles) */}
       <Tab.Screen
         name="Home"
         component={HomeStackNavigator}
@@ -167,7 +160,6 @@ export function AppNavigator(): React.JSX.Element {
         }}
       />
 
-      {/* Pestaña 2: Obras Guardadas (conteo en vivo desde Zustand) */}
       <Tab.Screen
         name="Saved"
         component={SavedScreen}
@@ -183,7 +175,6 @@ export function AppNavigator(): React.JSX.Element {
         }}
       />
 
-      {/* Pestaña 3: Perfil del miembro del Club */}
       <Tab.Screen
         name="Profile"
         component={ProfileScreen}
@@ -192,7 +183,6 @@ export function AppNavigator(): React.JSX.Element {
         }}
       />
 
-      {/* Pestaña 4: Ajustes (MMKV + SecureStore) */}
       <Tab.Screen
         name="Settings"
         component={SettingsScreen}
@@ -203,3 +193,4 @@ export function AppNavigator(): React.JSX.Element {
     </Tab.Navigator>
   );
 }
+// ===== SEMANA 08 · FIN =====

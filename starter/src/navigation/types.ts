@@ -1,104 +1,84 @@
-// ============================================
-// NAVIGATION TYPES — Semanas 06, 07 y 08: Dominio Teatro
-// Tipado estricto de parámetros para Tab y Stack Navigators (Sin tipos dinámicos)
-// ============================================
-
+// ===== SEMANA 03 · INICIO =====
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import type { NavigatorScreenParams } from '@react-navigation/native';
 
-// ============================================
-// 1. STACK NAVIGATOR — Anidado en la pestaña Home
-// ============================================
 export type HomeStackParamList = {
-  /** Pantalla de catálogo de obras con FlatList y búsqueda */
   HomeList: undefined;
 
-  /** Pantalla de detalle de la obra seleccionada */
   HomeDetail: {
     id: string;
     name: string;
   };
 
-  /** Formulario para publicar una obra nueva */
   Create: undefined;
 
-  /** Formulario para editar una obra existente */
   Edit: {
     id: string;
   };
 
-  /** Mapa interactivo de butacas de la función */
   SeatMap: {
     id: string;
     name: string;
   };
 };
 
-// ============================================
-// 2. TAB NAVIGATOR — Pantallas de nivel raíz
-// ============================================
 export type RootTabParamList = {
-  /** Pestaña principal con Stack anidado tipado con NavigatorScreenParams */
   Home: NavigatorScreenParams<HomeStackParamList>;
-  /** Pestaña de obras guardadas (su estado vive en Zustand) */
   Saved: undefined;
-  /** Pestaña de ajustes: preferencias MMKV y código seguro */
   Settings: undefined;
-  /** Pestaña del perfil del miembro autenticado */
   Profile: undefined;
 };
+// ===== SEMANA 03 · FIN =====
 
-// ============================================
-// 3. AUTH STACK — Login y Registro (sin autenticación)
-// ============================================
+// ===== SEMANA 08 · INICIO =====
 export type AuthStackParamList = {
   Login: undefined;
   Register: undefined;
 };
+// ===== SEMANA 08 · FIN =====
 
-// ============================================
-// 4. HELPERS DE TIPADO PARA PANTALLAS
-// ============================================
-
-// Props para DetailScreen
+// ===== SEMANA 04 · INICIO =====
 export type DetailScreenProps = NativeStackScreenProps<
   HomeStackParamList,
   'HomeDetail'
 >;
+// ===== SEMANA 04 · FIN =====
 
-// Props para EditScreen
+// ===== SEMANA 06 · INICIO =====
 export type EditScreenProps = NativeStackScreenProps<
   HomeStackParamList,
   'Edit'
 >;
+// ===== SEMANA 06 · FIN =====
 
-// Props para SeatMapScreen
+// ===== SEMANA 10 · INICIO =====
 export type SeatMapScreenProps = NativeStackScreenProps<
   HomeStackParamList,
   'SeatMap'
 >;
+// ===== SEMANA 10 · FIN =====
 
-// Props para SavedScreen
+// ===== SEMANA 03 · INICIO =====
 export type SavedScreenNavigationProp = BottomTabNavigationProp<
   RootTabParamList,
   'Saved'
 >;
+// ===== SEMANA 03 · FIN =====
 
-// Props para ProfileScreen
+// ===== SEMANA 08 · INICIO =====
 export type ProfileScreenNavigationProp = BottomTabNavigationProp<
   RootTabParamList,
   'Profile'
 >;
 
-// Props para LoginScreen
 export type LoginScreenProps = NativeStackScreenProps<
   AuthStackParamList,
   'Login'
 >;
 
-// Props para RegisterScreen
 export type RegisterScreenProps = NativeStackScreenProps<
   AuthStackParamList,
   'Register'
 >;
+// ===== SEMANA 08 · FIN =====

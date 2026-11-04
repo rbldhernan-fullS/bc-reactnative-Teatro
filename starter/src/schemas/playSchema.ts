@@ -1,8 +1,4 @@
-// ============================================
-// SCHEMA: playSchema — Semana 06
-// Validación Zod compartida por los formularios Create y Edit
-// ============================================
-
+// ===== SEMANA 06 · INICIO =====
 import { z } from 'zod';
 import { THEATRE_GENRES, THEATRE_HALLS } from '../types';
 import type { CreatePlayPayload, Item, UpdatePlayPayload } from '../types';
@@ -14,7 +10,6 @@ const DURATION_PATTERN = /^\d{2,3} min$/;
 export const DEFAULT_PLAY_IMAGE =
   'https://images.unsplash.com/photo-1503095396549-807759245b35?w=800&auto=format&fit=crop&q=80';
 
-/** Comprueba que la fecha exista realmente en el calendario (ej. rechaza 2027-02-30). */
 function isValidCalendarDate(value: string): boolean {
   const [year, month, day] = value.split('-').map(Number);
   const date = new Date(Date.UTC(year, month - 1, day));
@@ -88,17 +83,10 @@ export const playSchema = z.object({
     .max(600, 'La sinopsis no puede superar 600 caracteres.'),
 });
 
-/** Valores que entran al formulario (los numéricos llegan como texto desde TextInput). */
 export type PlayFormInput = z.input<typeof playSchema>;
 
-/**
- * Valores ya validados y convertidos (price, aforo y rating son number).
- * `z.infer` es equivalente a `z.output` y evita declarar una interfaz manual
- * que podría desincronizarse del schema.
- */
 export type PlayFormValues = z.infer<typeof playSchema>;
 
-/** Valores iniciales del formulario de creación. */
 export const EMPTY_PLAY_FORM: PlayFormInput = {
   name: '',
   subtitle: '',
@@ -114,7 +102,6 @@ export const EMPTY_PLAY_FORM: PlayFormInput = {
   synopsis: '',
 };
 
-/** Convierte una obra de la API en valores editables del formulario. */
 export function toPlayFormInput(play: Item): PlayFormInput {
   return {
     name: play.name,
@@ -132,15 +119,14 @@ export function toPlayFormInput(play: Item): PlayFormInput {
   };
 }
 
-/** El output del schema coincide campo a campo con el cuerpo de creación. */
 export function toCreatePlayPayload(values: PlayFormValues): CreatePlayPayload {
   return values;
 }
 
-/** Agrega el id para reemplazar la obra existente con PUT. */
 export function toUpdatePlayPayload(
   id: string,
   values: PlayFormValues
 ): UpdatePlayPayload {
   return { id, ...values };
 }
+// ===== SEMANA 06 · FIN =====

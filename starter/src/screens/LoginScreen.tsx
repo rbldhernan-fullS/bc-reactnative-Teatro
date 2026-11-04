@@ -1,8 +1,4 @@
-// ============================================
-// SCREEN: LoginScreen — Semana 08
-// Formulario RHF + Zod conectado al authStore (tokens en SecureStore)
-// ============================================
-
+// ===== SEMANA 01 · INICIO =====
 import React, { useCallback, useEffect } from 'react';
 import {
   ActivityIndicator,
@@ -14,11 +10,21 @@ import {
   Text,
   View,
 } from 'react-native';
+// ===== SEMANA 01 · FIN =====
+// ===== SEMANA 03 · INICIO =====
 import { SafeAreaView } from 'react-native-safe-area-context';
+// ===== SEMANA 03 · FIN =====
+// ===== SEMANA 06 · INICIO =====
 import { useForm } from 'react-hook-form';
+// ===== SEMANA 06 · FIN =====
+// ===== SEMANA 08 · INICIO =====
 import { zodResolver } from '@hookform/resolvers/zod';
+// ===== SEMANA 08 · FIN =====
+// ===== SEMANA 03 · INICIO =====
 import { Ionicons } from '@expo/vector-icons';
+// ===== SEMANA 03 · FIN =====
 
+// ===== SEMANA 08 · INICIO =====
 import { FormField } from '../components/FormField';
 import { loginSchema } from '../schemas/authSchema';
 import type { LoginFormValues } from '../schemas/authSchema';
@@ -50,17 +56,12 @@ export function LoginScreen({
     },
   });
 
-  // Limpia el error al salir. Al montar conservamos el posible aviso de
-  // "sesión expirada" que emite el interceptor.
   useEffect(() => clearError, [clearError]);
 
   const onSubmit = async (values: LoginFormValues): Promise<void> => {
     try {
       await login(values);
-      // RootNavigator detecta isAuthenticated === true y monta AppNavigator.
-    } catch {
-      // El store ya tradujo el error; se muestra en el banner.
-    }
+    } catch {}
   };
 
   const handleFillDemo = useCallback((): void => {
@@ -81,7 +82,6 @@ export function LoginScreen({
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          {/* Encabezado del Club */}
           <View style={styles.header}>
             <View style={styles.logoCircle}>
               <Text style={styles.logoEmoji}>🎭</Text>
@@ -94,7 +94,6 @@ export function LoginScreen({
             </Text>
           </View>
 
-          {/* Formulario */}
           <View style={styles.formCard}>
             <FormField<LoginFormValues>
               control={control}
@@ -158,7 +157,6 @@ export function LoginScreen({
             </Pressable>
           </View>
 
-          {/* Credenciales de prueba */}
           <View style={styles.demoCard}>
             <View style={styles.demoHeader}>
               <Ionicons
@@ -186,7 +184,6 @@ export function LoginScreen({
             </Pressable>
           </View>
 
-          {/* Enlace a registro */}
           <Pressable
             style={styles.linkButton}
             onPress={() => navigation.navigate('Register')}
@@ -390,3 +387,4 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
+// ===== SEMANA 08 · FIN =====

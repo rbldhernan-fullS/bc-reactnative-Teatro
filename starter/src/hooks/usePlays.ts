@@ -1,8 +1,4 @@
-// ============================================
-// HOOKS: usePlays — Semana 05: TanStack Query v5
-// Estado del servidor centralizado en la caché de TanStack Query
-// ============================================
-
+// ===== SEMANA 05 · INICIO =====
 import {
   useMutation,
   useQuery,
@@ -15,6 +11,8 @@ import {
   fetchPlays,
   updatePlay,
 } from '../services/theatreApi';
+// ===== SEMANA 05 · FIN =====
+// ===== SEMANA 07 · INICIO =====
 import { readPlaysCache, writePlaysCache } from '../storage/playsCache';
 import type {
   CreatePlayPayload,
@@ -22,20 +20,11 @@ import type {
   PlaysWithSource,
   UpdatePlayPayload,
 } from '../types';
+// ===== SEMANA 07 · FIN =====
 
-/**
- * Query key semántica. Al invalidar la raíz `['plays']` se refrescan también
- * las queries de detalle (`['plays', id]`) gracias al matching por prefijo.
- */
+// ===== SEMANA 05 · INICIO =====
 export const PLAYS_QUERY_KEY = ['plays'] as const;
 
-/**
- * Cartelera completa con caché offline.
- *
- * 1. Con red: consulta la API y guarda una copia en AsyncStorage.
- * 2. Sin red y con caché: devuelve la copia y marca `source: 'cache'`.
- * 3. Sin red y sin caché: propaga el error para la pantalla de reintento.
- */
 export function usePlays() {
   return useQuery<PlaysWithSource>({
     queryKey: PLAYS_QUERY_KEY,
@@ -45,10 +34,7 @@ export function usePlays() {
 
         try {
           await writePlaysCache(plays);
-        } catch {
-          // La caché es best-effort: un fallo de escritura no debe romper
-          // una carga de red que sí fue exitosa.
-        }
+        } catch {}
 
         return { plays, source: 'network' };
       } catch (error) {
@@ -64,7 +50,6 @@ export function usePlays() {
   });
 }
 
-/** Detalle de una obra. Solo consulta cuando el id es válido. */
 export function usePlayById(id: string) {
   return useQuery<Item>({
     queryKey: [...PLAYS_QUERY_KEY, id],
@@ -73,7 +58,6 @@ export function usePlayById(id: string) {
   });
 }
 
-/** Crea una obra y refresca la cartelera automáticamente. */
 export function useCreatePlay() {
   const queryClient = useQueryClient();
 
@@ -85,7 +69,6 @@ export function useCreatePlay() {
   });
 }
 
-/** Actualiza una obra e invalida tanto la lista como su detalle. */
 export function useUpdatePlay() {
   const queryClient = useQueryClient();
 
@@ -99,3 +82,4 @@ export function useUpdatePlay() {
     },
   });
 }
+// ===== SEMANA 05 · FIN =====

@@ -1,8 +1,4 @@
-// ============================================
-// SCREEN: SettingsScreen — Semana 07
-// Preferencias de la cartelera con MMKV y código sensible con SecureStore
-// ============================================
-
+// ===== SEMANA 01 · INICIO =====
 import React, { useCallback, useEffect, useState } from 'react';
 import {
   Alert,
@@ -13,10 +9,18 @@ import {
   Text,
   View,
 } from 'react-native';
+// ===== SEMANA 01 · FIN =====
+// ===== SEMANA 03 · INICIO =====
 import { SafeAreaView } from 'react-native-safe-area-context';
+// ===== SEMANA 03 · FIN =====
+// ===== SEMANA 07 · INICIO =====
 import * as SecureStore from 'expo-secure-store';
+// ===== SEMANA 07 · FIN =====
+// ===== SEMANA 03 · INICIO =====
 import { Ionicons } from '@expo/vector-icons';
+// ===== SEMANA 03 · FIN =====
 
+// ===== SEMANA 07 · INICIO =====
 import {
   ITEMS_PER_PAGE_OPTIONS,
   usePreferences,
@@ -24,17 +28,10 @@ import {
 import type { ItemsPerPage, SortOrder } from '../hooks/usePreferences';
 import { COLORS, RADIUS, SIZES, SPACING, TYPOGRAPHY } from '../theme';
 
-// ============================================
-// 1. DATO SENSIBLE (SecureStore)
-// ============================================
-
-/** Clave del código de acceso de taquilla. Nunca se guarda en MMKV/AsyncStorage. */
 const SENSITIVE_KEY = 'teatro_taquilla_access_code';
 
-/** Alfabeto sin caracteres ambiguos (0/O, 1/I) para códigos dictados en taquilla. */
 const CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 
-/** Genera un código tipo TCXXXX-XXXX. */
 function generateAccessCode(): string {
   let code = 'TC';
 
@@ -50,7 +47,6 @@ function generateAccessCode(): string {
   return code;
 }
 
-/** Muestra solo los extremos: el valor completo nunca se pinta en la UI. */
 function maskSecret(value: string): string {
   if (value.length <= 6) {
     return '••••••';
@@ -58,10 +54,6 @@ function maskSecret(value: string): string {
 
   return `${value.slice(0, 3)}•••${value.slice(-3)}`;
 }
-
-// ============================================
-// 2. COMPONENTES DE PREFERENCIAS
-// ============================================
 
 interface SwitchRowProps {
   label: string;
@@ -204,10 +196,6 @@ function SecureAction({
   );
 }
 
-// ============================================
-// 3. PANTALLA
-// ============================================
-
 const SORT_OPTIONS: readonly SegmentOption<SortOrder>[] = [
   { label: 'A → Z', value: 'asc' },
   { label: 'Z → A', value: 'desc' },
@@ -232,12 +220,10 @@ export function SettingsScreen(): React.JSX.Element {
     resetPreferences,
   } = usePreferences();
 
-  // Estado de UI (no persistente) para el dato sensible.
   const [isSaved, setIsSaved] = useState<boolean>(false);
   const [maskedValue, setMaskedValue] = useState<string | null>(null);
   const [isBusy, setIsBusy] = useState<boolean>(false);
 
-  // Al entrar, verificamos si existe el código sin revelar su contenido.
   useEffect(() => {
     let isMounted = true;
 
@@ -358,7 +344,6 @@ export function SettingsScreen(): React.JSX.Element {
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
-        {/* ───────────── MMKV ───────────── */}
         <Text style={styles.sectionTitle}>Preferencias de la cartelera</Text>
         <Text style={styles.sectionHint}>
           Se guardan con MMKV y se aplican al instante, sin botón de guardar ni
@@ -412,7 +397,6 @@ export function SettingsScreen(): React.JSX.Element {
           <Text style={styles.resetButtonText}>Restablecer preferencias</Text>
         </Pressable>
 
-        {/* ───────────── SecureStore ───────────── */}
         <Text style={styles.sectionTitle}>Seguridad (SecureStore)</Text>
         <Text style={styles.sectionHint}>
           El código de acceso de taquilla se cifra en Keychain (iOS) o Keystore
@@ -488,7 +472,6 @@ export function SettingsScreen(): React.JSX.Element {
           </Text>
         </View>
 
-        {/* ───────────── Resumen de storages ───────────── */}
         <Text style={styles.sectionTitle}>Almacenamiento de la app</Text>
 
         <View style={styles.infoBox}>
@@ -785,3 +768,4 @@ const styles = StyleSheet.create({
     lineHeight: TYPOGRAPHY.lineHeight.base,
   },
 });
+// ===== SEMANA 07 · FIN =====

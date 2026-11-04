@@ -1,38 +1,30 @@
-// ============================================
-// UTILS: theatre — Semanas 09 y 10
-// Aforo por sala, ocupación y generación del mapa de butacas
-// ============================================
-
+// ===== SEMANA 10 · INICIO =====
 import type { Item, Seat, TheatreHall } from '../types';
 
 export interface HallLayout {
   rows: number;
   seatsPerRow: number;
 }
+// ===== SEMANA 10 · FIN =====
 
-/**
- * Distribución física de cada sala. El número total de butacas se deriva de
- * estas dimensiones para que el mapa de la Semana 10 y la barra de ocupación
- * de la Semana 09 nunca se contradigan.
- */
+// ===== SEMANA 09 · INICIO =====
 export const HALL_LAYOUT: Record<TheatreHall, HallLayout> = {
   'Sala Principal': { rows: 10, seatsPerRow: 32 },
   'Sala de Cámara': { rows: 8, seatsPerRow: 15 },
   'Teatro Experimental': { rows: 8, seatsPerRow: 10 },
 };
+// ===== SEMANA 09 · FIN =====
 
+// ===== SEMANA 10 · INICIO =====
 const ROW_LABELS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+// ===== SEMANA 10 · FIN =====
 
-/** Capacidad total de butacas de una sala. */
+// ===== SEMANA 09 · INICIO =====
 export function getHallCapacity(hall: TheatreHall): number {
   const layout = HALL_LAYOUT[hall];
   return layout.rows * layout.seatsPerRow;
 }
 
-/**
- * Proporción de butacas ocupadas (0 = sala vacía, 1 = lleno).
- * Se acota para tolerar datos de la API fuera de rango.
- */
 export function getHallOccupancy(
   hall: TheatreHall,
   availableSeats: number
@@ -41,11 +33,9 @@ export function getHallOccupancy(
   const occupiedSeats = capacity - availableSeats;
   return Math.min(1, Math.max(0, occupiedSeats / capacity));
 }
+// ===== SEMANA 09 · FIN =====
 
-/**
- * Hash determinista y barato para repartir las butacas ocupadas de una obra.
- * Así el mismo mapa se mantiene estable entre renders y visitas.
- */
+// ===== SEMANA 10 · INICIO =====
 function hashString(value: string): number {
   let hash = 2166136261;
 
@@ -57,10 +47,6 @@ function hashString(value: string): number {
   return hash >>> 0;
 }
 
-/**
- * Construye el mapa completo de una función: todas las butacas de la sala,
- * marcando como ocupadas exactamente `capacidad - availableSeats`.
- */
 export function buildSeatMap(
   item: Pick<Item, 'id' | 'hall' | 'availableSeats'>
 ): Seat[] {
@@ -99,3 +85,4 @@ export function buildSeatMap(
 
   return seats;
 }
+// ===== SEMANA 10 · FIN =====
