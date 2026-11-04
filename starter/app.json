@@ -20,6 +20,9 @@
     "plugins": [
       "expo-status-bar",
       "expo-secure-store"
-    ]
+    ],
+    "web": {
+      "bundler": "metro"
+    }
   }
 }
