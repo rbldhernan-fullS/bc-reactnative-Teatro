@@ -171,3 +171,15 @@ Inspirada en el telón de terciopelo y la atmósfera de una sala clásica de tea
 - **Iconos y splash**: se dejó la configuración por defecto de Expo para evitar referencias a archivos inexistentes. Si se requiere branding, agregar `starter/assets/icon.png`, `starter/assets/splash.png` y `starter/assets/adaptive-icon.png` y volver a declararlos en `app.json`.
 - **Ejercicios de la semana**: los ejercicios `01-flatlist-basica` y `02-busqueda-input` se trabajan en sus propios starters del bootcamp y no forman parte de este repositorio.
 - **Siguiente semana**: Week-03 incorpora React Navigation 7 (Tab + Stack, detalle de obra y favoritos).
+
+---
+
+## 🌐 Ejecutar en web
+
+```bash
+cd starter
+pnpm install
+pnpm web
+```
+
+La app también corre en el navegador con `react-native-web` y Metro.
