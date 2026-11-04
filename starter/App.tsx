@@ -1,17 +1,21 @@
-// ============================================
-// APP ENTRY POINT — Semana 05: Networking
-// QueryClientProvider + NavigationContainer
-// ============================================
-
+// ===== SEMANA 01 · INICIO =====
 import React from 'react';
+// ===== SEMANA 01 · FIN =====
+// ===== SEMANA 05 · INICIO =====
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+// ===== SEMANA 05 · FIN =====
+// ===== SEMANA 03 · INICIO =====
 import { NavigationContainer } from '@react-navigation/native';
+// ===== SEMANA 03 · FIN =====
+// ===== SEMANA 01 · INICIO =====
 import { StatusBar } from 'expo-status-bar';
+// ===== SEMANA 01 · FIN =====
+// ===== SEMANA 03 · INICIO =====
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { RootNavigator } from './src/navigation/RootNavigator';
+// ===== SEMANA 03 · FIN =====
 
-// Una sola instancia por app: se crea fuera del componente para que no se
-// recree en cada render.
+// ===== SEMANA 05 · INICIO =====
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -21,7 +25,9 @@ const queryClient = new QueryClient({
     },
   },
 });
+// ===== SEMANA 05 · FIN =====
 
+// ===== SEMANA 01 · INICIO =====
 export default function App(): React.JSX.Element {
   return (
     <QueryClientProvider client={queryClient}>
@@ -34,3 +40,4 @@ export default function App(): React.JSX.Element {
     </QueryClientProvider>
   );
 }
+// ===== SEMANA 01 · FIN =====

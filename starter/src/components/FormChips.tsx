@@ -1,11 +1,9 @@
-// ============================================
-// COMPONENT: FormChips — Semana 06
-// Selector de opciones (género, sala) conectado a React Hook Form
-// ============================================
-
+// ===== SEMANA 01 · INICIO =====
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import type { StyleProp, ViewStyle } from 'react-native';
+// ===== SEMANA 01 · FIN =====
+// ===== SEMANA 06 · INICIO =====
 import {
   Controller,
   type Control,
@@ -132,3 +130,4 @@ const styles = StyleSheet.create({
     color: COLORS.error,
   },
 });
+// ===== SEMANA 06 · FIN =====
