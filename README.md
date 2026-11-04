@@ -214,3 +214,17 @@ starter/
     └── theme/
         └── index.ts                # Paleta vino y oro
 ```
+
+---
+
+## 🌐 Ejecutar en web
+
+```bash
+cd starter
+pnpm install
+pnpm web
+```
+
+La app también corre en el navegador con `react-native-web` y Metro. Los módulos exclusivos de nativo
+se sustituyen por implementaciones web mediante archivos `.web.ts`: **MMKV** y **SecureStore** usan
+`localStorage`, y las notificaciones quedan deshabilitadas en web sin romper el arranque.
