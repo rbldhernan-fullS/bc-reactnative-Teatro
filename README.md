@@ -144,3 +144,15 @@ starter/
 | **NavigationContainer Raíz** | ✅ Cumplido | Configurado en `App.tsx` junto con `SafeAreaProvider` |
 | **Dominio Coherente** | ✅ Cumplido | 100% adaptado al dominio Teatro (sinopsis, butacas, funciones, salas) |
 | **TypeScript Estricto** | ✅ Cumplido | 0 errores de compilación (`tsc --noEmit`), 0 usos de `any` |
+
+---
+
+## 🌐 Ejecutar en web
+
+```bash
+cd starter
+pnpm install
+pnpm web
+```
+
+La app también corre en el navegador con `react-native-web` y Metro.
