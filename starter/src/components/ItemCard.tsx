@@ -1,3 +1,4 @@
+// ===== SEMANA 01 · INICIO =====
 import React from 'react';
 import { View, Text, Image, Pressable, StyleSheet } from 'react-native';
 import { Item } from '../types';
@@ -75,6 +76,4 @@ const styles = StyleSheet.create({
     color: '#d4a24c',
   },
 });
-
-
-// Revisado Semana 1
+// ===== SEMANA 01 · FIN =====

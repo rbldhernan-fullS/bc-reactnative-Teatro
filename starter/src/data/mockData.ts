@@ -1,3 +1,4 @@
+// ===== SEMANA 01 · INICIO =====
 import { Item } from '../types';
 
 export const MOCK_ITEMS: Item[] = [
@@ -38,5 +39,4 @@ export const MOCK_ITEMS: Item[] = [
     price: 35000,
   },
 ];
-
-// Revisado Semana 1
+// ===== SEMANA 01 · FIN =====

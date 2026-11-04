@@ -1,11 +1,11 @@
+// ===== SEMANA 01 · INICIO =====
 export interface Item {
   id: string;
-  name: string;       // título de la obra
-  subtitle: string;   // director o compañía
+  name: string;
+  subtitle: string;
   imageUri: string;
-  genre: string;      // Drama, Comedia, Musical...
-  date: string;       // función, ej. '2026-11-14'
-  price: number;      // en COP
+  genre: string;
+  date: string;
+  price: number;
 }
-
-// Revisado Semana 1
+// ===== SEMANA 01 · FIN =====
