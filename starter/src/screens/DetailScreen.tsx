@@ -625,7 +625,7 @@ export function DetailScreen(): React.JSX.Element {
                 </>
               )}
             </Pressable>
-            {/* ===== SEMANA 12 · FIN */}
+            {/* ===== SEMANA 12 · FIN ===== */}
           </View>
         </View>
       </Animated.ScrollView>
