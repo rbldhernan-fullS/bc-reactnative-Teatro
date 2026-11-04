@@ -15,7 +15,13 @@
       "bundleIdentifier": "com.hernan.teatro"
     },
     "android": {
-      "package": "com.hernan.teatro"
+      "package": "com.hernan.teatro",
+      "permissions": [
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.CAMERA",
+        "android.permission.READ_MEDIA_IMAGES"
+      ]
     },
     "plugins": [
       "expo-status-bar",
@@ -41,6 +47,9 @@
           "locationWhenInUsePermission": "El Teatro Colón usa tu ubicación para mostrarte la sede y la distancia al teatro."
         }
       ]
-    ]
+    ],
+    "web": {
+      "bundler": "metro"
+    }
   }
 }

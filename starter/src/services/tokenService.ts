@@ -1,5 +1,5 @@
 // ===== SEMANA 07 · INICIO =====
-import * as SecureStore from 'expo-secure-store';
+import * as SecureStore from './secureStore';
 // ===== SEMANA 07 · FIN =====
 
 // ===== SEMANA 08 · INICIO =====
