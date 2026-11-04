@@ -1,38 +1,26 @@
-// ============================================
-// STORE: reminderStore — Semana 12
-// Recordatorios activos por obra, persistidos en MMKV para poder cancelarlos
-// aunque la app se cierre. Solo guarda ids y metadatos, no las obras.
-// ============================================
-
+// ===== SEMANA 04 · INICIO =====
 import { create } from 'zustand';
+// ===== SEMANA 04 · FIN =====
+// ===== SEMANA 12 · INICIO =====
 import { createJSONStorage, persist } from 'zustand/middleware';
 
 import { storage } from '../storage/mmkv';
 import type { ShowReminder } from '../types';
 
 export interface ReminderStore {
-  /** Recordatorios indexados por id de obra (uno activo por obra) */
   reminders: Record<string, ShowReminder>;
 
-  /** Registra o reemplaza el recordatorio de una obra */
   saveReminder: (reminder: ShowReminder) => void;
 
-  /** Quita el registro local de una obra */
   removeReminder: (itemId: string) => void;
 
-  /** Vacía todos los registros locales */
   clearReminders: () => void;
 
-  /** Elimina registros cuyo aviso ya no existe en el sistema operativo */
   pruneReminders: (scheduledIds: string[]) => void;
 }
 
 type PersistedReminderState = Pick<ReminderStore, 'reminders'>;
 
-/**
- * Adaptador sincrónico sobre la instancia MMKV compartida. Evita async/await
- * en el arranque y mantiene el mismo storage que las preferencias.
- */
 const mmkvStorage = createJSONStorage(() => ({
   getItem: (name: string): string | null => storage.getString(name) ?? null,
   setItem: (name: string, value: string): void => {
@@ -96,12 +84,11 @@ export const useReminderStore = create<ReminderStore>()(
   )
 );
 
-/** Selector: recordatorio activo de una obra. */
 export const selectReminder =
   (itemId: string) =>
   (state: ReminderStore): ShowReminder | undefined =>
     state.reminders[itemId];
 
-/** Selector: cantidad de recordatorios activos. */
 export const selectReminderCount = (state: ReminderStore): number =>
   Object.keys(state.reminders).length;
+  // ===== SEMANA 12 · FIN =====

@@ -1,9 +1,4 @@
-// ============================================
-// SCREEN: CameraScreen — Semana 11
-// Cámara a pantalla completa con permiso gestionado por PermissionGate.
-// La foto capturada se guarda como afiche local de la obra.
-// ============================================
-
+// ===== SEMANA 01 · INICIO =====
 import React, { useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -13,9 +8,13 @@ import {
   Text,
   View,
 } from 'react-native';
+// ===== SEMANA 01 · FIN =====
+// ===== SEMANA 03 · INICIO =====
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+// ===== SEMANA 03 · FIN =====
+// ===== SEMANA 11 · INICIO =====
 import {
   CameraView,
   useCameraPermissions,
@@ -116,7 +115,6 @@ export function CameraScreen(): React.JSX.Element {
         </View>
       ) : null}
 
-      {/* Barra superior: cerrar, flash y cambio de cámara */}
       <View style={[styles.topBar, { paddingTop: insets.top + SPACING.sm }]}>
         <Pressable
           style={({ pressed }) => [
@@ -170,7 +168,6 @@ export function CameraScreen(): React.JSX.Element {
         ) : null}
       </View>
 
-      {/* Disparador y ayuda */}
       {granted ? (
         <View style={[styles.bottomBar, { paddingBottom: insets.bottom + SPACING.lg }]}>
           <Text style={styles.hint}>
@@ -292,3 +289,4 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.background,
   },
 });
+// ===== SEMANA 11 · FIN =====

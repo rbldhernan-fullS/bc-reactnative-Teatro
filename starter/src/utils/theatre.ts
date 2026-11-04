@@ -1,38 +1,30 @@
-// ============================================
-// UTILS: theatre — Semanas 09, 10 y 11
-// Aforo por sala, ocupación, mapa de butacas y sede del teatro
-// ============================================
-
+// ===== SEMANA 10 · INICIO =====
 import type { Item, Seat, TheatreHall } from '../types';
 
 export interface HallLayout {
   rows: number;
   seatsPerRow: number;
 }
+// ===== SEMANA 10 · FIN =====
 
-/**
- * Distribución física de cada sala. El número total de butacas se deriva de
- * estas dimensiones para que el mapa de la Semana 10 y la barra de ocupación
- * de la Semana 09 nunca se contradigan.
- */
+// ===== SEMANA 09 · INICIO =====
 export const HALL_LAYOUT: Record<TheatreHall, HallLayout> = {
   'Sala Principal': { rows: 10, seatsPerRow: 32 },
   'Sala de Cámara': { rows: 8, seatsPerRow: 15 },
   'Teatro Experimental': { rows: 8, seatsPerRow: 10 },
 };
+// ===== SEMANA 09 · FIN =====
 
+// ===== SEMANA 10 · INICIO =====
 const ROW_LABELS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+// ===== SEMANA 10 · FIN =====
 
-/** Capacidad total de butacas de una sala. */
+// ===== SEMANA 09 · INICIO =====
 export function getHallCapacity(hall: TheatreHall): number {
   const layout = HALL_LAYOUT[hall];
   return layout.rows * layout.seatsPerRow;
 }
 
-/**
- * Proporción de butacas ocupadas (0 = sala vacía, 1 = lleno).
- * Se acota para tolerar datos de la API fuera de rango.
- */
 export function getHallOccupancy(
   hall: TheatreHall,
   availableSeats: number
@@ -41,11 +33,9 @@ export function getHallOccupancy(
   const occupiedSeats = capacity - availableSeats;
   return Math.min(1, Math.max(0, occupiedSeats / capacity));
 }
+// ===== SEMANA 09 · FIN =====
 
-/**
- * Hash determinista y barato para repartir las butacas ocupadas de una obra.
- * Así el mismo mapa se mantiene estable entre renders y visitas.
- */
+// ===== SEMANA 10 · INICIO =====
 function hashString(value: string): number {
   let hash = 2166136261;
 
@@ -57,10 +47,6 @@ function hashString(value: string): number {
   return hash >>> 0;
 }
 
-/**
- * Construye el mapa completo de una función: todas las butacas de la sala,
- * marcando como ocupadas exactamente `capacidad - availableSeats`.
- */
 export function buildSeatMap(
   item: Pick<Item, 'id' | 'hall' | 'availableSeats'>
 ): Seat[] {
@@ -99,11 +85,9 @@ export function buildSeatMap(
 
   return seats;
 }
+// ===== SEMANA 10 · FIN =====
 
-// ============================================
-// Semana 11: sede del teatro y distancia
-// ============================================
-
+// ===== SEMANA 11 · INICIO =====
 export interface VenueCoordinates {
   latitude: number;
   longitude: number;
@@ -115,10 +99,6 @@ export interface TheatreVenue extends VenueCoordinates {
   city: string;
 }
 
-/**
- * Sede física del Teatro Colón en La Candelaria (Bogotá). Se usa como destino
- * para calcular la distancia desde la ubicación del socio y para abrir el mapa.
- */
 export const TEATRO_COLON_VENUE: TheatreVenue = {
   name: 'Teatro Colón',
   address: 'Calle 10 # 5-32, La Candelaria',
@@ -133,10 +113,6 @@ function toRadians(degrees: number): number {
   return (degrees * Math.PI) / 180;
 }
 
-/**
- * Distancia en metros entre dos coordenadas usando la fórmula de Haversine.
- * Es suficientemente precisa para mostrar "estás a X del teatro" sin librerías.
- */
 export function getDistanceInMeters(
   from: VenueCoordinates,
   to: VenueCoordinates
@@ -155,7 +131,6 @@ export function getDistanceInMeters(
   return 2 * EARTH_RADIUS_METERS * Math.asin(Math.sqrt(haversine));
 }
 
-/** Formatea la distancia en metros o kilómetros con un decimal. */
 export function formatDistance(meters: number): string {
   if (!Number.isFinite(meters) || meters < 0) {
     return 'sin datos';
@@ -168,9 +143,9 @@ export function formatDistance(meters: number): string {
   return `${(meters / 1000).toFixed(1)} km`;
 }
 
-/** Enlace de Google Maps para llegar caminando a la sede. */
 export function getVenueDirectionsUrl(
   venue: TheatreVenue = TEATRO_COLON_VENUE
 ): string {
   return `https://www.google.com/maps/dir/?api=1&destination=${venue.latitude},${venue.longitude}&travelmode=walking`;
 }
+// ===== SEMANA 11 · FIN =====

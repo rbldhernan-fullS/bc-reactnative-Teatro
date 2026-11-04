@@ -1,11 +1,8 @@
-// ============================================
-// HOOK: useNotifications — Semana 12
-// Fachada de la Semana 12: expone el estado compartido del store y las
-// operaciones de dominio (avisos de cartelera y recordatorios de función).
-// ============================================
-
+// ===== SEMANA 01 · INICIO =====
 import { useCallback } from 'react';
+// ===== SEMANA 01 · FIN =====
 
+// ===== SEMANA 12 · INICIO =====
 import {
   cancelScheduledNotification,
   scheduleCarteleraNotification,
@@ -35,34 +32,26 @@ export interface UseNotificationsResult {
   lastReceived: ReceivedNotification | null;
   reminders: Record<string, ShowReminder>;
 
-  /** Relee el permiso del sistema sin abrir diálogos */
   refreshPermission: () => Promise<void>;
 
-  /** Pide permiso y obtiene el Expo Push Token */
   registerForPush: () => Promise<{ token: string | null; error: string | null }>;
 
-  /** Abre los ajustes del sistema para desbloquear el permiso */
   openSystemSettings: () => Promise<void>;
 
-  /** Aviso inmediato al publicar o editar una obra */
   scheduleCartelera: (
     play: Item,
     change: 'created' | 'updated'
   ) => Promise<ScheduleOutcome>;
 
-  /** Programa el recordatorio 2 h antes o la prueba de 10 s */
   scheduleReminder: (
     play: Item,
     kind: ReminderKind
   ) => Promise<ScheduleOutcome>;
 
-  /** Cancela el recordatorio de una obra. `false` si el sistema falla. */
   cancelReminder: (itemId: string) => Promise<boolean>;
 
-  /** Cancela todos los recordatorios y devuelve cuántos había */
   cancelAllReminders: () => Promise<number>;
 
-  /** Limpia el error de la sección de notificaciones */
   clearError: () => void;
 }
 
@@ -177,3 +166,4 @@ export function useNotifications(): UseNotificationsResult {
     clearError,
   };
 }
+// ===== SEMANA 12 · FIN =====

@@ -1,9 +1,4 @@
-// ============================================
-// SCREEN: DetailScreen — Semanas 05, 09, 10, 11 y 12
-// Ficha técnica con entrada Reanimated, barra de ocupación, mapa de butacas,
-// afiche local (cámara/galería), sede del teatro y recordatorio de función.
-// ============================================
-
+// ===== SEMANA 01 · INICIO =====
 import React, { useEffect, useState } from 'react';
 import {
   View,
@@ -14,9 +9,13 @@ import {
   Alert,
   ActivityIndicator,
 } from 'react-native';
+// ===== SEMANA 01 · FIN =====
+// ===== SEMANA 03 · INICIO =====
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+// ===== SEMANA 03 · FIN =====
+// ===== SEMANA 10 · INICIO =====
 import Animated, {
   Easing,
   interpolate,
@@ -24,35 +23,70 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+// ===== SEMANA 10 · FIN =====
+// ===== SEMANA 04 · INICIO =====
 import type { DetailScreenProps } from '../navigation/types';
+// ===== SEMANA 04 · FIN =====
+// ===== SEMANA 12 · INICIO =====
 import type { Item } from '../types';
+// ===== SEMANA 12 · FIN =====
+// ===== SEMANA 09 · INICIO =====
 import { AnimatedButton } from '../components/AnimatedButton';
+// ===== SEMANA 09 · FIN =====
+// ===== SEMANA 11 · INICIO =====
 import { PhotoPicker } from '../components/PhotoPicker';
+// ===== SEMANA 11 · FIN =====
+// ===== SEMANA 09 · INICIO =====
 import { ProgressBar } from '../components/ProgressBar';
+// ===== SEMANA 09 · FIN =====
+// ===== SEMANA 05 · INICIO =====
 import { ScreenState } from '../components/ScreenState';
+// ===== SEMANA 05 · FIN =====
+// ===== SEMANA 11 · INICIO =====
 import { VenueCard } from '../components/VenueCard';
+// ===== SEMANA 11 · FIN =====
+// ===== SEMANA 05 · INICIO =====
 import { usePlayById } from '../hooks/usePlays';
+// ===== SEMANA 05 · FIN =====
+// ===== SEMANA 12 · INICIO =====
 import { useNotifications } from '../hooks/useNotifications';
 import { usePreferences } from '../hooks/usePreferences';
+// ===== SEMANA 12 · FIN =====
+// ===== SEMANA 05 · INICIO =====
 import { getApiErrorMessage } from '../services/api';
+// ===== SEMANA 05 · FIN =====
+// ===== SEMANA 12 · INICIO =====
 import { formatScheduleDate } from '../services/notifications';
+// ===== SEMANA 12 · FIN =====
+// ===== SEMANA 04 · INICIO =====
 import { COLORS, TYPOGRAPHY, SPACING, RADIUS, SIZES } from '../theme';
 import { selectIsSaved, useSavedStore } from '../stores/savedStore';
+// ===== SEMANA 04 · FIN =====
+// ===== SEMANA 11 · INICIO =====
 import { selectPoster, usePosterStore } from '../stores/posterStore';
+// ===== SEMANA 11 · FIN =====
+// ===== SEMANA 09 · INICIO =====
 import { getHallCapacity, getHallOccupancy } from '../utils/theatre';
+// ===== SEMANA 09 · FIN =====
 
+// ===== SEMANA 03 · INICIO =====
 export function DetailScreen(): React.JSX.Element {
   const route = useRoute<DetailScreenProps['route']>();
   const navigation = useNavigation<DetailScreenProps['navigation']>();
+  // ===== SEMANA 04 · INICIO =====
   const insets = useSafeAreaInsets();
 
   const { id } = route.params;
+  // ===== SEMANA 04 · FIN =====
 
-  // Estado del servidor: la ficha viene de la caché de TanStack Query.
+  // ===== SEMANA 05 · INICIO =====
   const { data: item, isLoading, isError, error, refetch } = usePlayById(id);
+  // ===== SEMANA 05 · FIN =====
 
-  // Entrada del contenido con Reanimated: fade in + slide up de 500 ms.
+  // ===== SEMANA 10 · INICIO =====
   const entrance = useSharedValue(0);
+  // ===== SEMANA 10 · FIN =====
+  // ===== SEMANA 09 · INICIO =====
   const itemId = item?.id;
 
   useEffect(() => {
@@ -60,13 +94,17 @@ export function DetailScreen(): React.JSX.Element {
       return;
     }
 
+    // ===== SEMANA 10 · INICIO =====
     entrance.value = 0;
     entrance.value = withTiming(1, {
       duration: 500,
       easing: Easing.out(Easing.cubic),
     });
+    // ===== SEMANA 10 · FIN =====
   }, [entrance, itemId]);
+  // ===== SEMANA 09 · FIN =====
 
+  // ===== SEMANA 10 · INICIO =====
   const contentStyle = useAnimatedStyle(() => ({
     opacity: entrance.value,
     transform: [
@@ -75,27 +113,35 @@ export function DetailScreen(): React.JSX.Element {
       },
     ],
   }));
+  // ===== SEMANA 10 · FIN =====
 
-  // Estado de UI: el botón lee y escribe solo el id en el store.
+  // ===== SEMANA 04 · INICIO =====
   const isSaved = useSavedStore(selectIsSaved(id));
+  // ===== SEMANA 04 · FIN =====
+  // ===== SEMANA 05 · INICIO =====
   const toggleSaved = useSavedStore((state) => state.toggleSaved);
+  // ===== SEMANA 05 · FIN =====
 
-  // Semana 11: el afiche local tiene prioridad sobre el de la API.
+  // ===== SEMANA 11 · INICIO =====
   const localPoster = usePosterStore(selectPoster(id));
+  // ===== SEMANA 11 · FIN =====
 
-  // Semana 12: recordatorio local y preferencia que lo habilita.
+  // ===== SEMANA 12 · INICIO =====
   const { reminders, scheduleReminder, cancelReminder } = useNotifications();
   const { remindersEnabled } = usePreferences();
   const [isScheduling, setIsScheduling] = useState(false);
   const reminder = reminders[id];
+  // ===== SEMANA 12 · FIN =====
 
-  // Mantiene el título del header sincronizado después de editar la obra.
+  // ===== SEMANA 06 · INICIO =====
   useEffect(() => {
     if (item) {
       navigation.setOptions({ title: item.name });
     }
   }, [item, navigation]);
+  // ===== SEMANA 06 · FIN =====
 
+  // ===== SEMANA 05 · INICIO =====
   if (isLoading) {
     return (
       <View style={styles.screenWrapper}>
@@ -123,7 +169,9 @@ export function DetailScreen(): React.JSX.Element {
       </View>
     );
   }
+  // ===== SEMANA 05 · FIN =====
 
+  // ===== SEMANA 04 · INICIO =====
   if (!item) {
     return (
       <View style={[styles.screenWrapper, styles.notFoundContainer]}>
@@ -142,6 +190,7 @@ export function DetailScreen(): React.JSX.Element {
       </View>
     );
   }
+  // ===== SEMANA 04 · FIN =====
 
   const {
     name,
@@ -158,15 +207,20 @@ export function DetailScreen(): React.JSX.Element {
     synopsis,
   } = item;
 
-  // Alias con tipo estrecho: las funciones declaradas debajo (closures) no
-  // conservan el estrechamiento de `item` tras el return temprano.
+  // ===== SEMANA 12 · INICIO =====
   const play: Item = item;
+  // ===== SEMANA 12 · FIN =====
 
+  // ===== SEMANA 09 · INICIO =====
   const hallCapacity = getHallCapacity(hall);
   const occupiedSeats = Math.max(0, hallCapacity - availableSeats);
   const occupancy = getHallOccupancy(hall, availableSeats);
+  // ===== SEMANA 09 · FIN =====
+  // ===== SEMANA 11 · INICIO =====
   const posterUri = localPoster ?? imageUri;
+  // ===== SEMANA 11 · FIN =====
 
+  // ===== SEMANA 12 · INICIO =====
   async function handleScheduleReminder(): Promise<void> {
     setIsScheduling(true);
 
@@ -219,6 +273,7 @@ export function DetailScreen(): React.JSX.Element {
         : 'El aviso ya no estaba programado en el sistema; el registro local quedó limpio.'
     );
   }
+  // ===== SEMANA 12 · FIN =====
 
   function handleBookingPress(): void {
     navigation.navigate('SeatMap', { id, name });
@@ -234,7 +289,6 @@ export function DetailScreen(): React.JSX.Element {
         ]}
         showsVerticalScrollIndicator={false}
       >
-        {/* Banner principal / Afiche (local o de la API) */}
         <View style={styles.imageContainer}>
           <Image
             source={{ uri: posterUri }}
@@ -243,7 +297,6 @@ export function DetailScreen(): React.JSX.Element {
           />
           <View style={styles.imageOverlay} />
 
-          {/* Badges superiores sobre la imagen */}
           <View style={styles.badgesRow}>
             <View style={styles.genreBadge}>
               <Text style={styles.genreBadgeText}>{genre}</Text>
@@ -253,14 +306,16 @@ export function DetailScreen(): React.JSX.Element {
             </View>
           </View>
 
+          {/* ===== SEMANA 11 · INICIO ===== */}
           {localPoster ? (
             <View style={styles.localPosterBadge}>
               <Ionicons name="camera" size={12} color={COLORS.background} />
               <Text style={styles.localPosterBadgeText}>Afiche local</Text>
             </View>
           ) : null}
+          {/* ===== SEMANA 11 · FIN ===== */}
 
-          {/* Acción Guardar / Quitar conectada al store */}
+          {/* ===== SEMANA 04 · INICIO ===== */}
           <Pressable
             style={({ pressed }) => [
               styles.savePill,
@@ -290,14 +345,13 @@ export function DetailScreen(): React.JSX.Element {
               {isSaved ? 'Guardada' : 'Guardar'}
             </Text>
           </Pressable>
+          {/* ===== SEMANA 04 · FIN ===== */}
         </View>
 
-        {/* Información Principal */}
         <View style={styles.body}>
           <Text style={styles.title}>{name}</Text>
           <Text style={styles.subtitle}>{subtitle}</Text>
 
-          {/* Barra de metadatos rápidos */}
           <View style={styles.metaGrid}>
             <View style={styles.metaCard}>
               <Text style={styles.metaIcon}>🏛</Text>
@@ -326,7 +380,6 @@ export function DetailScreen(): React.JSX.Element {
             </View>
           </View>
 
-          {/* Disponibilidad de butacas */}
           <View style={styles.availabilityBanner}>
             <Text style={styles.availabilityIcon}>🎭</Text>
             <View style={styles.availabilityTextWrapper}>
@@ -341,7 +394,7 @@ export function DetailScreen(): React.JSX.Element {
             </View>
           </View>
 
-          {/* Ocupación de la sala: ancho y color interpolados */}
+          {/* ===== SEMANA 09 · INICIO ===== */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Estado del aforo</Text>
             <ProgressBar
@@ -350,8 +403,9 @@ export function DetailScreen(): React.JSX.Element {
               caption={`${occupiedSeats} de ${hallCapacity} butacas ocupadas en la ${hall}`}
             />
           </View>
+          {/* ===== SEMANA 09 · FIN ===== */}
 
-          {/* Semana 11: afiche local con cámara o galería */}
+          {/* ===== SEMANA 11 · INICIO ===== */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Afiche de la obra</Text>
             <PhotoPicker
@@ -361,10 +415,10 @@ export function DetailScreen(): React.JSX.Element {
             />
           </View>
 
-          {/* Semana 11: sede del teatro, ubicación y distancia */}
           <VenueCard hall={hall} />
+          {/* ===== SEMANA 11 · FIN ===== */}
 
-          {/* Semana 12: recordatorio local 2 h antes de la función */}
+          {/* ===== SEMANA 12 · INICIO ===== */}
           <View style={styles.section}>
             <View style={styles.reminderHeader}>
               <Text style={styles.sectionTitle}>Recordatorio de función</Text>
@@ -480,14 +534,13 @@ export function DetailScreen(): React.JSX.Element {
               </Pressable>
             </View>
           </View>
+          {/* ===== SEMANA 12 · FIN ===== */}
 
-          {/* Sinopsis de la obra */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Sinopsis Argumental</Text>
             <Text style={styles.synopsisText}>{synopsis}</Text>
           </View>
 
-          {/* Ficha Técnica Teatral */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Ficha Artística</Text>
             <View style={styles.specRow}>
@@ -512,7 +565,6 @@ export function DetailScreen(): React.JSX.Element {
         </View>
       </Animated.ScrollView>
 
-      {/* Barra de acción inferior fija */}
       <View
         style={[
           styles.bottomBar,
@@ -866,3 +918,4 @@ const styles = StyleSheet.create({
     fontWeight: TYPOGRAPHY.weight.bold,
   },
 });
+// ===== SEMANA 03 · FIN =====

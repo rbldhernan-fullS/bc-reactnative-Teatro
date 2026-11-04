@@ -1,10 +1,8 @@
-// ============================================
-// COMPONENT: AnimatedButton — Semana 10
-// Feedback táctil con Gesture.Tap + withTiming / withSpring (Reanimated 4)
-// ============================================
-
+// ===== SEMANA 01 · INICIO =====
 import React, { useMemo } from 'react';
 import { StyleSheet, Text } from 'react-native';
+// ===== SEMANA 01 · FIN =====
+// ===== SEMANA 10 · INICIO =====
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   runOnJS,
@@ -13,30 +11,31 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
+// ===== SEMANA 10 · FIN =====
+// ===== SEMANA 03 · INICIO =====
 import { Ionicons } from '@expo/vector-icons';
+// ===== SEMANA 03 · FIN =====
+// ===== SEMANA 09 · INICIO =====
 import { COLORS, TYPOGRAPHY, SPACING, RADIUS, SIZES } from '../theme';
 
 type ButtonVariant = 'primary' | 'outline';
 
 interface AnimatedButtonProps {
-  /** Texto visible del botón */
   label: string;
-  /** Acción ejecutada al completar el tap */
   onPress: () => void;
-  /** Estilo visual: relleno dorado u contorno sobre fondo vino */
   variant?: ButtonVariant;
-  /** Icono opcional de Ionicons */
   icon?: keyof typeof Ionicons.glyphMap;
-  /** Reduce paddings y tipografía para cabeceras */
   compact?: boolean;
-  /** Bloquea la interacción y atenúa el botón */
   disabled?: boolean;
-  /** Etiqueta accesible cuando el texto visible no basta */
   accessibilityLabel?: string;
 }
+// ===== SEMANA 09 · FIN =====
 
+// ===== SEMANA 10 · INICIO =====
 const PRESSED_SCALE = 0.95;
+// ===== SEMANA 10 · FIN =====
 
+// ===== SEMANA 09 · INICIO =====
 const PRESS_OUT_SPRING = {
   damping: 10,
   stiffness: 240,
@@ -52,9 +51,12 @@ export function AnimatedButton({
   disabled = false,
   accessibilityLabel,
 }: AnimatedButtonProps): React.JSX.Element {
+  // ===== SEMANA 10 · INICIO =====
   const scale = useSharedValue(1);
+  // ===== SEMANA 10 · FIN =====
   const isPrimary = variant === 'primary';
 
+  // ===== SEMANA 10 · INICIO =====
   const tapGesture = useMemo(
     () =>
       Gesture.Tap()
@@ -78,6 +80,7 @@ export function AnimatedButton({
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
   }));
+  // ===== SEMANA 10 · FIN =====
 
   return (
     <GestureDetector gesture={tapGesture}>
@@ -155,3 +158,4 @@ const styles = StyleSheet.create({
     color: COLORS.accent,
   },
 });
+// ===== SEMANA 09 · FIN =====

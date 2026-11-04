@@ -1,12 +1,10 @@
-// ============================================
-// SERVICE: notifications — Semana 12
-// Permisos, Expo Push Token y notificaciones locales del Teatro Colón.
-// Todo el acceso a expo-notifications vive aquí: las pantallas y los stores
-// solo consumen funciones tipadas.
-// ============================================
-
+// ===== SEMANA 01 · INICIO =====
 import { Platform } from 'react-native';
+// ===== SEMANA 01 · FIN =====
+// ===== SEMANA 05 · INICIO =====
 import Constants from 'expo-constants';
+// ===== SEMANA 05 · FIN =====
+// ===== SEMANA 12 · INICIO =====
 import * as Notifications from 'expo-notifications';
 
 import type {
@@ -18,16 +16,12 @@ import type {
   ScheduleOutcome,
 } from '../types';
 
-/** Canal de Android para avisos de funciones. */
 export const TEATRO_NOTIFICATION_CHANNEL = 'teatro-funciones';
 
-/** Los recordatorios de función se programan 2 horas antes. */
 export const SHOW_REMINDER_OFFSET_MS = 2 * 60 * 60 * 1000;
 
-/** Segundos de la prueba rápida solicitada en la rúbrica. */
 export const DEMO_REMINDER_SECONDS = 10;
 
-/** Margen mínimo para que un trigger con fecha siga siendo útil. */
 const MIN_TRIGGER_LEAD_MS = 5 * 1000;
 
 const MONTHS_ES = [
@@ -44,10 +38,6 @@ const MONTHS_ES = [
   'nov',
   'dic',
 ] as const;
-
-// ============================================
-// 1. PERMISOS
-// ============================================
 
 export type NotificationPermissionState =
   | 'granted'
@@ -82,16 +72,11 @@ function toPermissionSnapshot(
   };
 }
 
-/** Consulta el permiso sin mostrar ningún diálogo del sistema. */
 export async function getNotificationPermission(): Promise<NotificationPermissionSnapshot> {
   const response = await Notifications.getPermissionsAsync();
   return toPermissionSnapshot(response);
 }
 
-/**
- * Consulta el permiso y, si `request` es `true`, abre el diálogo del sistema.
- * Con `request: false` nunca interrumpe al socio (útil al publicar una obra).
- */
 export async function ensureNotificationPermission(
   request: boolean
 ): Promise<NotificationPermissionSnapshot> {
@@ -105,14 +90,6 @@ export async function ensureNotificationPermission(
   return toPermissionSnapshot(requested);
 }
 
-// ============================================
-// 2. EXPO PUSH TOKEN
-// ============================================
-
-/**
- * El `projectId` se lee de la configuración de EAS. Si falta, la app muestra
- * un aviso visible en Ajustes en lugar de intentar un token que fallará.
- */
 export function getEasProjectId(): string | null {
   const extra = Constants.expoConfig?.extra;
   const easExtra =
@@ -134,7 +111,6 @@ export function getEasProjectId(): string | null {
   return null;
 }
 
-/** Obtiene el token que identifica a este dispositivo ante Expo Push API. */
 export async function requestExpoPushToken(
   projectId: string
 ): Promise<string> {
@@ -142,14 +118,6 @@ export async function requestExpoPushToken(
   return token.data;
 }
 
-// ============================================
-// 3. CANAL DE ANDROID
-// ============================================
-
-/**
- * Android 8+ exige un canal antes de programar la primera notificación.
- * Se llama al arrancar la app y es idempotente.
- */
 export async function configureNotificationChannel(): Promise<void> {
   if (Platform.OS !== 'android') {
     return;
@@ -167,16 +135,9 @@ export async function configureNotificationChannel(): Promise<void> {
         sound: 'default',
       }
     );
-  } catch {
-    // Sin canal Android usa el canal por defecto: no es un error bloqueante.
-  }
+  } catch {}
 }
 
-// ============================================
-// 4. FECHAS DE LA FUNCIÓN
-// ============================================
-
-/** Convierte `date` (YYYY-MM-DD) y `time` (HH:mm) en una fecha local. */
 export function getShowDate(play: Item): Date | null {
   const dateMatch = /^(\d{4})-(\d{2})-(\d{2})$/.exec(play.date);
   const timeMatch = /^(\d{2}):(\d{2})$/.exec(play.time);
@@ -200,7 +161,6 @@ export function getShowDate(play: Item): Date | null {
   return Number.isNaN(showDate.getTime()) ? null : showDate;
 }
 
-/** Momento exacto en el que debe sonar el recordatorio (2 h antes). */
 export function getShowReminderDate(play: Item): Date | null {
   const showDate = getShowDate(play);
 
@@ -211,7 +171,6 @@ export function getShowReminderDate(play: Item): Date | null {
   return new Date(showDate.getTime() - SHOW_REMINDER_OFFSET_MS);
 }
 
-/** Formato corto en español, sin depender de datos regionales de Intl. */
 export function formatScheduleDate(timestamp: number): string {
   const date = new Date(timestamp);
 
@@ -226,10 +185,6 @@ export function formatScheduleDate(timestamp: number): string {
 
   return `${day} ${month} · ${hours}:${minutes}`;
 }
-
-// ============================================
-// 5. PROGRAMACIÓN
-// ============================================
 
 function buildPayload(
   play: Item,
@@ -294,10 +249,6 @@ async function scheduleLocal(
   }
 }
 
-/**
- * Aviso inmediato de cartelera. No pide permiso: si aún no está concedido,
- * simplemente no se programa para no interrumpir el alta de la obra.
- */
 export async function scheduleCarteleraNotification(
   play: Item,
   change: 'created' | 'updated'
@@ -331,10 +282,6 @@ export async function scheduleCarteleraNotification(
   );
 }
 
-/**
- * Recordatorio de una obra. `show` usa un trigger de fecha 2 h antes de la
- * función; `demo` usa un intervalo de 10 s para comprobar el formato.
- */
 export async function scheduleShowReminder(
   play: Item,
   kind: ReminderKind
@@ -387,7 +334,6 @@ export async function scheduleShowReminder(
   );
 }
 
-/** Aviso inmediato de prueba lanzado desde Ajustes. */
 export async function scheduleTestNotification(): Promise<ScheduleOutcome> {
   const permission = await ensureNotificationPermission(true);
 
@@ -408,7 +354,6 @@ export async function scheduleTestNotification(): Promise<ScheduleOutcome> {
   );
 }
 
-/** Recordatorio genérico de 10 s para comprobar el flujo desde Ajustes. */
 export async function scheduleTestReminder(): Promise<ScheduleOutcome> {
   const permission = await ensureNotificationPermission(true);
 
@@ -431,7 +376,6 @@ export async function scheduleTestReminder(): Promise<ScheduleOutcome> {
   );
 }
 
-/** Cancela un aviso ya programado. Devuelve `false` si el sistema falla. */
 export async function cancelScheduledNotification(
   notificationId: string
 ): Promise<boolean> {
@@ -443,7 +387,6 @@ export async function cancelScheduledNotification(
   }
 }
 
-/** Identificadores que siguen programados en el sistema operativo. */
 export async function getScheduledNotificationIds(): Promise<string[] | null> {
   try {
     const scheduled =
@@ -455,10 +398,6 @@ export async function getScheduledNotificationIds(): Promise<string[] | null> {
   }
 }
 
-// ============================================
-// 6. PAYLOAD Y ERRORES
-// ============================================
-
 function isNotificationScreen(value: unknown): value is NotificationScreen {
   return (
     value === 'HomeDetail' || value === 'HomeList' || value === 'Settings'
@@ -469,10 +408,6 @@ function isNotificationKind(value: unknown): value is NotificationKind {
   return value === 'event' || value === 'reminder' || value === 'test';
 }
 
-/**
- * Valida el `data` que llega desde el sistema operativo. Puede venir de una
- * notificación local o de un push enviado desde Expo Push Tool.
- */
 export function parseNotificationPayload(
   data: unknown
 ): NotificationPayload | null {
@@ -500,7 +435,6 @@ export function parseNotificationPayload(
   };
 }
 
-/** Mensaje legible para cualquier fallo de expo-notifications. */
 export function getNotificationErrorMessage(error: unknown): string {
   if (error instanceof Error && error.message.trim().length > 0) {
     return error.message;
@@ -508,3 +442,4 @@ export function getNotificationErrorMessage(error: unknown): string {
 
   return 'No se pudo completar la operación con notificaciones.';
 }
+// ===== SEMANA 12 · FIN =====

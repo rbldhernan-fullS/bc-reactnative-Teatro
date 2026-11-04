@@ -1,9 +1,7 @@
-// ============================================
-// HOOK: usePreferences — Semana 07
-// Preferencias de la cartelera persistidas con MMKV (reactivas y sincrónicas)
-// ============================================
-
+// ===== SEMANA 01 · INICIO =====
 import { useCallback } from 'react';
+// ===== SEMANA 01 · FIN =====
+// ===== SEMANA 07 · INICIO =====
 import {
   useMMKVBoolean,
   useMMKVNumber,
@@ -12,11 +10,6 @@ import {
 
 import { storage } from '../storage/mmkv';
 
-// ============================================
-// 1. CLAVES Y VALORES POR DEFECTO
-// ============================================
-
-/** Claves centralizadas: evita strings sueltos repartidos por las pantallas. */
 export const PREF_KEYS = {
   SORT_ORDER: 'pref_sortOrder',
   COMPACT_MODE: 'pref_compactMode',
@@ -45,14 +38,6 @@ export const DEFAULT_PREFERENCES = {
   remindersEnabled: boolean;
 };
 
-// ============================================
-// 2. NORMALIZACIÓN DE VALORES GUARDADOS
-// ============================================
-
-/**
- * MMKV devuelve `string | undefined`. Si el archivo se editó a mano o cambió
- * la versión de la app, caemos al valor por defecto tipado.
- */
 function normalizeSortOrder(value: string | undefined): SortOrder {
   return value === 'desc' ? 'desc' : DEFAULT_PREFERENCES.sortOrder;
 }
@@ -65,17 +50,6 @@ function normalizeItemsPerPage(value: number | undefined): ItemsPerPage {
   return DEFAULT_PREFERENCES.itemsPerPage;
 }
 
-// ============================================
-// 3. HOOK PRINCIPAL
-// ============================================
-
-/**
- * Expone las preferencias del usuario y sus setters.
- *
- * Los hooks `useMMKV*` son reactivos: al escribir en MMKV, todos los
- * componentes suscritos se vuelven a renderizar sin `async/await` ni
- * reiniciar la app. La escritura es sincrónica y sobrevive al cierre.
- */
 export function usePreferences() {
   const [storedSortOrder, setSortOrder] = useMMKVString(
     PREF_KEYS.SORT_ORDER,
@@ -93,17 +67,21 @@ export function usePreferences() {
     PREF_KEYS.ONLY_AVAILABLE,
     storage
   );
+  // ===== SEMANA 12 · INICIO =====
   const [storedRemindersEnabled, setStoredRemindersEnabled] = useMMKVBoolean(
     PREF_KEYS.REMINDERS_ENABLED,
     storage
   );
+  // ===== SEMANA 12 · FIN =====
 
   const resetPreferences = useCallback((): void => {
     setSortOrder(DEFAULT_PREFERENCES.sortOrder);
     setCompactMode(DEFAULT_PREFERENCES.compactMode);
     setItemsPerPage(DEFAULT_PREFERENCES.itemsPerPage);
     setOnlyAvailable(DEFAULT_PREFERENCES.onlyAvailable);
+    // ===== SEMANA 12 · INICIO =====
     setStoredRemindersEnabled(DEFAULT_PREFERENCES.remindersEnabled);
+    // ===== SEMANA 12 · FIN =====
   }, [
     setCompactMode,
     setItemsPerPage,
@@ -133,3 +111,4 @@ export function usePreferences() {
     resetPreferences,
   };
 }
+// ===== SEMANA 07 · FIN =====

@@ -1,8 +1,4 @@
-// ============================================
-// SCREEN: EditScreen — Semanas 06 y 12
-// Edición de una obra con defaultValues desde la API y aviso de actualización
-// ============================================
-
+// ===== SEMANA 01 · INICIO =====
 import React, { useEffect } from 'react';
 import {
   KeyboardAvoidingView,
@@ -11,14 +7,22 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
+// ===== SEMANA 01 · FIN =====
+// ===== SEMANA 03 · INICIO =====
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+// ===== SEMANA 03 · FIN =====
+// ===== SEMANA 06 · INICIO =====
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { PlayForm } from '../components/PlayForm';
 import { ScreenState } from '../components/ScreenState';
+// ===== SEMANA 06 · FIN =====
+// ===== SEMANA 12 · INICIO =====
 import { useNotifications } from '../hooks/useNotifications';
+// ===== SEMANA 12 · FIN =====
+// ===== SEMANA 06 · INICIO =====
 import { usePlayById, useUpdatePlay } from '../hooks/usePlays';
 import {
   EMPTY_PLAY_FORM,
@@ -41,7 +45,9 @@ export function EditScreen(): React.JSX.Element {
 
   const { data: play, isLoading, isError, error, refetch } = usePlayById(id);
   const { mutateAsync: updatePlay, isPending, error: mutationError } = useUpdatePlay();
+  // ===== SEMANA 12 · INICIO =====
   const { scheduleCartelera } = useNotifications();
+  // ===== SEMANA 12 · FIN =====
 
   const {
     control,
@@ -54,7 +60,6 @@ export function EditScreen(): React.JSX.Element {
     mode: 'onBlur',
   });
 
-  // Carga los datos de la obra en el formulario cuando llega la respuesta.
   useEffect(() => {
     if (play) {
       reset(toPlayFormInput(play));
@@ -63,15 +68,14 @@ export function EditScreen(): React.JSX.Element {
 
   async function onSubmit(values: PlayFormValues): Promise<void> {
     try {
+      // ===== SEMANA 12 · INICIO =====
       const updated = await updatePlay(toUpdatePlayPayload(id, values));
 
-      // Semana 12: aviso inmediato de la ficha actualizada.
       await scheduleCartelera(updated, 'updated');
+      // ===== SEMANA 12 · FIN =====
 
       navigation.goBack();
-    } catch {
-      // El mensaje se muestra desde mutationError con getApiErrorMessage.
-    }
+    } catch {}
   }
 
   if (isLoading) {
@@ -162,3 +166,4 @@ const styles = StyleSheet.create({
     paddingBottom: SPACING.xxxl,
   },
 });
+// ===== SEMANA 06 · FIN =====

@@ -1,14 +1,15 @@
-// ============================================
-// STORE: notificationStore — Semana 12
-// Estado compartido por Ajustes y el detalle: permiso, Expo Push Token,
-// dispositivo físico y última notificación recibida en primer plano.
-// ============================================
-
+// ===== SEMANA 01 · INICIO =====
 import { Linking } from 'react-native';
+// ===== SEMANA 01 · FIN =====
+// ===== SEMANA 12 · INICIO =====
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
+// ===== SEMANA 12 · FIN =====
+// ===== SEMANA 04 · INICIO =====
 import { create } from 'zustand';
+// ===== SEMANA 04 · FIN =====
 
+// ===== SEMANA 12 · INICIO =====
 import {
   ensureNotificationPermission,
   getEasProjectId,
@@ -43,19 +44,14 @@ export interface NotificationState {
   error: string | null;
   lastReceived: ReceivedNotification | null;
 
-  /** Relee el permiso sin abrir diálogos del sistema */
   refreshPermission: () => Promise<void>;
 
-  /** Pide permiso y obtiene el Expo Push Token del proyecto EAS */
   registerForPush: () => Promise<RegisterPushResult>;
 
-  /** Abre los ajustes de la app en el sistema operativo */
   openSystemSettings: () => Promise<void>;
 
-  /** Guarda la última notificación recibida en primer plano */
   markReceived: (notification: Notifications.Notification) => void;
 
-  /** Limpia el mensaje de error de la sección de notificaciones */
   clearError: () => void;
 }
 
@@ -138,17 +134,13 @@ export const useNotificationStore = create<NotificationState>()((set) => ({
   openSystemSettings: async (): Promise<void> => {
     try {
       await Linking.openSettings();
-    } catch {
-      // Algunos emuladores no exponen la pantalla de ajustes de la app.
-    }
+    } catch {}
   },
 
   markReceived: (notification: Notifications.Notification): void => {
     const content = notification.request.content;
     const payload = parseNotificationPayload(content.data);
 
-    // Si el aviso era un recordatorio de esta obra, el registro local ya
-    // cumplió su función. Se compara el id para no borrar uno más reciente.
     if (payload?.kind === 'reminder' && payload.itemId) {
       const reminder = useReminderStore.getState().reminders[payload.itemId];
 
@@ -171,3 +163,4 @@ export const useNotificationStore = create<NotificationState>()((set) => ({
     set({ error: null });
   },
 }));
+// ===== SEMANA 12 · FIN =====

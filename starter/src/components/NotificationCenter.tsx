@@ -1,11 +1,7 @@
-// ============================================
-// COMPONENT: NotificationCenter — Semana 12
-// Monta los listeners globales de expo-notifications y reconcilia los
-// recordatorios persistidos. No renderiza UI: su único trabajo son los
-// efectos con cleanup correcto.
-// ============================================
-
+// ===== SEMANA 01 · INICIO =====
 import { useEffect } from 'react';
+// ===== SEMANA 01 · FIN =====
+// ===== SEMANA 12 · INICIO =====
 import * as Notifications from 'expo-notifications';
 
 import {
@@ -17,7 +13,6 @@ import { navigateFromNotification } from '../navigation/navigationRef';
 import { useNotificationStore } from '../stores/notificationStore';
 import { useReminderStore } from '../stores/reminderStore';
 
-/** Elimina registros locales cuyos avisos ya disparó el sistema. */
 async function reconcileReminders(): Promise<void> {
   const scheduledIds = await getScheduledNotificationIds();
 
@@ -27,14 +22,12 @@ async function reconcileReminders(): Promise<void> {
 }
 
 export function NotificationCenter(): null {
-  // Arranque: canal de Android, permiso actual y limpieza de registros viejos.
   useEffect(() => {
     void configureNotificationChannel();
     void useNotificationStore.getState().refreshPermission();
     void reconcileReminders();
   }, []);
 
-  // Notificación recibida con la app abierta (foreground).
   useEffect(() => {
     const subscription = Notifications.addNotificationReceivedListener(
       (notification) => {
@@ -47,7 +40,6 @@ export function NotificationCenter(): null {
     };
   }, []);
 
-  // Tap sobre el banner con la app abierta o en segundo plano.
   useEffect(() => {
     const subscription =
       Notifications.addNotificationResponseReceivedListener((response) => {
@@ -63,7 +55,6 @@ export function NotificationCenter(): null {
     };
   }, []);
 
-  // App cerrada (killed): el tap se recupera al montar la navegación.
   useEffect(() => {
     let active = true;
 
@@ -79,12 +70,9 @@ export function NotificationCenter(): null {
 
         navigateFromNotification(payload ?? { screen: 'HomeList' });
 
-        // Evita repetir la navegación en el siguiente arranque.
         await Notifications.clearLastNotificationResponseAsync();
       })
-      .catch(() => {
-        // Sin respuesta previa: es el caso normal de un arranque manual.
-      });
+      .catch(() => {});
 
     return () => {
       active = false;
@@ -93,3 +81,4 @@ export function NotificationCenter(): null {
 
   return null;
 }
+// ===== SEMANA 12 · FIN =====

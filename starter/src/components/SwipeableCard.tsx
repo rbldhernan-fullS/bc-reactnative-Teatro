@@ -1,10 +1,8 @@
-// ============================================
-// COMPONENT: SwipeableCard — Semana 10
-// Tarjeta arrastrable con Gesture.Pan, umbral ±120 px y snap-back
-// ============================================
-
+// ===== SEMANA 01 · INICIO =====
 import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+// ===== SEMANA 01 · FIN =====
+// ===== SEMANA 10 · INICIO =====
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   Extrapolate,
@@ -14,7 +12,11 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
+// ===== SEMANA 10 · FIN =====
+// ===== SEMANA 03 · INICIO =====
 import { Ionicons } from '@expo/vector-icons';
+// ===== SEMANA 03 · FIN =====
+// ===== SEMANA 10 · INICIO =====
 import type { Item } from '../types';
 import { COLORS, TYPOGRAPHY, SPACING, RADIUS, SIZES } from '../theme';
 import { AnimatedCard } from './AnimatedCard';
@@ -141,7 +143,6 @@ export const SwipeableCard = React.memo(function SwipeableCard({
 
   return (
     <View style={styles.container}>
-      {/* Acción derecha: guardar o quitar de la lista del socio */}
       <Animated.View
         style={[styles.actionLayer, styles.actionLeft, saveHintStyle]}
         pointerEvents="none"
@@ -156,7 +157,6 @@ export const SwipeableCard = React.memo(function SwipeableCard({
         </Text>
       </Animated.View>
 
-      {/* Acción izquierda: descartar de la cartelera */}
       <Animated.View
         style={[styles.actionLayer, styles.actionRight, dismissHintStyle]}
         pointerEvents="none"
@@ -219,3 +219,4 @@ const styles = StyleSheet.create({
     color: COLORS.error,
   },
 });
+// ===== SEMANA 10 · FIN =====

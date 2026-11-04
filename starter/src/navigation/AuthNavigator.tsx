@@ -1,11 +1,11 @@
-// ============================================
-// NAVIGATION: AuthNavigator — Semana 08
-// Stack público para Login y Registro (sin sesión iniciada)
-// ============================================
-
+// ===== SEMANA 01 · INICIO =====
 import React from 'react';
+// ===== SEMANA 01 · FIN =====
+// ===== SEMANA 03 · INICIO =====
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+// ===== SEMANA 03 · FIN =====
 
+// ===== SEMANA 08 · INICIO =====
 import { LoginScreen } from '../screens/LoginScreen';
 import { RegisterScreen } from '../screens/RegisterScreen';
 import { COLORS } from '../theme';
@@ -27,3 +27,4 @@ export function AuthNavigator(): React.JSX.Element {
     </Stack.Navigator>
   );
 }
+// ===== SEMANA 08 · FIN =====

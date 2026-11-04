@@ -1,24 +1,21 @@
-// ============================================
-// COMPONENT: ProgressBar — Semana 10
-// Ancho y color interpolados con Reanimated (sin Animated API de RN)
-// ============================================
-
+// ===== SEMANA 01 · INICIO =====
 import React, { useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+// ===== SEMANA 01 · FIN =====
+// ===== SEMANA 10 · INICIO =====
 import Animated, {
   interpolateColor,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+// ===== SEMANA 10 · FIN =====
+// ===== SEMANA 09 · INICIO =====
 import { COLORS, TYPOGRAPHY, SPACING, RADIUS } from '../theme';
 
 interface ProgressBarProps {
-  /** Progreso normalizado entre 0 y 1 */
   progress: number;
-  /** Título corto de la métrica */
   label: string;
-  /** Detalle numérico bajo la barra */
   caption?: string;
 }
 
@@ -31,8 +28,10 @@ export function ProgressBar({
   caption,
 }: ProgressBarProps): React.JSX.Element {
   const clampedProgress = Math.min(1, Math.max(0, progress));
+  // ===== SEMANA 10 · INICIO =====
   const progressValue = useSharedValue(0);
   const trackWidth = useSharedValue(0);
+  // ===== SEMANA 10 · FIN =====
 
   useEffect(() => {
     progressValue.value = withTiming(clampedProgress, {
@@ -40,6 +39,7 @@ export function ProgressBar({
     });
   }, [clampedProgress, progressValue]);
 
+  // ===== SEMANA 10 · INICIO =====
   const fillStyle = useAnimatedStyle(() => ({
     width: trackWidth.value * progressValue.value,
     backgroundColor: interpolateColor(
@@ -48,6 +48,7 @@ export function ProgressBar({
       [COLORS.success, '#facc15', COLORS.error]
     ),
   }));
+  // ===== SEMANA 10 · FIN =====
 
   const percent = Math.round(clampedProgress * 100);
 
@@ -108,3 +109,4 @@ const styles = StyleSheet.create({
     color: COLORS.textMuted,
   },
 });
+// ===== SEMANA 09 · FIN =====

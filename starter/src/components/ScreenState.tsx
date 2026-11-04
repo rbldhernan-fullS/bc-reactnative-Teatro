@@ -1,8 +1,4 @@
-// ============================================
-// COMPONENT: ScreenState — Semana 05
-// Estado reutilizable de carga, error o lista vacía
-// ============================================
-
+// ===== SEMANA 01 · INICIO =====
 import React from 'react';
 import {
   ActivityIndicator,
@@ -11,7 +7,11 @@ import {
   Text,
   View,
 } from 'react-native';
+// ===== SEMANA 01 · FIN =====
+// ===== SEMANA 03 · INICIO =====
 import { Ionicons } from '@expo/vector-icons';
+// ===== SEMANA 03 · FIN =====
+// ===== SEMANA 05 · INICIO =====
 import { COLORS, RADIUS, SIZES, SPACING, TYPOGRAPHY } from '../theme';
 
 interface ScreenStateProps {
@@ -99,3 +99,4 @@ const styles = StyleSheet.create({
     color: COLORS.background,
   },
 });
+// ===== SEMANA 05 · FIN =====
