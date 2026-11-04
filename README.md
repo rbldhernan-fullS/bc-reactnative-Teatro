@@ -191,3 +191,15 @@ Prueba manual sugerida:
 4. Detener la API (`Ctrl+C` en `pnpm api`) y comprobar el estado de error con **Reintentar**.
 5. Publicar una obra nueva y confirmar que aparece en la cartelera.
 6. Editar `api/db.json` o reiniciar la API para comprobar la persistencia.
+
+---
+
+## 🌐 Ejecutar en web
+
+```bash
+cd starter
+pnpm install
+pnpm web
+```
+
+La app también corre en el navegador con `react-native-web` y Metro.
