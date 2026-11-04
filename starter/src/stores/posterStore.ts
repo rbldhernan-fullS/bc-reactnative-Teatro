@@ -1,29 +1,19 @@
-// ============================================
-// STORE: posterStore — Semana 11
-// Afiche local por obra. La API guarda URLs; las fotos capturadas con la
-// cámara o la galería viven solo en el dispositivo, así que se mantienen
-// aquí y no se envían al servidor.
-// ============================================
-
+// ===== SEMANA 04 · INICIO =====
 import { create } from 'zustand';
+// ===== SEMANA 04 · FIN =====
 
-/** Identificador del afiche mientras la obra aún no existe en la API. */
+// ===== SEMANA 11 · INICIO =====
 export const POSTER_DRAFT_ID = 'poster-draft';
 
 export interface PosterStore {
-  /** URI local del afiche, indexada por id de obra */
   posters: Record<string, string>;
 
-  /** Registra o reemplaza el afiche local de una obra */
   setPoster: (targetId: string, uri: string) => void;
 
-  /** Elimina el afiche local y vuelve al afiche de la API */
   removePoster: (targetId: string) => void;
 
-  /** Traslada el afiche del borrador al id real de la obra creada */
   movePoster: (fromId: string, toId: string) => void;
 
-  /** Descarta el afiche de un formulario cancelado */
   clearDraft: () => void;
 }
 
@@ -74,9 +64,9 @@ export const usePosterStore = create<PosterStore>()((set, get) => ({
   },
 }));
 
-/** Selector: afiche local de una obra o `undefined` si usa el de la API. */
 export function selectPoster(
   targetId: string
 ): (state: PosterStore) => string | undefined {
   return (state) => state.posters[targetId];
 }
+// ===== SEMANA 11 · FIN =====

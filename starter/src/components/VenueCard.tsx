@@ -1,9 +1,4 @@
-// ============================================
-// COMPONENT: VenueCard — Semana 11
-// Sede del teatro con ubicación del socio, dirección textual (geocodificación
-// inversa), distancia y seguimiento en tiempo real.
-// ============================================
-
+// ===== SEMANA 01 · INICIO =====
 import React from 'react';
 import {
   ActivityIndicator,
@@ -15,8 +10,12 @@ import {
   Text,
   View,
 } from 'react-native';
+// ===== SEMANA 01 · FIN =====
+// ===== SEMANA 03 · INICIO =====
 import { Ionicons } from '@expo/vector-icons';
+// ===== SEMANA 03 · FIN =====
 
+// ===== SEMANA 11 · INICIO =====
 import { PermissionGate } from './PermissionGate';
 import { useLocation } from '../hooks/useLocation';
 import type { TheatreHall } from '../types';
@@ -29,7 +28,6 @@ import {
 import { COLORS, RADIUS, SIZES, SPACING, TYPOGRAPHY } from '../theme';
 
 interface VenueCardProps {
-  /** Sala de la función que se está consultando */
   hall: TheatreHall;
 }
 
@@ -312,3 +310,4 @@ const styles = StyleSheet.create({
     color: COLORS.accent,
   },
 });
+// ===== SEMANA 11 · FIN =====

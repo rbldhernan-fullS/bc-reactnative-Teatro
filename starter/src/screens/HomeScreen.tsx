@@ -1,9 +1,4 @@
-// ============================================================
-// SCREEN: HomeScreen — Semanas 05, 07, 09 y 10
-// Cartelera con red/caché, preferencias MMKV, entrada escalonada con
-// Reanimated, tarjetas arrastrables y LayoutAnimation.
-// ============================================================
-
+// ===== SEMANA 01 · INICIO =====
 import React, {
   useState,
   useMemo,
@@ -26,6 +21,8 @@ import {
   UIManager,
 } from 'react-native';
 import type { ListRenderItem } from 'react-native';
+// ===== SEMANA 01 · FIN =====
+// ===== SEMANA 10 · INICIO =====
 import Animated, {
   interpolate,
   useAnimatedStyle,
@@ -33,29 +30,55 @@ import Animated, {
   withDelay,
   withTiming,
 } from 'react-native-reanimated';
+// ===== SEMANA 10 · FIN =====
+// ===== SEMANA 03 · INICIO =====
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+// ===== SEMANA 03 · FIN =====
+// ===== SEMANA 10 · INICIO =====
 import type { Item } from '../types';
+// ===== SEMANA 10 · FIN =====
+// ===== SEMANA 07 · INICIO =====
 import { SwipeableCard } from '../components/SwipeableCard';
+// ===== SEMANA 07 · FIN =====
+// ===== SEMANA 05 · INICIO =====
 import { AnimatedButton } from '../components/AnimatedButton';
+// ===== SEMANA 05 · FIN =====
+// ===== SEMANA 04 · INICIO =====
 import { ScreenState } from '../components/ScreenState';
+// ===== SEMANA 04 · FIN =====
+// ===== SEMANA 10 · INICIO =====
 import { usePlays } from '../hooks/usePlays';
 import { usePreferences } from '../hooks/usePreferences';
+// ===== SEMANA 10 · FIN =====
+// ===== SEMANA 09 · INICIO =====
 import { getApiErrorMessage } from '../services/api';
+// ===== SEMANA 09 · FIN =====
+// ===== SEMANA 10 · INICIO =====
 import { useSavedStore } from '../stores/savedStore';
+// ===== SEMANA 10 · FIN =====
+// ===== SEMANA 07 · INICIO =====
 import { COLORS, TYPOGRAPHY, SPACING, RADIUS } from '../theme';
+// ===== SEMANA 07 · FIN =====
+// ===== SEMANA 04 · INICIO =====
 import type { HomeStackParamList } from '../navigation/types';
+// ===== SEMANA 04 · FIN =====
 
+// ===== SEMANA 03 · INICIO =====
 type HomeScreenNavProp = NativeStackNavigationProp<HomeStackParamList, 'HomeList'>;
+// ===== SEMANA 03 · FIN =====
 
+// ===== SEMANA 09 · INICIO =====
 const DOMAIN_TITLE = 'Teatro Colón';
+// ===== SEMANA 09 · FIN =====
+// ===== SEMANA 10 · INICIO =====
 const DOMAIN_SUBTITLE = 'Cartelera oficial de la temporada';
+// ===== SEMANA 10 · FIN =====
+// ===== SEMANA 09 · INICIO =====
 const ENTRANCE_STAGGER_MS = 80;
 const ENTRANCE_DURATION_MS = 420;
 
-// LayoutAnimation requiere habilitarse explícitamente en Android.
-// Se ejecuta una sola vez, fuera del ciclo de render.
 if (Platform.OS === 'android') {
   UIManager.setLayoutAnimationEnabledExperimental?.(true);
 }
@@ -63,16 +86,14 @@ if (Platform.OS === 'android') {
 function animateListLayout(): void {
   LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
 }
+// ===== SEMANA 09 · FIN =====
 
+// ===== SEMANA 10 · INICIO =====
 interface StaggeredItemProps {
   index: number;
   children: React.ReactNode;
 }
 
-/**
- * Entrada escalonada con Reanimated: cada tarjeta espera `index * 80 ms`.
- * El valor compartido evita re-renders en JS durante la animación.
- */
 function StaggeredItem({
   index,
   children,
@@ -103,25 +124,26 @@ function StaggeredItem({
 
   return <Animated.View style={animatedStyle}>{children}</Animated.View>;
 }
+// ===== SEMANA 10 · FIN =====
 
-/**
- * Normaliza un texto para búsquedas insensibles a mayúsculas y acentos.
- * Ej.: "Ópera" -> "opera".
- */
+// ===== SEMANA 04 · INICIO =====
 function normalizeText(value: string): string {
   return value
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase();
 }
+// ===== SEMANA 04 · FIN =====
 
+// ===== SEMANA 01 · INICIO =====
 export function HomeScreen(): React.JSX.Element {
+  // ===== SEMANA 03 · INICIO =====
   const navigation = useNavigation<HomeScreenNavProp>();
+  // ===== SEMANA 03 · FIN =====
 
-  // Estado del servidor: la cartelera viene de la API o de la caché offline.
+  // ===== SEMANA 07 · INICIO =====
   const { data, isLoading, isError, error, refetch, isFetching } = usePlays();
 
-  // Preferencias persistidas con MMKV (reactivas, sin async/await).
   const {
     sortOrder,
     compactMode,
@@ -129,36 +151,38 @@ export function HomeScreen(): React.JSX.Element {
     onlyAvailable,
     setOnlyAvailable,
   } = usePreferences();
+  // ===== SEMANA 07 · FIN =====
 
-  // Estado de UI: solo los ids guardados viven en Zustand.
+  // ===== SEMANA 05 · INICIO =====
   const savedIds = useSavedStore((state) => state.savedIds);
   const toggleSaved = useSavedStore((state) => state.toggleSaved);
 
   const savedIdSet = useMemo(() => new Set(savedIds), [savedIds]);
 
-  // Referencia para enfocar el input al hacer click en cualquier parte de la barra
   const searchInputRef = useRef<TextInput>(null);
+  // ===== SEMANA 05 · FIN =====
 
-  // 1. Estado de búsqueda
+  // ===== SEMANA 04 · INICIO =====
   const [query, setQuery] = useState<string>('');
+  // ===== SEMANA 04 · FIN =====
 
-  // 2. Paginación local: no se persiste porque se reinicia con cada filtro.
+  // ===== SEMANA 10 · INICIO =====
   const [visibleCount, setVisibleCount] = useState<number>(itemsPerPage);
 
-  // 3. Obras descartadas con swipe izquierdo durante esta sesión.
   const [dismissedIds, setDismissedIds] = useState<string[]>([]);
   const dismissedIdSet = useMemo(() => new Set(dismissedIds), [dismissedIds]);
+  // ===== SEMANA 10 · FIN =====
 
+  // ===== SEMANA 07 · INICIO =====
   const plays = useMemo(() => data?.plays ?? [], [data]);
   const isOffline = data?.source === 'cache';
 
-  // Al cambiar la preferencia de paginación o los filtros, volvemos a la
-  // primera página para que el usuario no vea una lista recortada.
   useEffect(() => {
     setVisibleCount(itemsPerPage);
   }, [itemsPerPage, query, onlyAvailable, sortOrder]);
+  // ===== SEMANA 07 · FIN =====
 
-  // Manejador de selección de obra con navegación al detalle tipada
+  // ===== SEMANA 03 · INICIO =====
   const handleItemPress = useCallback(
     (item: Item): void => {
       navigation.navigate('HomeDetail', {
@@ -168,16 +192,18 @@ export function HomeScreen(): React.JSX.Element {
     },
     [navigation]
   );
+  // ===== SEMANA 03 · FIN =====
 
-  // Guarda o quita la obra usando únicamente su identificador.
+  // ===== SEMANA 05 · INICIO =====
   const handleToggleSave = useCallback(
     (item: Item): void => {
       toggleSaved(item.id);
     },
     [toggleSaved]
   );
+  // ===== SEMANA 05 · FIN =====
 
-  // Acción del swipe izquierdo: oculta la obra de la cartelera de la sesión.
+  // ===== SEMANA 10 · INICIO =====
   const handleDismiss = useCallback((item: Item): void => {
     animateListLayout();
     setDismissedIds((current) =>
@@ -189,16 +215,21 @@ export function HomeScreen(): React.JSX.Element {
     animateListLayout();
     setDismissedIds([]);
   }, []);
+  // ===== SEMANA 10 · FIN =====
 
-  // 4. Filtrado por búsqueda, butacas, descartadas y orden alfabético
+  // ===== SEMANA 02 · INICIO =====
   const filteredItems = useMemo(() => {
     const cleanQuery = normalizeText(query.trim());
 
+    // ===== SEMANA 04 · INICIO =====
     const result = plays.filter((item) => {
+      // ===== SEMANA 10 · INICIO =====
       if (dismissedIdSet.has(item.id)) {
         return false;
       }
+      // ===== SEMANA 10 · FIN =====
 
+      // ===== SEMANA 07 · INICIO =====
       if (onlyAvailable && item.availableSeats === 0) {
         return false;
       }
@@ -206,6 +237,7 @@ export function HomeScreen(): React.JSX.Element {
       if (!cleanQuery) {
         return true;
       }
+      // ===== SEMANA 07 · FIN =====
 
       return [item.name, item.subtitle, item.genre, item.hall].some((field) =>
         normalizeText(field).includes(cleanQuery)
@@ -217,24 +249,33 @@ export function HomeScreen(): React.JSX.Element {
         ? first.name.localeCompare(second.name, 'es')
         : second.name.localeCompare(first.name, 'es')
     );
+    // ===== SEMANA 04 · FIN =====
   }, [dismissedIdSet, plays, query, onlyAvailable, sortOrder]);
+  // ===== SEMANA 02 · FIN =====
 
-  // 5. Página visible según `itemsPerPage`
+  // ===== SEMANA 07 · INICIO =====
   const visibleItems = useMemo(
     () => filteredItems.slice(0, visibleCount),
     [filteredItems, visibleCount]
   );
+  // ===== SEMANA 07 · FIN =====
 
-  // 6. Pull-to-refresh delegado a TanStack Query
+  // ===== SEMANA 05 · INICIO =====
   const handleRefresh = useCallback((): void => {
     void refetch();
   }, [refetch]);
+  // ===== SEMANA 05 · FIN =====
 
+  // ===== SEMANA 07 · INICIO =====
   const handleLoadMore = useCallback((): void => {
+    // ===== SEMANA 09 · INICIO =====
     animateListLayout();
+    // ===== SEMANA 09 · FIN =====
     setVisibleCount((current) => current + itemsPerPage);
   }, [itemsPerPage]);
+  // ===== SEMANA 07 · FIN =====
 
+  // ===== SEMANA 09 · INICIO =====
   const handleToggleOnlyAvailable = useCallback(
     (value: boolean): void => {
       animateListLayout();
@@ -242,8 +283,9 @@ export function HomeScreen(): React.JSX.Element {
     },
     [setOnlyAvailable]
   );
+  // ===== SEMANA 09 · FIN =====
 
-  // 7. Render Item memorizado con useCallback
+  // ===== SEMANA 02 · INICIO =====
   const renderItem: ListRenderItem<Item> = useCallback(
     ({ item, index }) => (
       <StaggeredItem index={index}>
@@ -266,14 +308,13 @@ export function HomeScreen(): React.JSX.Element {
     ]
   );
 
-  // 8. Separador entre elementos con useCallback
   const renderSeparator = useCallback(
     () => <View style={styles.separator} />,
     []
   );
 
-  // 9. Estado vacío: distingue cartelera vacía, búsqueda y filtro de butacas
   const renderEmpty = useCallback(() => {
+    // ===== SEMANA 05 · INICIO =====
     if (plays.length === 0) {
       return (
         <ScreenState
@@ -285,7 +326,9 @@ export function HomeScreen(): React.JSX.Element {
         />
       );
     }
+    // ===== SEMANA 05 · FIN =====
 
+    // ===== SEMANA 07 · INICIO =====
     if (query.trim().length > 0) {
       return (
         <View style={styles.emptyContainer}>
@@ -310,7 +353,9 @@ export function HomeScreen(): React.JSX.Element {
         </View>
       );
     }
+    // ===== SEMANA 07 · FIN =====
 
+    // ===== SEMANA 10 · INICIO =====
     if (dismissedIds.length > 0) {
       return (
         <View style={styles.emptyContainer}>
@@ -333,15 +378,19 @@ export function HomeScreen(): React.JSX.Element {
         </View>
       );
     }
+    // ===== SEMANA 10 · FIN =====
 
     return (
       <View style={styles.emptyContainer}>
+        {/* ===== SEMANA 07 · INICIO ===== */}
         <Text style={styles.emptyIcon}>🎟️</Text>
         <Text style={styles.emptyTitle}>Sin funciones disponibles</Text>
+        {/* ===== SEMANA 07 · FIN ===== */}
         <Text style={styles.emptySubtitle}>
           Todas las obras de la cartelera están agotadas. Desactiva el filtro
           para volver a ver la temporada completa.
         </Text>
+        {/* ===== SEMANA 05 · INICIO ===== */}
         <Pressable
           style={({ pressed }) => [
             styles.clearFilterButton,
@@ -351,6 +400,7 @@ export function HomeScreen(): React.JSX.Element {
         >
           <Text style={styles.clearFilterButtonText}>Ver todas las obras</Text>
         </Pressable>
+        {/* ===== SEMANA 05 · FIN ===== */}
       </View>
     );
   }, [
@@ -362,14 +412,16 @@ export function HomeScreen(): React.JSX.Element {
     plays.length,
     query,
   ]);
+  // ===== SEMANA 02 · FIN =====
 
-  // 9. Pie de lista: paginación local con la preferencia itemsPerPage
   const renderFooter = useCallback(() => {
+    // ===== SEMANA 07 · INICIO =====
     const remaining = filteredItems.length - visibleItems.length;
 
     if (remaining <= 0) {
       return null;
     }
+    // ===== SEMANA 07 · FIN =====
 
     return (
       <View style={styles.footer}>
@@ -386,6 +438,7 @@ export function HomeScreen(): React.JSX.Element {
     );
   }, [filteredItems.length, handleLoadMore, itemsPerPage, visibleItems.length]);
 
+  // ===== SEMANA 05 · INICIO =====
   if (isLoading) {
     return (
       <SafeAreaView style={styles.safeArea} edges={['top']}>
@@ -411,6 +464,7 @@ export function HomeScreen(): React.JSX.Element {
       </SafeAreaView>
     );
   }
+  // ===== SEMANA 05 · FIN =====
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
@@ -419,7 +473,6 @@ export function HomeScreen(): React.JSX.Element {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         <View style={styles.container}>
-          {/* Header del Dominio Teatro */}
           <View style={styles.header}>
             <View style={styles.headerTitleRow}>
               <View style={styles.headerTextBlock}>
@@ -440,7 +493,6 @@ export function HomeScreen(): React.JSX.Element {
             </View>
           </View>
 
-          {/* Barra de búsqueda */}
           <View style={styles.searchSection}>
             <Pressable
               style={styles.searchInputWrapper}
@@ -475,7 +527,6 @@ export function HomeScreen(): React.JSX.Element {
               )}
             </Pressable>
 
-            {/* Contador de resultados + preferencias activas */}
             <View style={styles.resultsBar}>
               <Text style={styles.resultsCount}>
                 {filteredItems.length}{' '}
@@ -484,6 +535,7 @@ export function HomeScreen(): React.JSX.Element {
                   : 'obras disponibles'}
               </Text>
 
+              {/* ===== SEMANA 07 · INICIO ===== */}
               <View style={styles.activeFilters}>
                 <Text style={styles.activeFilterBadge}>
                   {sortOrder === 'asc' ? 'A → Z' : 'Z → A'}
@@ -495,10 +547,11 @@ export function HomeScreen(): React.JSX.Element {
                   <Text style={styles.activeFilterBadge}>Con butacas</Text>
                 )}
               </View>
+              {/* ===== SEMANA 07 · FIN ===== */}
             </View>
           </View>
 
-          {/* Banner offline: los datos vienen de AsyncStorage */}
+          {/* ===== SEMANA 07 · INICIO ===== */}
           {isOffline && (
             <View style={styles.offlineBanner}>
               <Text style={styles.offlineIcon}>⚠️</Text>
@@ -521,8 +574,9 @@ export function HomeScreen(): React.JSX.Element {
               </Pressable>
             </View>
           )}
+          {/* ===== SEMANA 07 · FIN ===== */}
 
-          {/* Obras descartadas con swipe: se pueden restaurar en la sesión */}
+          {/* ===== SEMANA 10 · INICIO ===== */}
           {dismissedIds.length > 0 && (
             <Pressable
               style={({ pressed }) => [
@@ -543,14 +597,13 @@ export function HomeScreen(): React.JSX.Element {
             </Pressable>
           )}
 
-          {/* Pista de gestos del dominio */}
           <View style={styles.swipeHint}>
             <Text style={styles.swipeHintText}>
               Desliza → guardar · ← descartar
             </Text>
           </View>
+          {/* ===== SEMANA 10 · FIN ===== */}
 
-          {/* Área de Lista con dismiss de teclado al tocar fuera */}
           <TouchableWithoutFeedback
             onPress={Keyboard.dismiss}
             accessible={false}
@@ -821,3 +874,4 @@ const styles = StyleSheet.create({
     color: COLORS.accent,
   },
 });
+// ===== SEMANA 01 · FIN =====

@@ -1,10 +1,8 @@
-// ============================================
-// AUTH SERVICE — Semana 08
-// Llamadas a dummyjson.com/auth y mensajes de error en español
-// ============================================
-
+// ===== SEMANA 05 · INICIO =====
 import axios from 'axios';
+// ===== SEMANA 05 · FIN =====
 
+// ===== SEMANA 08 · INICIO =====
 import type {
   AuthSession,
   AuthUser,
@@ -13,17 +11,12 @@ import type {
 } from '../types';
 import { authClient, publicAuthClient } from './authClient';
 
-/** Espera simulada del registro para mostrar el spinner del formulario. */
 const REGISTER_DELAY_MS = 700;
 
 interface AuthErrorBody {
   message?: string;
 }
 
-/**
- * Autentica al miembro contra dummyjson. Los tokens llegan en la misma
- * respuesta que el perfil; el store los separa y los envía a SecureStore.
- */
 export async function login(
   credentials: LoginCredentials
 ): Promise<AuthSession> {
@@ -36,11 +29,6 @@ export async function login(
   return data;
 }
 
-/**
- * dummyjson no ofrece un registro real: crea usuarios temporales que luego no
- * pueden iniciar sesión. Para la demo simulamos la creación de la cuenta y
- * redirigimos al Login, donde se usan las credenciales públicas.
- */
 export async function register(payload: RegisterData): Promise<AuthUser> {
   await new Promise<void>((resolve) => {
     setTimeout(resolve, REGISTER_DELAY_MS);
@@ -55,16 +43,11 @@ export async function register(payload: RegisterData): Promise<AuthUser> {
   };
 }
 
-/**
- * Perfil autenticado. `authClient` añade el Bearer desde SecureStore y, si el
- * access token expiró, refresca y reintenta la petición automáticamente.
- */
 export async function getProfile(): Promise<AuthUser> {
   const { data } = await authClient.get<AuthUser>('/auth/me');
   return data;
 }
 
-/** Separa el perfil de los tokens que devuelve `/auth/login`. */
 export function extractAuthUser(session: AuthSession): AuthUser {
   return {
     id: session.id,
@@ -76,7 +59,6 @@ export function extractAuthUser(session: AuthSession): AuthUser {
   };
 }
 
-/** Traduce cualquier fallo de autenticación a un mensaje accionable. */
 export function getAuthErrorMessage(error: unknown): string {
   if (axios.isAxiosError<AuthErrorBody>(error)) {
     if (!error.response) {
@@ -100,3 +82,4 @@ export function getAuthErrorMessage(error: unknown): string {
 
   return 'Ocurrió un error inesperado al autenticarte.';
 }
+// ===== SEMANA 08 · FIN =====

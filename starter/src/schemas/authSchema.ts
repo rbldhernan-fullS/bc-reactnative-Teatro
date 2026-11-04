@@ -1,10 +1,8 @@
-// ============================================
-// SCHEMA: authSchema — Semana 08
-// Validación Zod compartida por Login y Registro (React Hook Form)
-// ============================================
-
+// ===== SEMANA 06 · INICIO =====
 import { z } from 'zod';
+// ===== SEMANA 06 · FIN =====
 
+// ===== SEMANA 08 · INICIO =====
 const usernameField = z
   .string()
   .trim()
@@ -53,3 +51,4 @@ export const registerSchema = z
 
 export type LoginFormValues = z.infer<typeof loginSchema>;
 export type RegisterFormValues = z.infer<typeof registerSchema>;
+// ===== SEMANA 08 · FIN =====

@@ -1,37 +1,23 @@
-// ============================================
-// HOOK: useLocation — Semana 11
-// Permiso de ubicación en primer plano, posición puntual, dirección textual
-// (geocodificación inversa) y seguimiento en tiempo real con cleanup.
-// ============================================
-
+// ===== SEMANA 01 · INICIO =====
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState } from 'react-native';
+// ===== SEMANA 01 · FIN =====
+// ===== SEMANA 11 · INICIO =====
 import * as Location from 'expo-location';
 
 export interface UseLocationResult {
-  /** Respuesta del permiso; `null` mientras se consulta por primera vez */
   permission: Location.LocationPermissionResponse | null;
-  /** Coordenadas de la última lectura (puntual o del seguimiento) */
   coords: Location.LocationObjectCoords | null;
-  /** Dirección legible obtenida con `reverseGeocodeAsync` */
   address: string | null;
-  /** Mensaje de error legible para la UI */
   error: string | null;
-  /** El sistema está mostrando el diálogo de permisos */
   requesting: boolean;
-  /** Se está resolviendo una lectura puntual de GPS */
   loading: boolean;
-  /** `watchPositionAsync` está activo */
   watching: boolean;
-  /** Solicita el permiso y, si se concede, lee la posición actual */
   requestAccess: () => Promise<void>;
-  /** Vuelve a leer la posición o solicita el permiso si aún no existe */
   refresh: () => Promise<void>;
-  /** Activa o detiene el seguimiento en tiempo real */
   toggleWatching: () => void;
 }
 
-/** Convierte la respuesta del geocodificador en una línea legible. */
 function formatGeocodedAddress(
   entry: Location.LocationGeocodedAddress | undefined
 ): string | null {
@@ -81,8 +67,6 @@ export function useLocation(): UseLocationResult {
 
         setAddress(formatGeocodedAddress(results[0]));
       } catch {
-        // La dirección es un extra: si el geocodificador falla, las
-        // coordenadas y la distancia siguen siendo útiles.
         setAddress(null);
       }
     },
@@ -142,8 +126,6 @@ export function useLocation(): UseLocationResult {
     setWatching((current) => !current);
   }, []);
 
-  // Estado inicial sin prompt: solo consulta; pide permiso cuando el socio
-  // toca el botón de la tarjeta de sede.
   useEffect(() => {
     let active = true;
 
@@ -170,8 +152,6 @@ export function useLocation(): UseLocationResult {
     };
   }, [loadPosition]);
 
-  // Al volver de los ajustes del sistema se relee el permiso sin volver a
-  // preguntar. Si el socio lo activó allí, se carga la posición de inmediato.
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextState) => {
       if (nextState !== 'active') {
@@ -188,16 +168,12 @@ export function useLocation(): UseLocationResult {
             void loadPosition();
           }
         })
-        .catch(() => {
-          // Se conserva el estado anterior: no es un error bloqueante.
-        });
+        .catch(() => {});
     });
 
     return () => subscription.remove();
   }, [loadPosition]);
 
-  // Seguimiento en tiempo real: la suscripción se elimina al detenerlo o al
-  // desmontar la pantalla (requisito de la rúbrica, sin memory leaks).
   useEffect(() => {
     if (!watching || !permission?.granted) {
       return undefined;
@@ -251,3 +227,4 @@ export function useLocation(): UseLocationResult {
     toggleWatching,
   };
 }
+// ===== SEMANA 11 · FIN =====

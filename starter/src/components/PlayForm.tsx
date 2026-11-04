@@ -1,8 +1,4 @@
-// ============================================
-// COMPONENT: PlayForm — Semana 06
-// Formulario compartido por Create y Edit (RHF + Zod)
-// ============================================
-
+// ===== SEMANA 01 · INICIO =====
 import React from 'react';
 import {
   ActivityIndicator,
@@ -11,12 +7,22 @@ import {
   Text,
   View,
 } from 'react-native';
+// ===== SEMANA 01 · FIN =====
+// ===== SEMANA 06 · INICIO =====
 import type { Control, FieldErrors } from 'react-hook-form';
+// ===== SEMANA 06 · FIN =====
+// ===== SEMANA 03 · INICIO =====
 import { Ionicons } from '@expo/vector-icons';
+// ===== SEMANA 03 · FIN =====
 
+// ===== SEMANA 06 · INICIO =====
 import { FormChips } from './FormChips';
 import { FormField } from './FormField';
+// ===== SEMANA 06 · FIN =====
+// ===== SEMANA 11 · INICIO =====
 import { PhotoPicker } from './PhotoPicker';
+// ===== SEMANA 11 · FIN =====
+// ===== SEMANA 06 · INICIO =====
 import type { PlayFormInput } from '../schemas/playSchema';
 import { THEATRE_GENRES, THEATRE_HALLS } from '../types';
 import { COLORS, RADIUS, SIZES, SPACING, TYPOGRAPHY } from '../theme';
@@ -30,9 +36,7 @@ interface PlayFormProps {
   onCancel: () => void;
   intro: string;
   serverError?: string;
-  /** Id de la obra (o del borrador) para guardar el afiche local */
   posterTargetId: string;
-  /** Afiche de la API que se muestra mientras no hay foto local */
   posterFallbackUri: string;
 }
 
@@ -168,7 +172,7 @@ export function PlayForm({
         errorMessage={errors.imageUri?.message}
       />
 
-      {/* Semana 11: afiche local con cámara o galería */}
+      {/* ===== SEMANA 11 · INICIO ===== */}
       <View style={styles.posterSection}>
         <Text style={styles.posterLabel}>Afiche local de la obra</Text>
         <Text style={styles.posterHint}>
@@ -180,6 +184,7 @@ export function PlayForm({
           fallbackUri={posterFallbackUri}
         />
       </View>
+      {/* ===== SEMANA 11 · FIN ===== */}
 
       <FormField
         control={control}
@@ -298,3 +303,4 @@ const styles = StyleSheet.create({
     fontWeight: TYPOGRAPHY.weight.semibold,
   },
 });
+// ===== SEMANA 06 · FIN =====

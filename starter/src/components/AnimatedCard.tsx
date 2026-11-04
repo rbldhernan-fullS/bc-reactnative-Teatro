@@ -1,16 +1,16 @@
-// ============================================
-// COMPONENT: AnimatedCard — Semana 10
-// Envoltorio táctil migrado a Reanimated: spring de escala sin Animated API
-// ============================================
-
+// ===== SEMANA 01 · INICIO =====
 import React from 'react';
 import { Pressable } from 'react-native';
+// ===== SEMANA 01 · FIN =====
+// ===== SEMANA 10 · INICIO =====
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
+// ===== SEMANA 10 · FIN =====
+// ===== SEMANA 09 · INICIO =====
 import type { Item } from '../types';
 import { SIZES } from '../theme';
 import { ItemCard } from './ItemCard';
@@ -36,11 +36,13 @@ export const AnimatedCard = React.memo(function AnimatedCard({
   onToggleSave,
   compact = false,
 }: AnimatedCardProps): React.JSX.Element {
+  // ===== SEMANA 10 · INICIO =====
   const scale = useSharedValue(1);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
   }));
+  // ===== SEMANA 10 · FIN =====
 
   function handlePressIn(): void {
     scale.value = withTiming(SIZES.pressedScale, { duration: 90 });
@@ -69,3 +71,4 @@ export const AnimatedCard = React.memo(function AnimatedCard({
     </Animated.View>
   );
 });
+// ===== SEMANA 09 · FIN =====

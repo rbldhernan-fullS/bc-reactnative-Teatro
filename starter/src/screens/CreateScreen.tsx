@@ -1,9 +1,4 @@
-// ============================================
-// SCREEN: CreateScreen — Semanas 06 y 11
-// Formulario validado con React Hook Form + Zod y afiche local opcional
-// capturado con la cámara o elegido de la galería.
-// ============================================
-
+// ===== SEMANA 01 · INICIO =====
 import React, { useEffect } from 'react';
 import {
   KeyboardAvoidingView,
@@ -11,13 +6,23 @@ import {
   ScrollView,
   StyleSheet,
 } from 'react-native';
+// ===== SEMANA 01 · FIN =====
+// ===== SEMANA 03 · INICIO =====
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+// ===== SEMANA 03 · FIN =====
+// ===== SEMANA 06 · INICIO =====
 import { useForm } from 'react-hook-form';
+// ===== SEMANA 06 · FIN =====
+// ===== SEMANA 10 · INICIO =====
 import { zodResolver } from '@hookform/resolvers/zod';
+// ===== SEMANA 10 · FIN =====
 
+// ===== SEMANA 08 · INICIO =====
 import { PlayForm } from '../components/PlayForm';
 import { useCreatePlay } from '../hooks/usePlays';
+// ===== SEMANA 08 · FIN =====
+// ===== SEMANA 06 · INICIO =====
 import {
   DEFAULT_PLAY_IMAGE,
   EMPTY_PLAY_FORM,
@@ -26,23 +31,35 @@ import {
   type PlayFormInput,
   type PlayFormValues,
 } from '../schemas/playSchema';
+// ===== SEMANA 06 · FIN =====
+// ===== SEMANA 11 · INICIO =====
 import { POSTER_DRAFT_ID, usePosterStore } from '../stores/posterStore';
+// ===== SEMANA 11 · FIN =====
+// ===== SEMANA 06 · INICIO =====
 import { getApiErrorMessage } from '../services/api';
 import { COLORS, SPACING } from '../theme';
+// ===== SEMANA 06 · FIN =====
+// ===== SEMANA 05 · INICIO =====
 import type { HomeStackParamList } from '../navigation/types';
 
 type CreateNavProp = NativeStackNavigationProp<HomeStackParamList, 'Create'>;
 
 export function CreateScreen(): React.JSX.Element {
   const navigation = useNavigation<CreateNavProp>();
+  // ===== SEMANA 11 · INICIO =====
   const movePoster = usePosterStore((state) => state.movePoster);
   const clearDraft = usePosterStore((state) => state.clearDraft);
+  // ===== SEMANA 11 · FIN =====
 
+  // ===== SEMANA 06 · INICIO =====
   const { mutateAsync: createPlay, isPending, error: mutationError } = useCreatePlay();
+  // ===== SEMANA 06 · FIN =====
 
-  // Si el formulario se cierra sin publicar, el afiche del borrador se descarta.
+  // ===== SEMANA 11 · INICIO =====
   useEffect(() => () => clearDraft(), [clearDraft]);
+  // ===== SEMANA 11 · FIN =====
 
+  // ===== SEMANA 06 · INICIO =====
   const {
     control,
     handleSubmit,
@@ -52,18 +69,21 @@ export function CreateScreen(): React.JSX.Element {
     defaultValues: EMPTY_PLAY_FORM,
     mode: 'onBlur',
   });
+  // ===== SEMANA 06 · FIN =====
 
   async function onSubmit(values: PlayFormValues): Promise<void> {
     try {
+      // ===== SEMANA 11 · INICIO =====
       const created = await createPlay(toCreatePlayPayload(values));
       movePoster(POSTER_DRAFT_ID, created.id);
+      // ===== SEMANA 11 · FIN =====
       navigation.goBack();
-    } catch {
-      // El mensaje se muestra desde mutationError con getApiErrorMessage.
-    }
+    } catch {}
   }
 
+  // ===== SEMANA 06 · INICIO =====
   const submitting = isSubmitting || isPending;
+  // ===== SEMANA 06 · FIN =====
 
   return (
     <KeyboardAvoidingView
@@ -109,3 +129,4 @@ const styles = StyleSheet.create({
     paddingBottom: SPACING.xxxl,
   },
 });
+// ===== SEMANA 05 · FIN =====

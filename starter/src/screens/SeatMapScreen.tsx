@@ -1,9 +1,4 @@
-// ============================================
-// SCREEN: SeatMapScreen — Semana 10
-// Mapa de butacas con zoom (Pinch), desplazamiento (Pan de 2 dedos),
-// selección por tap y resumen de reserva.
-// ============================================
-
+// ===== SEMANA 01 · INICIO =====
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Alert,
@@ -13,9 +8,13 @@ import {
   View,
 } from 'react-native';
 import type { LayoutChangeEvent } from 'react-native';
+// ===== SEMANA 01 · FIN =====
+// ===== SEMANA 03 · INICIO =====
 import { useRoute } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+// ===== SEMANA 03 · FIN =====
+// ===== SEMANA 10 · INICIO =====
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedStyle,
@@ -56,7 +55,6 @@ function getFitScale(hall: TheatreHall, viewportWidth: number): number {
   return Math.min(1, (viewportWidth - VIEWPORT_PADDING) / contentWidth);
 }
 
-/** Mantiene el mapa dentro de límites razonables al soltar el gesto. */
 function clampTranslation(
   value: number,
   contentSize: number,
@@ -324,7 +322,6 @@ export function SeatMapScreen(): React.JSX.Element {
 
   return (
     <View style={styles.screen}>
-      {/* Resumen de la función */}
       <View style={styles.header}>
         <Text style={styles.title}>{item.name}</Text>
         <Text style={styles.subtitle}>
@@ -335,7 +332,6 @@ export function SeatMapScreen(): React.JSX.Element {
         </Text>
       </View>
 
-      {/* Leyenda */}
       <View style={styles.legendRow}>
         <View style={styles.legendItem}>
           <View style={[styles.legendDot, styles.legendAvailable]} />
@@ -351,7 +347,6 @@ export function SeatMapScreen(): React.JSX.Element {
         </View>
       </View>
 
-      {/* Mapa con zoom y desplazamiento */}
       <View style={styles.viewport} onLayout={handleViewportLayout}>
         <GestureDetector gesture={mapGesture}>
           <Animated.View
@@ -434,7 +429,6 @@ export function SeatMapScreen(): React.JSX.Element {
         Pellizca para zoom · arrastra con dos dedos · toca una butaca
       </Text>
 
-      {/* Resumen y confirmación */}
       <View
         style={[
           styles.bottomBar,
@@ -649,3 +643,4 @@ const styles = StyleSheet.create({
     color: COLORS.textSecondary,
   },
 });
+// ===== SEMANA 10 · FIN =====

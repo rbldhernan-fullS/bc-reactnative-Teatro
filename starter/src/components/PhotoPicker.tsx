@@ -1,9 +1,4 @@
-// ============================================
-// COMPONENT: PhotoPicker — Semana 11
-// Afiche de la obra con cámara o galería. La foto se guarda en el store local
-// (posterStore) y se refleja de inmediato en el detalle.
-// ============================================
-
+// ===== SEMANA 01 · INICIO =====
 import React, { useCallback, useState } from 'react';
 import {
   ActivityIndicator,
@@ -14,9 +9,13 @@ import {
   Text,
   View,
 } from 'react-native';
+// ===== SEMANA 01 · FIN =====
+// ===== SEMANA 03 · INICIO =====
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
+// ===== SEMANA 03 · FIN =====
+// ===== SEMANA 11 · INICIO =====
 import * as ImagePicker from 'expo-image-picker';
 
 import { usePosterStore } from '../stores/posterStore';
@@ -28,11 +27,8 @@ type PhotoPickerNavigationProp = NativeStackNavigationProp<
 >;
 
 interface PhotoPickerProps {
-  /** Id de la obra (o el borrador mientras se crea) */
   targetId: string;
-  /** Afiche de la API que se ve mientras no hay foto local */
   fallbackUri: string;
-  /** Oculta la miniatura cuando la pantalla ya muestra el afiche grande */
   showPreview?: boolean;
 }
 
@@ -231,3 +227,4 @@ const styles = StyleSheet.create({
     lineHeight: TYPOGRAPHY.lineHeight.base,
   },
 });
+// ===== SEMANA 11 · FIN =====

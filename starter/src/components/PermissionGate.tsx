@@ -1,9 +1,4 @@
-// ============================================
-// COMPONENT: PermissionGate — Semana 11
-// Estado de permiso reutilizable: comprobando / denegado / concedido.
-// Evita repetir la UI de "solicitar permiso" y "abrir ajustes" en cada API.
-// ============================================
-
+// ===== SEMANA 01 · INICIO =====
 import React from 'react';
 import {
   ActivityIndicator,
@@ -13,16 +8,15 @@ import {
   Text,
   View,
 } from 'react-native';
+// ===== SEMANA 01 · FIN =====
+// ===== SEMANA 03 · INICIO =====
 import { Ionicons } from '@expo/vector-icons';
+// ===== SEMANA 03 · FIN =====
+// ===== SEMANA 11 · INICIO =====
 import { COLORS, RADIUS, SIZES, SPACING, TYPOGRAPHY } from '../theme';
 
 export type PermissionStatus = 'granted' | 'denied' | 'undetermined';
 
-/**
- * Forma mínima que comparten `CameraPermissionResponse` y
- * `LocationPermissionResponse`. Al declararla aquí, el componente no depende
- * de los tipos internos de expo-camera ni de expo-location.
- */
 export interface PermissionSnapshot {
   granted: boolean;
   status: PermissionStatus;
@@ -30,18 +24,13 @@ export interface PermissionSnapshot {
 }
 
 interface PermissionGateProps {
-  /** `null` mientras se consulta el permiso por primera vez */
   permission: PermissionSnapshot | null;
-  /** Muestra un spinner en el botón mientras el sistema responde */
   requesting?: boolean;
   icon?: keyof typeof Ionicons.glyphMap;
   title: string;
-  /** Explicación de para qué se usa el permiso dentro del dominio */
   description: string;
-  /** Texto adicional cuando el usuario ya denegó el permiso */
   deniedHint?: string;
   onRequest: () => void;
-  /** Contenido que solo se monta cuando el permiso está concedido */
   children?: React.ReactNode;
 }
 
@@ -65,9 +54,7 @@ export function PermissionGate({
   async function handleOpenSettings(): Promise<void> {
     try {
       await Linking.openSettings();
-    } catch {
-      // En algunos emuladores no existe la pantalla de ajustes de la app.
-    }
+    } catch {}
   }
 
   return (
@@ -174,3 +161,4 @@ const styles = StyleSheet.create({
     color: COLORS.background,
   },
 });
+// ===== SEMANA 11 · FIN =====
