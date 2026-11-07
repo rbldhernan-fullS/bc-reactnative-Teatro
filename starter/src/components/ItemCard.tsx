@@ -27,6 +27,8 @@ export const ItemCard = React.memo(function ItemCard({
 }: ItemCardProps): React.JSX.Element {
   // ===== SEMANA 04 · INICIO =====
   function handleSavePress(event: GestureResponderEvent): void {
+    // stopPropagation evita que, en web, pulsar «guardar» dispare también la
+    // navegación de la tarjeta (el contenedor es presionable). En nativo es inofensivo.
     event.stopPropagation();
     onToggleSave(item);
   }
