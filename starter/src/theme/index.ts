@@ -18,6 +18,7 @@ export const COLORS = {
   success: '#3fb950',
   warning: '#f0883e',
   error: '#f85149',
+  errorDim: '#f8514926',
   info: '#58a6ff',
 
   overlay: 'rgba(20, 9, 12, 0.75)',
