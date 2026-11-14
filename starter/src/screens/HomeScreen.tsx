@@ -141,7 +141,7 @@ export function HomeScreen(): React.JSX.Element {
 
   // ===== SEMANA 05 · INICIO =====
   const savedIds = useSavedStore((state) => state.savedIds);
-  const toggleSaved = useSavedStore((state) => state.toggleSaved);
+  const toggleSaved = useSavedStore((state) => state.toggle);
 
   const savedIdSet = useMemo(() => new Set(savedIds), [savedIds]);
   // ===== SEMANA 05 · FIN =====

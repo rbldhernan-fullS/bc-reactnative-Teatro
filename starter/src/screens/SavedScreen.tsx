@@ -1,7 +1,7 @@
 // ===== SEMANA 01 · INICIO =====
 import React, { useCallback, useMemo } from 'react';
 import { View, Text, FlatList, Image, Pressable, StyleSheet } from 'react-native';
-import type { GestureResponderEvent, ListRenderItem } from 'react-native';
+import type { ListRenderItem } from 'react-native';
 // ===== SEMANA 01 · FIN =====
 // ===== SEMANA 03 · INICIO =====
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -26,9 +26,9 @@ export function SavedScreen(): React.JSX.Element {
 
   // ===== SEMANA 05 · INICIO =====
   const savedIds = useSavedStore((state) => state.savedIds);
-  const removeId = useSavedStore((state) => state.removeId);
+  const removeSaved = useSavedStore((state) => state.remove);
   // ===== SEMANA 05 · FIN =====
-  const clearSaved = useSavedStore((state) => state.clearSaved);
+  const clearSaved = useSavedStore((state) => state.clear);
 
   // ===== SEMANA 05 · INICIO =====
   const { data, isLoading, isError, error, refetch, isFetching } = usePlays();
@@ -66,67 +66,74 @@ export function SavedScreen(): React.JSX.Element {
   );
 
   const handleRemovePress = useCallback(
-    (event: GestureResponderEvent, id: string): void => {
-      event.stopPropagation();
+    (id: string): void => {
       // ===== SEMANA 05 · INICIO =====
-      removeId(id);
+      removeSaved(id);
       // ===== SEMANA 05 · FIN =====
     },
-    [removeId],
+    [removeSaved],
   );
+
+  const handleEmptyAction = useCallback((): void => {
+    navigation.navigate('Home', { screen: 'HomeList' });
+  }, [navigation]);
 
   const renderSavedItem: ListRenderItem<Item> = useCallback(
     ({ item }) => (
-      <Pressable
-        style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
-        onPress={() => handleItemPress(item)}
-        accessibilityRole="button"
-        accessibilityLabel={`Ver detalles de ${item.name}`}
-      >
-        {/* ===== SEMANA 12 · INICIO ===== */}
-        <Image source={{ uri: item.imageUri }} style={styles.cardImage} resizeMode="cover" />
-        {/* ===== SEMANA 12 · FIN ===== */}
+      <View style={styles.card}>
+        <Pressable
+          style={({ pressed }) => [styles.cardPressTarget, pressed && styles.cardPressed]}
+          onPress={() => handleItemPress(item)}
+          accessibilityRole="button"
+          accessibilityLabel={`Ver detalles de ${item.name}`}
+        >
+          {/* ===== SEMANA 12 · INICIO ===== */}
+          <Image source={{ uri: item.imageUri }} style={styles.cardImage} resizeMode="cover" />
+          {/* ===== SEMANA 12 · FIN ===== */}
 
-        <View style={styles.cardContent}>
-          <View style={styles.cardHeaderRow}>
+          <View style={styles.cardContent}>
+            <View style={styles.cardHeaderRow}>
+              {/* ===== SEMANA 12 · INICIO ===== */}
+              <View style={styles.genreBadge}>
+                <Text style={styles.genreBadgeText}>{item.genre}</Text>
+              </View>
+              {/* ===== SEMANA 12 · FIN ===== */}
+              <View style={styles.removeButtonSlot} />
+            </View>
+
             {/* ===== SEMANA 12 · INICIO ===== */}
-            <View style={styles.genreBadge}>
-              <Text style={styles.genreBadgeText}>{item.genre}</Text>
+            <Text style={styles.itemName} numberOfLines={1}>
+              {item.name}
+            </Text>
+            <Text style={styles.itemSubtitle} numberOfLines={1}>
+              {item.subtitle}
+            </Text>
+
+            <View style={styles.metaRow}>
+              <Text style={styles.metaText}>🏛 {item.hall}</Text>
+              <Text style={styles.metaDot}>•</Text>
+              <Text style={styles.metaText}>📅 {item.date}</Text>
+            </View>
+
+            <View style={styles.cardFooter}>
+              <Text style={styles.ratingText}>★ {item.rating.toFixed(1)}</Text>
+              <Text style={styles.priceText}>${item.price.toLocaleString('es-CO')} COP</Text>
             </View>
             {/* ===== SEMANA 12 · FIN ===== */}
-
-            <Pressable
-              onPress={(event) => handleRemovePress(event, item.id)}
-              style={({ pressed }) => [styles.removeButton, pressed && styles.removeButtonPressed]}
-              hitSlop={8}
-              accessibilityRole="button"
-              accessibilityLabel={`Quitar ${item.name} de guardados`}
-            >
-              <Ionicons name="bookmark" size={SIZES.iconMd} color={COLORS.accent} />
-            </Pressable>
           </View>
+        </Pressable>
 
-          {/* ===== SEMANA 12 · INICIO ===== */}
-          <Text style={styles.itemName} numberOfLines={1}>
-            {item.name}
-          </Text>
-          <Text style={styles.itemSubtitle} numberOfLines={1}>
-            {item.subtitle}
-          </Text>
-
-          <View style={styles.metaRow}>
-            <Text style={styles.metaText}>🏛 {item.hall}</Text>
-            <Text style={styles.metaDot}>•</Text>
-            <Text style={styles.metaText}>📅 {item.date}</Text>
-          </View>
-
-          <View style={styles.cardFooter}>
-            <Text style={styles.ratingText}>★ {item.rating.toFixed(1)}</Text>
-            <Text style={styles.priceText}>${item.price.toLocaleString('es-CO')} COP</Text>
-          </View>
-          {/* ===== SEMANA 12 · FIN ===== */}
-        </View>
-      </Pressable>
+        {/* Hermano del área pulsable: evita el <button> anidado (E‑01). */}
+        <Pressable
+          onPress={() => handleRemovePress(item.id)}
+          style={({ pressed }) => [styles.removeButton, pressed && styles.removeButtonPressed]}
+          hitSlop={8}
+          accessibilityRole="button"
+          accessibilityLabel={`Quitar ${item.name} de guardados`}
+        >
+          <Ionicons name="bookmark" size={SIZES.iconMd} color={COLORS.accent} />
+        </Pressable>
+      </View>
     ),
     [handleItemPress, handleRemovePress],
   );
@@ -141,9 +148,17 @@ export function SavedScreen(): React.JSX.Element {
         <Text style={styles.emptySubtitle}>
           Usa el bookmark de la cartelera o del detalle para guardar una obra y encontrarla aquí.
         </Text>
+        <Pressable
+          style={({ pressed }) => [styles.emptyButton, pressed && styles.emptyButtonPressed]}
+          onPress={handleEmptyAction}
+          accessibilityRole="button"
+          accessibilityLabel="Ver la cartelera de obras"
+        >
+          <Text style={styles.emptyButtonText}>Ver cartelera</Text>
+        </Pressable>
       </View>
     ),
-    [],
+    [handleEmptyAction],
   );
 
   // ===== SEMANA 05 · INICIO =====
@@ -299,12 +314,15 @@ const styles = StyleSheet.create({
     height: SPACING.md,
   },
   card: {
+    position: 'relative',
     backgroundColor: COLORS.surface,
     borderRadius: RADIUS.lg,
     borderWidth: 1,
     borderColor: COLORS.border,
-    flexDirection: 'row',
     overflow: 'hidden',
+  },
+  cardPressTarget: {
+    flexDirection: 'row',
   },
   cardPressed: {
     backgroundColor: COLORS.surfaceAlt,
@@ -338,8 +356,14 @@ const styles = StyleSheet.create({
     fontWeight: TYPOGRAPHY.weight.semibold,
   },
   removeButton: {
+    position: 'absolute',
+    top: SPACING.md,
+    right: SPACING.md,
     padding: SPACING.xxs,
     borderRadius: RADIUS.full,
+  },
+  removeButtonSlot: {
+    width: SIZES.iconMd + SPACING.xxs * 2,
   },
   removeButtonPressed: {
     backgroundColor: COLORS.surfaceAlt,
@@ -404,6 +428,23 @@ const styles = StyleSheet.create({
     color: COLORS.textMuted,
     textAlign: 'center',
     lineHeight: TYPOGRAPHY.lineHeight.base,
+  },
+  emptyButton: {
+    marginTop: SPACING.lg,
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.sm,
+    borderRadius: RADIUS.full,
+    borderWidth: 1,
+    borderColor: COLORS.accent,
+    backgroundColor: COLORS.accentDim,
+  },
+  emptyButtonPressed: {
+    opacity: 0.7,
+  },
+  emptyButtonText: {
+    fontSize: TYPOGRAPHY.size.sm,
+    fontWeight: TYPOGRAPHY.weight.semibold,
+    color: COLORS.accent,
   },
 });
 // ===== SEMANA 04 · FIN =====

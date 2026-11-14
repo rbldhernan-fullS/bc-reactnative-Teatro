@@ -1,103 +1,137 @@
 // ===== SEMANA 04 · INICIO =====
 import { create } from 'zustand';
-import { persist, createJSONStorage, type PersistStorage } from 'zustand/middleware';
-import { Platform } from 'react-native';
+import { persist } from 'zustand/middleware';
+import type { PersistStorage, StorageValue } from 'zustand/middleware';
 
-export interface SavedStore {
+import { storage } from '../storage/mmkv';
+
+export interface SavedState {
   savedIds: string[];
 
-  saveId: (id: string) => void;
+  save: (id: string) => void;
 
-  removeId: (id: string) => void;
+  remove: (id: string) => void;
 
-  toggleSaved: (id: string) => void;
+  toggle: (id: string) => void;
 
-  clearSaved: () => void;
+  clear: () => void;
 }
 
-type SavedState = { savedIds: string[] };
+interface PersistedSavedState {
+  savedIds: string[];
+}
 
-const INITIAL_SAVED_IDS = ['3', '1', '6', '8'];
+const SAVED_STORAGE_KEY = 'teatro-saved';
+const SAVED_STORAGE_VERSION = 1;
 
-// Storage adaptable: AsyncStorage en nativo y localStorage en web.
-// Así `persist` funciona en ambos entornos sin romper el bundler de web,
-// que no resuelve la implementación nativa de AsyncStorage.
-const webStorage: PersistStorage<SavedState, unknown> = {
-  getItem: (key) => {
-    const raw = (globalThis as any).localStorage?.getItem(key) ?? null;
-    return raw
-      ? Promise.resolve({ state: JSON.parse(raw) as SavedState, version: 1 })
-      : Promise.resolve(null);
+/**
+ * Adaptador de `persist` sobre el almacenamiento del proyecto.
+ *
+ * `storage/mmkv.ts` (nativo) y `storage/mmkv.web.ts` (localStorage) exponen la
+ * misma interfaz `getString`/`set`/`remove`, así que la lógica es idéntica en
+ * ambas plataformas. `JSON.parse` va protegido: un valor corrupto se descarta
+ * y el store arranca vacío en lugar de romper el arranque.
+ */
+const savedStorage: PersistStorage<PersistedSavedState> = {
+  getItem: (name): StorageValue<PersistedSavedState> | null => {
+    const raw = storage.getString(name);
+
+    if (!raw) {
+      return null;
+    }
+
+    try {
+      const parsed: unknown = JSON.parse(raw);
+
+      if (typeof parsed !== 'object' || parsed === null) {
+        return null;
+      }
+
+      const candidate = parsed as StorageValue<PersistedSavedState>;
+      const ids = candidate.state?.savedIds;
+
+      if (!Array.isArray(ids)) {
+        return null;
+      }
+
+      return {
+        state: { savedIds: ids.filter((id): id is string => typeof id === 'string') },
+        version: typeof candidate.version === 'number' ? candidate.version : undefined,
+      };
+    } catch {
+      return null;
+    }
   },
-  setItem: (key, value) => {
-    (globalThis as any).localStorage?.setItem(key, JSON.stringify(value.state));
-    return Promise.resolve();
+  setItem: (name, value) => {
+    storage.set(name, JSON.stringify(value));
   },
-  removeItem: (key) => {
-    (globalThis as any).localStorage?.removeItem(key);
-    return Promise.resolve();
+  removeItem: (name) => {
+    storage.remove(name);
   },
 };
 
-const storage: PersistStorage<SavedState, unknown> | undefined =
-  Platform.OS === 'web'
-    ? webStorage
-    : (createJSONStorage(() => {
-        // @ts-ignore - `require` está disponible en el runtime de Metro/Expo
-        const AsyncStorage = require('@react-native-async-storage/async-storage').default;
-        return AsyncStorage;
-      }) as PersistStorage<SavedState, unknown>);
+function sanitizeIds(ids: unknown): string[] {
+  if (!Array.isArray(ids)) {
+    return [];
+  }
 
-export const useSavedStore = create<SavedStore>()(
+  return ids.filter((id): id is string => typeof id === 'string');
+}
+
+export const useSavedStore = create<SavedState>()(
   persist(
     (set, get) => ({
-      savedIds: INITIAL_SAVED_IDS,
+      // Sin seed: la lista de guardados es del usuario y arranca vacía.
+      savedIds: [],
 
-      saveId: (id) => {
-        const { savedIds } = get();
-        if (savedIds.includes(id)) {
+      save: (id) => {
+        if (get().savedIds.includes(id)) {
           return;
         }
 
         set((state) => ({ savedIds: [...state.savedIds, id] }));
       },
 
-      removeId: (id) =>
+      remove: (id) =>
         set((state) => ({
           savedIds: state.savedIds.filter((savedId) => savedId !== id),
         })),
 
-      toggleSaved: (id) => {
-        // Reusa saveId/removeId en lugar de duplicar la lógica de filtro/inserción.
-        if (get().savedIds.includes(id)) {
-          get().removeId(id);
+      toggle: (id) => {
+        const { savedIds, save, remove } = get();
+
+        if (savedIds.includes(id)) {
+          remove(id);
           return;
         }
 
-        get().saveId(id);
+        save(id);
       },
 
-      clearSaved: () => set({ savedIds: [] }),
+      clear: () => set({ savedIds: [] }),
     }),
     {
-      name: 'saved-storage',
-      storage,
-      // Solo se persisten los ids; los objetos se resuelven desde ITEMS/api.
-      partialize: (state) => ({ savedIds: state.savedIds }),
-      onRehydrateStorage: () => (state) => {
-        if (state) {
-          // eslint-disable-next-line no-console
-          console.log('[savedStore] estado rehidratado desde almacenamiento');
+      name: SAVED_STORAGE_KEY,
+      version: SAVED_STORAGE_VERSION,
+      storage: savedStorage,
+      // Solo se persisten los ids; las obras se resuelven desde la API.
+      partialize: (state): PersistedSavedState => ({ savedIds: state.savedIds }),
+      migrate: (persistedState, version): PersistedSavedState => {
+        if (version < SAVED_STORAGE_VERSION) {
+          const legacy = persistedState as { savedIds?: unknown } | undefined;
+          return { savedIds: sanitizeIds(legacy?.savedIds) };
         }
+
+        return persistedState as PersistedSavedState;
       },
     },
   ),
 );
 
-export const selectSavedCount = (state: SavedStore): number => state.savedIds.length;
+export const selectSavedCount = (state: SavedState): number => state.savedIds.length;
 
 export const selectIsSaved =
   (id: string) =>
-  (state: SavedStore): boolean =>
+  (state: SavedState): boolean =>
     state.savedIds.includes(id);
 // ===== SEMANA 04 · FIN =====
