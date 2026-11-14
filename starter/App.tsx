@@ -1,6 +1,9 @@
 // ===== SEMANA 10 · INICIO =====
 import 'react-native-gesture-handler';
 // ===== SEMANA 10 · FIN =====
+// ===== SEMANA 12 · INICIO =====
+import './src/platform/devConsole';
+// ===== SEMANA 12 · FIN =====
 
 // ===== SEMANA 01 · INICIO =====
 import React, { useEffect } from 'react';
