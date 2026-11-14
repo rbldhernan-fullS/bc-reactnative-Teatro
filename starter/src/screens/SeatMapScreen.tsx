@@ -1,20 +1,17 @@
 // ===== SEMANA 01 · INICIO =====
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import type { LayoutChangeEvent } from 'react-native';
 // ===== SEMANA 01 · FIN =====
 // ===== SEMANA 03 · INICIO =====
 import { useRoute } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
 // ===== SEMANA 03 · FIN =====
 // ===== SEMANA 10 · INICIO =====
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
-import type { Seat, TheatreHall } from '../types';
+import type { Seat } from '../types';
 import type { SeatMapScreenProps } from '../navigation/types';
 import { AnimatedButton } from '../components/AnimatedButton';
 import { ScreenState } from '../components/ScreenState';
+import { SeatMapViewport } from '../components/SeatMapViewport';
 import { notify } from '../platform/notify';
 import { usePlayById } from '../hooks/usePlays';
 import { getApiErrorMessage } from '../services/api';
@@ -27,32 +24,7 @@ const ROW_LABEL_WIDTH = 24;
 const AISLE_EXTRA = SPACING.md;
 const STAGE_HEIGHT = 34;
 const ROW_HEIGHT = SEAT_SIZE + SEAT_GAP;
-const VIEWPORT_PADDING = SPACING.base * 2;
-const MIN_INITIAL_SCALE = 0.55;
-const MAX_SCALE = 2.5;
 const MAX_SEATS_PER_BOOKING = 8;
-
-function getFitScale(hall: TheatreHall, viewportWidth: number): number {
-  const layout = HALL_LAYOUT[hall];
-  const contentWidth = ROW_LABEL_WIDTH + layout.seatsPerRow * (SEAT_SIZE + SEAT_GAP) + AISLE_EXTRA;
-
-  if (viewportWidth <= 0) {
-    return 1;
-  }
-
-  return Math.min(1, (viewportWidth - VIEWPORT_PADDING) / contentWidth);
-}
-
-function clampTranslation(
-  value: number,
-  contentSize: number,
-  viewportSize: number,
-  scale: number,
-): number {
-  'worklet';
-  const limit = Math.max(0, (contentSize * scale - viewportSize) / 2);
-  return Math.min(limit, Math.max(-limit, value));
-}
 
 export function SeatMapScreen(): React.JSX.Element {
   const route = useRoute<SeatMapScreenProps['route']>();
@@ -62,7 +34,7 @@ export function SeatMapScreen(): React.JSX.Element {
   const { data: item, isLoading, isError, error, refetch } = usePlayById(id);
 
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [viewport, setViewport] = useState({ width: 0, height: 0 });
+  const dragEndedAt = useRef(0);
 
   const hall = item?.hall ?? 'Sala Principal';
   const layout = HALL_LAYOUT[hall];
@@ -86,114 +58,20 @@ export function SeatMapScreen(): React.JSX.Element {
 
   const contentWidth = ROW_LABEL_WIDTH + layout.seatsPerRow * (SEAT_SIZE + SEAT_GAP) + AISLE_EXTRA;
   const contentHeight = STAGE_HEIGHT + layout.rows * ROW_HEIGHT + SPACING.sm;
-  const initialScale = Math.max(MIN_INITIAL_SCALE, getFitScale(hall, viewport.width));
-  const minScale = 0.5;
 
-  const scale = useSharedValue(1);
-  const savedScale = useSharedValue(1);
-  const translateX = useSharedValue(0);
-  const translateY = useSharedValue(0);
-  const startX = useSharedValue(0);
-  const startY = useSharedValue(0);
-
-  useEffect(() => {
-    scale.value = initialScale;
-    translateX.value = 0;
-    translateY.value = 0;
-  }, [initialScale, item?.id, scale, translateX, translateY]);
-
-  const pinchGesture = useMemo(
-    () =>
-      Gesture.Pinch()
-        .onStart(() => {
-          savedScale.value = scale.value;
-        })
-        .onUpdate((event) => {
-          scale.value = Math.min(MAX_SCALE, Math.max(minScale, savedScale.value * event.scale));
-        })
-        .onEnd(() => {
-          translateX.value = withSpring(
-            clampTranslation(translateX.value, contentWidth, viewport.width, scale.value),
-          );
-          translateY.value = withSpring(
-            clampTranslation(translateY.value, contentHeight, viewport.height, scale.value),
-          );
-        }),
-    [
-      contentHeight,
-      contentWidth,
-      minScale,
-      savedScale,
-      scale,
-      translateX,
-      translateY,
-      viewport.height,
-      viewport.width,
-    ],
-  );
-
-  const panGesture = useMemo(
-    () =>
-      Gesture.Pan()
-        .minPointers(2)
-        .onStart(() => {
-          startX.value = translateX.value;
-          startY.value = translateY.value;
-        })
-        .onUpdate((event) => {
-          translateX.value = startX.value + event.translationX;
-          translateY.value = startY.value + event.translationY;
-        })
-        .onEnd(() => {
-          translateX.value = withSpring(
-            clampTranslation(translateX.value, contentWidth, viewport.width, scale.value),
-          );
-          translateY.value = withSpring(
-            clampTranslation(translateY.value, contentHeight, viewport.height, scale.value),
-          );
-        }),
-    [
-      contentHeight,
-      contentWidth,
-      scale,
-      startX,
-      startY,
-      translateX,
-      translateY,
-      viewport.height,
-      viewport.width,
-    ],
-  );
-
-  const mapGesture = useMemo(
-    () => Gesture.Simultaneous(pinchGesture, panGesture),
-    [panGesture, pinchGesture],
-  );
-
-  const mapStyle = useAnimatedStyle(() => ({
-    transform: [
-      { translateX: translateX.value },
-      { translateY: translateY.value },
-      { scale: scale.value },
-    ],
-  }));
-
-  const handleViewportLayout = useCallback((event: LayoutChangeEvent): void => {
-    const { width, height } = event.nativeEvent.layout;
-    setViewport((current) =>
-      current.width === width && current.height === height ? current : { width, height },
-    );
+  const handleMapDragEnd = useCallback((): void => {
+    dragEndedAt.current = Date.now();
   }, []);
-
-  const handleResetView = useCallback((): void => {
-    scale.value = withSpring(initialScale, { damping: 16, stiffness: 180 });
-    translateX.value = withSpring(0);
-    translateY.value = withSpring(0);
-  }, [initialScale, scale, translateX, translateY]);
 
   const handleSeatPress = useCallback(
     (seat: Seat): void => {
       if (seat.status === 'occupied') {
+        return;
+      }
+
+      // Tras arrastrar el mapa, el puntero puede terminar sobre una butaca y
+      // disparar su pulsación: se descarta el clic inmediatamente posterior.
+      if (Date.now() - dragEndedAt.current < 300) {
         return;
       }
 
@@ -301,71 +179,57 @@ export function SeatMapScreen(): React.JSX.Element {
         </View>
       </View>
 
-      <View style={styles.viewport} onLayout={handleViewportLayout}>
-        <GestureDetector gesture={mapGesture}>
-          <Animated.View
-            style={[styles.mapContent, { width: contentWidth, height: contentHeight }, mapStyle]}
-          >
-            <Text style={styles.stageLabel}>ESCENARIO</Text>
+      <SeatMapViewport
+        contentWidth={contentWidth}
+        contentHeight={contentHeight}
+        onDragEnd={handleMapDragEnd}
+      >
+        <Text style={styles.stageLabel}>ESCENARIO</Text>
 
-            {rows.map(([row, rowSeats]) => (
-              <View key={row} style={styles.seatRow}>
-                <Text style={styles.rowLabel}>{row}</Text>
+        {rows.map(([row, rowSeats]) => (
+          <View key={row} style={styles.seatRow}>
+            <Text style={styles.rowLabel}>{row}</Text>
 
-                {rowSeats.map((seat) => {
-                  const isSelected = selectedIdSet.has(seat.id);
-                  const isOccupied = seat.status === 'occupied';
-                  const isAisleSeat = seat.number === Math.ceil(layout.seatsPerRow / 2) + 1;
+            {rowSeats.map((seat) => {
+              const isSelected = selectedIdSet.has(seat.id);
+              const isOccupied = seat.status === 'occupied';
+              const isAisleSeat = seat.number === Math.ceil(layout.seatsPerRow / 2) + 1;
 
-                  return (
-                    <Pressable
-                      key={seat.id}
-                      onPress={() => handleSeatPress(seat)}
-                      disabled={isOccupied}
-                      style={[
-                        styles.seat,
-                        isAisleSeat && styles.aisleSeat,
-                        isOccupied && styles.seatOccupied,
-                        isSelected && styles.seatSelected,
-                      ]}
-                      accessibilityRole="button"
-                      accessibilityState={{
-                        disabled: isOccupied,
-                        selected: isSelected,
-                      }}
-                      accessibilityLabel={`Fila ${seat.row}, butaca ${seat.number}${
-                        isOccupied ? ', ocupada' : isSelected ? ', seleccionada' : ', disponible'
-                      }`}
-                    >
-                      <Text
-                        style={[
-                          styles.seatNumber,
-                          isOccupied && styles.seatNumberOccupied,
-                          isSelected && styles.seatNumberSelected,
-                        ]}
-                      >
-                        {seat.number}
-                      </Text>
-                    </Pressable>
-                  );
-                })}
-              </View>
-            ))}
-          </Animated.View>
-        </GestureDetector>
-
-        <Pressable
-          style={({ pressed }) => [styles.resetButton, pressed && styles.resetButtonPressed]}
-          onPress={handleResetView}
-          accessibilityRole="button"
-          accessibilityLabel="Centrar y restablecer el zoom"
-        >
-          <Ionicons name="scan-outline" size={16} color={COLORS.accent} />
-          <Text style={styles.resetText}>Centrar</Text>
-        </Pressable>
-      </View>
-
-      <Text style={styles.hint}>Pellizca para zoom · arrastra con dos dedos · toca una butaca</Text>
+              return (
+                <Pressable
+                  key={seat.id}
+                  onPress={() => handleSeatPress(seat)}
+                  disabled={isOccupied}
+                  style={[
+                    styles.seat,
+                    isAisleSeat && styles.aisleSeat,
+                    isOccupied && styles.seatOccupied,
+                    isSelected && styles.seatSelected,
+                  ]}
+                  accessibilityRole="button"
+                  accessibilityState={{
+                    disabled: isOccupied,
+                    selected: isSelected,
+                  }}
+                  accessibilityLabel={`Fila ${seat.row}, butaca ${seat.number}${
+                    isOccupied ? ', ocupada' : isSelected ? ', seleccionada' : ', disponible'
+                  }`}
+                >
+                  <Text
+                    style={[
+                      styles.seatNumber,
+                      isOccupied && styles.seatNumberOccupied,
+                      isSelected && styles.seatNumberSelected,
+                    ]}
+                  >
+                    {seat.number}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
+        ))}
+      </SeatMapViewport>
 
       <View style={[styles.bottomBar, { paddingBottom: SPACING.md + insets.bottom }]}>
         <View style={styles.summary}>
@@ -447,21 +311,6 @@ const styles = StyleSheet.create({
     fontSize: TYPOGRAPHY.size.xs,
     color: COLORS.textMuted,
   },
-  viewport: {
-    flex: 1,
-    marginHorizontal: SPACING.base,
-    borderRadius: RADIUS.lg,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    backgroundColor: COLORS.surface,
-    overflow: 'hidden',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  mapContent: {
-    alignItems: 'center',
-    paddingVertical: SPACING.sm,
-  },
   stageLabel: {
     width: '100%',
     textAlign: 'center',
@@ -516,35 +365,6 @@ const styles = StyleSheet.create({
   seatNumberSelected: {
     color: COLORS.background,
     fontWeight: TYPOGRAPHY.weight.bold,
-  },
-  resetButton: {
-    position: 'absolute',
-    top: SPACING.sm,
-    right: SPACING.sm,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: SPACING.xxs,
-    paddingHorizontal: SPACING.sm,
-    paddingVertical: SPACING.xs,
-    borderRadius: RADIUS.full,
-    borderWidth: 1,
-    borderColor: COLORS.accent,
-    backgroundColor: COLORS.overlay,
-  },
-  resetButtonPressed: {
-    opacity: 0.7,
-  },
-  resetText: {
-    fontSize: TYPOGRAPHY.size.xs,
-    fontWeight: TYPOGRAPHY.weight.semibold,
-    color: COLORS.accent,
-  },
-  hint: {
-    textAlign: 'center',
-    fontSize: TYPOGRAPHY.size.xs,
-    color: COLORS.textMuted,
-    paddingVertical: SPACING.sm,
-    paddingHorizontal: SPACING.base,
   },
   bottomBar: {
     flexDirection: 'row',
