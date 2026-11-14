@@ -10,12 +10,19 @@ import { useAuthStore } from '../stores/authStore';
 import { AppNavigator } from './AppNavigator';
 import { AuthNavigator } from './AuthNavigator';
 // ===== SEMANA 08 · FIN =====
+// ===== SEMANA 03 · INICIO =====
+import { useWebFocusFix } from './useWebFocusFix';
+// ===== SEMANA 03 · FIN =====
 
 // ===== SEMANA 03 · INICIO =====
 export function RootNavigator(): React.JSX.Element {
   // ===== SEMANA 08 · INICIO =====
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   // ===== SEMANA 08 · FIN =====
+
+  // ===== SEMANA 03 · INICIO =====
+  useWebFocusFix();
+  // ===== SEMANA 03 · FIN =====
 
   // ===== SEMANA 12 · INICIO =====
   useEffect(() => {
