@@ -2,7 +2,6 @@
 import React, { useEffect } from 'react';
 import {
   ActivityIndicator,
-  Alert,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -27,6 +26,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 // ===== SEMANA 08 · INICIO =====
 import { FormField } from '../components/FormField';
+import { notify } from '../platform/notify';
 import { registerSchema } from '../schemas/authSchema';
 import type { RegisterFormValues } from '../schemas/authSchema';
 import { useAuthStore } from '../stores/authStore';
@@ -67,18 +67,14 @@ export function RegisterScreen({ navigation }: RegisterScreenProps): React.JSX.E
         password: values.password,
       });
 
-      Alert.alert(
+      notify(
         'Cuenta creada',
         'El registro es simulado en esta demo. Inicia sesión con las credenciales de prueba para entrar al Club.',
-        [
-          {
-            text: 'Iniciar sesión',
-            onPress: () => navigation.navigate('Login'),
-          },
-        ],
-        { cancelable: false },
       );
-    } catch {}
+      navigation.navigate('Login');
+    } catch {
+      // El mensaje de error lo muestra el formulario desde el store.
+    }
   };
 
   const isBusy = isLoading || isSubmitting;

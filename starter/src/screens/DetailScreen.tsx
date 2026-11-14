@@ -1,15 +1,6 @@
 // ===== SEMANA 01 · INICIO =====
 import React, { useEffect, useState } from 'react';
-import {
-  View,
-  Text,
-  Image,
-  StyleSheet,
-  Pressable,
-  Alert,
-  ActivityIndicator,
-  Platform,
-} from 'react-native';
+import { View, Text, Image, StyleSheet, Pressable, ActivityIndicator } from 'react-native';
 // ===== SEMANA 01 · FIN =====
 // ===== SEMANA 03 · INICIO =====
 import { useRoute, useNavigation } from '@react-navigation/native';
@@ -55,10 +46,13 @@ import { useDeletePlay } from '../hooks/usePlays';
 import { usePreferences } from '../hooks/usePreferences';
 // ===== SEMANA 12 · FIN =====
 // ===== SEMANA 05 · INICIO =====
-import { getApiErrorMessage } from '../services/api';
+import { getApiErrorMessage, isNotFoundError } from '../services/api';
 // ===== SEMANA 05 · FIN =====
 // ===== SEMANA 12 · INICIO =====
 import { formatScheduleDate } from '../services/notifications';
+// ===== SEMANA 12 · FIN =====
+// ===== SEMANA 12 · INICIO =====
+import { confirm, notify, notifyError } from '../platform/notify';
 // ===== SEMANA 12 · FIN =====
 // ===== SEMANA 04 · INICIO =====
 import { COLORS, TYPOGRAPHY, SPACING, RADIUS, SIZES } from '../theme';
@@ -121,7 +115,7 @@ export function DetailScreen(): React.JSX.Element {
   const isSaved = useSavedStore(selectIsSaved(id));
   // ===== SEMANA 04 · FIN =====
   // ===== SEMANA 05 · INICIO =====
-  const toggleSaved = useSavedStore((state) => state.toggleSaved);
+  const toggleSaved = useSavedStore((state) => state.toggle);
   // ===== SEMANA 05 · FIN =====
 
   // ===== SEMANA 11 · INICIO =====
@@ -158,6 +152,22 @@ export function DetailScreen(): React.JSX.Element {
   }
 
   if (isError) {
+    // Un 404 no es una caída de la API: la obra no existe (E‑07). Se muestra un
+    // estado de "no encontrada" sin reintentos ni errores en consola.
+    if (isNotFoundError(error)) {
+      return (
+        <View style={styles.screenWrapper}>
+          <ScreenState
+            icon="search-outline"
+            title="Obra no encontrada"
+            message="La obra que buscas no existe o salió de cartelera."
+            actionLabel="Volver a la cartelera"
+            onAction={() => navigation.goBack()}
+          />
+        </View>
+      );
+    }
+
     return (
       <View style={styles.screenWrapper}>
         <ScreenState
@@ -229,16 +239,14 @@ export function DetailScreen(): React.JSX.Element {
       const outcome = await scheduleReminder(play, 'show');
 
       if (outcome.ok) {
-        Alert.alert(
+        notify(
           'Recordatorio programado',
-          `Te avisaremos el ${formatScheduleDate(
-            outcome.scheduledAt,
-          )}, 2 horas antes de "${name}".`,
+          `Te avisaremos el ${formatScheduleDate(outcome.scheduledAt)}, 2 horas antes de "${name}".`,
         );
         return;
       }
 
-      Alert.alert('No se pudo programar', outcome.reason);
+      notifyError('No se pudo programar', outcome.reason);
     } finally {
       setIsScheduling(false);
     }
@@ -251,14 +259,14 @@ export function DetailScreen(): React.JSX.Element {
       const outcome = await scheduleReminder(play, 'demo');
 
       if (outcome.ok) {
-        Alert.alert(
+        notify(
           'Prueba programada',
           `El aviso de "${name}" llegará en 10 segundos. Mantén la app abierta para verlo en primer plano.`,
         );
         return;
       }
 
-      Alert.alert('No se pudo programar la prueba', outcome.reason);
+      notifyError('No se pudo programar la prueba', outcome.reason);
     } finally {
       setIsScheduling(false);
     }
@@ -267,7 +275,7 @@ export function DetailScreen(): React.JSX.Element {
   async function handleCancelReminder(): Promise<void> {
     const cancelled = await cancelReminder(id);
 
-    Alert.alert(
+    notify(
       cancelled ? 'Recordatorio cancelado' : 'Recordatorio retirado',
       cancelled
         ? `Ya no recibirás el aviso de "${name}".`
@@ -282,33 +290,25 @@ export function DetailScreen(): React.JSX.Element {
 
     try {
       await deletePlayMutation.mutateAsync(id);
-      Alert.alert('Obra eliminada', `"${name}" salió de la cartelera.`);
+      notify('Obra eliminada', `"${name}" salió de la cartelera.`);
       navigation.goBack();
     } catch (error) {
-      Alert.alert('No se pudo eliminar la obra', getApiErrorMessage(error));
+      notifyError('No se pudo eliminar la obra', getApiErrorMessage(error));
     }
   }
 
-  function confirmDeletePlay(): void {
-    const message = `¿Seguro que quieres eliminar "${name}"? También se cancelará el recordatorio programado.`;
+  async function confirmDeletePlay(): Promise<void> {
+    const accepted = await confirm({
+      title: 'Eliminar obra',
+      message: `¿Seguro que quieres eliminar "${name}"? También se cancelará el recordatorio programado.`,
+      confirmText: 'Eliminar',
+      cancelText: 'Cancelar',
+      destructive: true,
+    });
 
-    if (Platform.OS === 'web') {
-      if (globalThis.confirm(message)) {
-        void handleDeletePlay();
-      }
-      return;
+    if (accepted) {
+      await handleDeletePlay();
     }
-
-    Alert.alert('Eliminar obra', message, [
-      { text: 'Cancelar', style: 'cancel' },
-      {
-        text: 'Eliminar',
-        style: 'destructive',
-        onPress: () => {
-          void handleDeletePlay();
-        },
-      },
-    ]);
   }
   // ===== SEMANA 12 · FIN =====
 

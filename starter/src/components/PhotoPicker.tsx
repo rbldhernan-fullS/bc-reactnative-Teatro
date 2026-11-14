@@ -1,6 +1,6 @@
 // ===== SEMANA 01 · INICIO =====
 import React, { useCallback, useState } from 'react';
-import { ActivityIndicator, Alert, Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 // ===== SEMANA 01 · FIN =====
 // ===== SEMANA 03 · INICIO =====
 import { useNavigation } from '@react-navigation/native';
@@ -11,6 +11,7 @@ import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 
 import { usePosterStore } from '../stores/posterStore';
+import { notify } from '../platform/notify';
 import type { HomeStackParamList } from '../navigation/types';
 import { COLORS, RADIUS, SIZES, SPACING, TYPOGRAPHY } from '../theme';
 
@@ -60,7 +61,7 @@ export function PhotoPicker({
         setPoster(targetId, asset.uri);
       }
     } catch {
-      Alert.alert(
+      notify(
         'Galería no disponible',
         'No pudimos abrir tus fotos. Revisa los permisos de la galería e inténtalo de nuevo.',
       );

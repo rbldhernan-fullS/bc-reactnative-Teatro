@@ -1,6 +1,6 @@
 // ===== SEMANA 01 · INICIO =====
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import type { LayoutChangeEvent } from 'react-native';
 // ===== SEMANA 01 · FIN =====
 // ===== SEMANA 03 · INICIO =====
@@ -15,6 +15,7 @@ import type { Seat, TheatreHall } from '../types';
 import type { SeatMapScreenProps } from '../navigation/types';
 import { AnimatedButton } from '../components/AnimatedButton';
 import { ScreenState } from '../components/ScreenState';
+import { notify } from '../platform/notify';
 import { usePlayById } from '../hooks/usePlays';
 import { getApiErrorMessage } from '../services/api';
 import { COLORS, TYPOGRAPHY, SPACING, RADIUS } from '../theme';
@@ -199,7 +200,7 @@ export function SeatMapScreen(): React.JSX.Element {
       const alreadySelected = selectedIdSet.has(seat.id);
 
       if (!alreadySelected && selectedIds.length >= MAX_SEATS_PER_BOOKING) {
-        Alert.alert(
+        notify(
           'Límite de butacas',
           `Puedes seleccionar hasta ${MAX_SEATS_PER_BOOKING} butacas por reserva.`,
         );
@@ -221,16 +222,13 @@ export function SeatMapScreen(): React.JSX.Element {
     }
 
     const total = selectedIds.length * item.price;
+    const seatLabel = selectedIds.length === 1 ? 'butaca' : 'butacas';
 
-    Alert.alert(
+    notify(
       'Reserva confirmada',
-      `${selectedIds.length} ${
-        selectedIds.length === 1 ? 'butaca' : 'butacas'
-      } para "${item.name}"\n${item.hall} · ${item.date} · ${item.time}\nTotal: $${total.toLocaleString(
-        'es-CO',
-      )} COP`,
-      [{ text: 'Cerrar', onPress: () => setSelectedIds([]) }],
+      `${selectedIds.length} ${seatLabel} para "${item.name}"\n${item.hall} · ${item.date} · ${item.time}\nTotal: $${total.toLocaleString('es-CO')} COP`,
     );
+    setSelectedIds([]);
   }, [item, selectedIds]);
 
   if (isLoading) {

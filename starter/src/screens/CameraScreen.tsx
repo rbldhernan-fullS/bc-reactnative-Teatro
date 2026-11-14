@@ -1,6 +1,6 @@
 // ===== SEMANA 01 · INICIO =====
 import React, { useRef, useState } from 'react';
-import { ActivityIndicator, Alert, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 // ===== SEMANA 01 · FIN =====
 // ===== SEMANA 03 · INICIO =====
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -11,6 +11,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { CameraView, useCameraPermissions, type CameraType, type FlashMode } from 'expo-camera';
 
 import { PermissionGate } from '../components/PermissionGate';
+import { notify } from '../platform/notify';
 import { usePosterStore } from '../stores/posterStore';
 import type { CameraScreenProps } from '../navigation/types';
 import { COLORS, RADIUS, SIZES, SPACING, TYPOGRAPHY } from '../theme';
@@ -56,14 +57,14 @@ export function CameraScreen(): React.JSX.Element {
       });
 
       if (!photo) {
-        Alert.alert('Captura vacía', 'La cámara no devolvió una imagen. Inténtalo de nuevo.');
+        notify('Captura vacía', 'La cámara no devolvió una imagen. Inténtalo de nuevo.');
         return;
       }
 
       setPoster(targetId, photo.uri);
       navigation.goBack();
     } catch {
-      Alert.alert(
+      notify(
         'No se pudo capturar',
         'Cierra la cámara y vuelve a intentarlo. Si el problema continúa, usa la galería.',
       );

@@ -1,6 +1,6 @@
 // ===== SEMANA 01 · INICIO =====
 import React, { useCallback } from 'react';
-import { Alert, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 // ===== SEMANA 01 · FIN =====
 // ===== SEMANA 03 · INICIO =====
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -11,6 +11,7 @@ import { Ionicons } from '@expo/vector-icons';
 // ===== SEMANA 08 · INICIO =====
 import { selectSavedCount, useSavedStore } from '../stores/savedStore';
 import { useAuthStore } from '../stores/authStore';
+import { confirm } from '../platform/notify';
 import { COLORS, RADIUS, SIZES, SPACING, TYPOGRAPHY } from '../theme';
 import type { ProfileScreenNavigationProp } from '../navigation/types';
 
@@ -37,16 +38,20 @@ export function ProfileScreen(): React.JSX.Element {
   const initial = user?.firstName?.[0]?.toUpperCase() ?? user?.username?.[0]?.toUpperCase() ?? '?';
 
   const handleLogoutPress = useCallback((): void => {
-    Alert.alert('Cerrar sesión', '¿Seguro que quieres salir del Club Teatro Colón?', [
-      { text: 'Cancelar', style: 'cancel' },
-      {
-        text: 'Salir',
-        style: 'destructive',
-        onPress: () => {
-          void logout();
-        },
-      },
-    ]);
+    // `confirm` usa `window.confirm` en web y `Alert.alert` en nativo (E‑10).
+    void (async (): Promise<void> => {
+      const accepted = await confirm({
+        title: 'Cerrar sesión',
+        message: '¿Seguro que quieres salir del Club Teatro Colón?',
+        confirmText: 'Salir',
+        cancelText: 'Cancelar',
+        destructive: true,
+      });
+
+      if (accepted) {
+        await logout();
+      }
+    })();
   }, [logout]);
 
   return (

@@ -1,6 +1,6 @@
 // ===== SEMANA 01 · INICIO =====
 import React, { useCallback, useEffect, useState } from 'react';
-import { Alert, Pressable, ScrollView, Share, StyleSheet, Switch, Text, View } from 'react-native';
+import { Pressable, ScrollView, Share, StyleSheet, Switch, Text, View } from 'react-native';
 // ===== SEMANA 01 · FIN =====
 // ===== SEMANA 03 · INICIO =====
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -18,6 +18,7 @@ import type { ItemsPerPage, SortOrder } from '../hooks/usePreferences';
 // ===== SEMANA 07 · FIN =====
 // ===== SEMANA 12 · INICIO =====
 import { useNotifications } from '../hooks/useNotifications';
+import { notify } from '../platform/notify';
 import {
   formatScheduleDate,
   scheduleTestNotification,
@@ -277,9 +278,9 @@ export function SettingsScreen(): React.JSX.Element {
       setIsSaved(storedCode !== null);
       setMaskedValue(storedCode ? maskSecret(storedCode) : null);
 
-      Alert.alert('Código guardado', 'El código de taquilla quedó cifrado en SecureStore.');
+      notify('Código guardado', 'El código de taquilla quedó cifrado en SecureStore.');
     } catch {
-      Alert.alert('No se pudo guardar', 'SecureStore no está disponible en este dispositivo.');
+      notify('No se pudo guardar', 'SecureStore no está disponible en este dispositivo.');
     } finally {
       setIsBusy(false);
     }
@@ -299,12 +300,12 @@ export function SettingsScreen(): React.JSX.Element {
 
       setIsSaved(false);
       setMaskedValue(null);
-      Alert.alert(
+      notify(
         'Sin código guardado',
         'Genera y guarda un código de taquilla para verlo enmascarado.',
       );
     } catch {
-      Alert.alert('No se pudo leer', 'SecureStore no está disponible en este dispositivo.');
+      notify('No se pudo leer', 'SecureStore no está disponible en este dispositivo.');
     } finally {
       setIsBusy(false);
     }
@@ -317,9 +318,9 @@ export function SettingsScreen(): React.JSX.Element {
       await SecureStore.deleteItemAsync(SENSITIVE_KEY);
       setIsSaved(false);
       setMaskedValue(null);
-      Alert.alert('Código eliminado', 'El código fue borrado de SecureStore.');
+      notify('Código eliminado', 'El código fue borrado de SecureStore.');
     } catch {
-      Alert.alert('No se pudo eliminar', 'SecureStore no está disponible en este dispositivo.');
+      notify('No se pudo eliminar', 'SecureStore no está disponible en este dispositivo.');
     } finally {
       setIsBusy(false);
     }
@@ -327,7 +328,7 @@ export function SettingsScreen(): React.JSX.Element {
 
   const handleResetPreferences = useCallback((): void => {
     resetPreferences();
-    Alert.alert(
+    notify(
       'Preferencias restablecidas',
       'La cartelera vuelve al orden A → Z, sin modo compacto y con todas las funciones.',
     );
@@ -342,7 +343,7 @@ export function SettingsScreen(): React.JSX.Element {
     const result = await registerForPush();
 
     if (result.token) {
-      Alert.alert(
+      notify(
         'Notificaciones activas',
         'El Expo Push Token ya está disponible. Compártelo o pégalo en https://expo.dev/notifications para enviar un push de prueba.',
       );
@@ -350,7 +351,7 @@ export function SettingsScreen(): React.JSX.Element {
     }
 
     if (result.error) {
-      Alert.alert('No se pudo activar el push', result.error);
+      notify('No se pudo activar el push', result.error);
     }
   }, [registerForPush]);
 
@@ -364,7 +365,7 @@ export function SettingsScreen(): React.JSX.Element {
         message: `Expo Push Token del Teatro Colón: ${pushToken}`,
       });
     } catch {
-      Alert.alert('No se pudo compartir', 'Mantén pulsado el token para copiarlo manualmente.');
+      notify('No se pudo compartir', 'Mantén pulsado el token para copiarlo manualmente.');
     }
   }, [pushToken]);
 
@@ -372,7 +373,7 @@ export function SettingsScreen(): React.JSX.Element {
     const outcome = await scheduleTestNotification();
 
     if (!outcome.ok) {
-      Alert.alert('No se pudo enviar el aviso', outcome.reason);
+      notify('No se pudo enviar el aviso', outcome.reason);
     }
   }, []);
 
@@ -380,14 +381,14 @@ export function SettingsScreen(): React.JSX.Element {
     const outcome = await scheduleTestReminder();
 
     if (outcome.ok) {
-      Alert.alert(
+      notify(
         'Prueba programada',
         'El recordatorio llegará en 10 segundos. Mantén la app abierta para verlo en primer plano.',
       );
       return;
     }
 
-    Alert.alert('No se pudo programar la prueba', outcome.reason);
+    notify('No se pudo programar la prueba', outcome.reason);
   }, []);
 
   const handleToggleReminders = useCallback(
@@ -398,7 +399,7 @@ export function SettingsScreen(): React.JSX.Element {
         const count = await cancelAllReminders();
 
         if (count > 0) {
-          Alert.alert(
+          notify(
             'Recordatorios desactivados',
             `Se cancelaron ${count} aviso(s) programado(s) en el sistema.`,
           );
@@ -412,7 +413,7 @@ export function SettingsScreen(): React.JSX.Element {
     async (itemId: string, playName: string): Promise<void> => {
       const cancelled = await cancelReminder(itemId);
 
-      Alert.alert(
+      notify(
         cancelled ? 'Recordatorio cancelado' : 'Recordatorio retirado',
         cancelled
           ? `Se canceló el aviso de "${playName}".`
@@ -425,7 +426,7 @@ export function SettingsScreen(): React.JSX.Element {
   const handleCancelAll = useCallback(async (): Promise<void> => {
     const count = await cancelAllReminders();
 
-    Alert.alert(
+    notify(
       'Recordatorios cancelados',
       count > 0
         ? `Se cancelaron ${count} recordatorio(s) de función.`
