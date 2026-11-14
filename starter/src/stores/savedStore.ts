@@ -44,8 +44,7 @@ const storage: PersistStorage<SavedState, unknown> | undefined =
     ? webStorage
     : (createJSONStorage(() => {
         // @ts-ignore - `require` está disponible en el runtime de Metro/Expo
-        const AsyncStorage = require('@react-native-async-storage/async-storage')
-          .default;
+        const AsyncStorage = require('@react-native-async-storage/async-storage').default;
         return AsyncStorage;
       }) as PersistStorage<SavedState, unknown>);
 
@@ -91,12 +90,11 @@ export const useSavedStore = create<SavedStore>()(
           console.log('[savedStore] estado rehidratado desde almacenamiento');
         }
       },
-    }
-  )
+    },
+  ),
 );
 
-export const selectSavedCount = (state: SavedStore): number =>
-  state.savedIds.length;
+export const selectSavedCount = (state: SavedStore): number => state.savedIds.length;
 
 export const selectIsSaved =
   (id: string) =>

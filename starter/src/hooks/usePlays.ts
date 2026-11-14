@@ -1,9 +1,5 @@
 // ===== SEMANA 05 · INICIO =====
-import {
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import {
   createPlay,
@@ -15,12 +11,7 @@ import {
 // ===== SEMANA 05 · FIN =====
 // ===== SEMANA 07 · INICIO =====
 import { readPlaysCache, writePlaysCache } from '../storage/playsCache';
-import type {
-  CreatePlayPayload,
-  Item,
-  PlaysWithSource,
-  UpdatePlayPayload,
-} from '../types';
+import type { CreatePlayPayload, Item, PlaysWithSource, UpdatePlayPayload } from '../types';
 // ===== SEMANA 07 · FIN =====
 
 // ===== SEMANA 05 · INICIO =====

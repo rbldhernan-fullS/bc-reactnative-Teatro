@@ -1,14 +1,6 @@
 // ===== SEMANA 01 · INICIO =====
 import React, { useCallback, useState } from 'react';
-import {
-  ActivityIndicator,
-  Alert,
-  Image,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { ActivityIndicator, Alert, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 // ===== SEMANA 01 · FIN =====
 // ===== SEMANA 03 · INICIO =====
 import { useNavigation } from '@react-navigation/native';
@@ -22,9 +14,7 @@ import { usePosterStore } from '../stores/posterStore';
 import type { HomeStackParamList } from '../navigation/types';
 import { COLORS, RADIUS, SIZES, SPACING, TYPOGRAPHY } from '../theme';
 
-type PhotoPickerNavigationProp = NativeStackNavigationProp<
-  HomeStackParamList
->;
+type PhotoPickerNavigationProp = NativeStackNavigationProp<HomeStackParamList>;
 
 interface PhotoPickerProps {
   targetId: string;
@@ -72,7 +62,7 @@ export function PhotoPicker({
     } catch {
       Alert.alert(
         'Galería no disponible',
-        'No pudimos abrir tus fotos. Revisa los permisos de la galería e inténtalo de nuevo.'
+        'No pudimos abrir tus fotos. Revisa los permisos de la galería e inténtalo de nuevo.',
       );
     } finally {
       setPicking(false);
@@ -83,11 +73,7 @@ export function PhotoPicker({
     <View style={styles.container}>
       {showPreview ? (
         <View style={styles.previewWrapper}>
-          <Image
-            source={{ uri: previewUri }}
-            style={styles.preview}
-            resizeMode="cover"
-          />
+          <Image source={{ uri: previewUri }} style={styles.preview} resizeMode="cover" />
           <View style={styles.previewBadge}>
             <Text style={styles.previewBadgeText}>
               {poster ? 'Afiche local' : 'Afiche de la API'}
@@ -98,10 +84,7 @@ export function PhotoPicker({
 
       <View style={styles.actions}>
         <Pressable
-          style={({ pressed }) => [
-            styles.action,
-            pressed && styles.actionPressed,
-          ]}
+          style={({ pressed }) => [styles.action, pressed && styles.actionPressed]}
           onPress={() => navigation.navigate('Camera', { targetId })}
           accessibilityRole="button"
           accessibilityLabel="Capturar el afiche con la cámara"
@@ -111,10 +94,7 @@ export function PhotoPicker({
         </Pressable>
 
         <Pressable
-          style={({ pressed }) => [
-            styles.action,
-            pressed && styles.actionPressed,
-          ]}
+          style={({ pressed }) => [styles.action, pressed && styles.actionPressed]}
           onPress={() => {
             void pickFromLibrary();
           }}
@@ -143,16 +123,13 @@ export function PhotoPicker({
             accessibilityLabel="Quitar el afiche local"
           >
             <Ionicons name="trash-outline" size={SIZES.iconSm} color={COLORS.error} />
-            <Text style={[styles.actionText, styles.actionTextDanger]}>
-              Quitar
-            </Text>
+            <Text style={[styles.actionText, styles.actionTextDanger]}>Quitar</Text>
           </Pressable>
         ) : null}
       </View>
 
       <Text style={styles.hint}>
-        La foto se guarda en este dispositivo y se muestra en el detalle de la
-        obra.
+        La foto se guarda en este dispositivo y se muestra en el detalle de la obra.
       </Text>
     </View>
   );

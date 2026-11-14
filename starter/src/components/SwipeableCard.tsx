@@ -86,14 +86,7 @@ export const SwipeableCard = React.memo(function SwipeableCard({
           translateX.value = withSpring(0, SNAP_SPRING);
           translateY.value = withSpring(0, SNAP_SPRING);
         }),
-    [
-      handleSwipeLeft,
-      handleSwipeRight,
-      startX,
-      startY,
-      translateX,
-      translateY,
-    ]
+    [handleSwipeLeft, handleSwipeRight, startX, startY, translateX, translateY],
   );
 
   const cardStyle = useAnimatedStyle(() => {
@@ -101,7 +94,7 @@ export const SwipeableCard = React.memo(function SwipeableCard({
       translateX.value,
       [-SWIPE_THRESHOLD, 0, SWIPE_THRESHOLD],
       [-6, 0, 6],
-      Extrapolate.CLAMP
+      Extrapolate.CLAMP,
     );
 
     return {
@@ -114,12 +107,7 @@ export const SwipeableCard = React.memo(function SwipeableCard({
   });
 
   const saveHintStyle = useAnimatedStyle(() => {
-    const reveal = interpolate(
-      translateX.value,
-      [0, SWIPE_THRESHOLD],
-      [0, 1],
-      Extrapolate.CLAMP
-    );
+    const reveal = interpolate(translateX.value, [0, SWIPE_THRESHOLD], [0, 1], Extrapolate.CLAMP);
 
     return {
       opacity: reveal,
@@ -128,12 +116,7 @@ export const SwipeableCard = React.memo(function SwipeableCard({
   });
 
   const dismissHintStyle = useAnimatedStyle(() => {
-    const reveal = interpolate(
-      translateX.value,
-      [-SWIPE_THRESHOLD, 0],
-      [1, 0],
-      Extrapolate.CLAMP
-    );
+    const reveal = interpolate(translateX.value, [-SWIPE_THRESHOLD, 0], [1, 0], Extrapolate.CLAMP);
 
     return {
       opacity: reveal,
@@ -152,9 +135,7 @@ export const SwipeableCard = React.memo(function SwipeableCard({
           size={SIZES.iconMd}
           color={COLORS.accent}
         />
-        <Text style={styles.saveActionText}>
-          {saved ? 'Quitar' : 'Guardar'}
-        </Text>
+        <Text style={styles.saveActionText}>{saved ? 'Quitar' : 'Guardar'}</Text>
       </Animated.View>
 
       <Animated.View
@@ -162,11 +143,7 @@ export const SwipeableCard = React.memo(function SwipeableCard({
         pointerEvents="none"
       >
         <Text style={styles.dismissActionText}>Descartar</Text>
-        <Ionicons
-          name="eye-off-outline"
-          size={SIZES.iconMd}
-          color={COLORS.error}
-        />
+        <Ionicons name="eye-off-outline" size={SIZES.iconMd} color={COLORS.error} />
       </Animated.View>
 
       <GestureDetector gesture={panGesture}>

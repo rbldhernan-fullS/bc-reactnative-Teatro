@@ -5,12 +5,7 @@ import type { InternalAxiosRequestConfig } from 'axios';
 
 // ===== SEMANA 08 · INICIO =====
 import type { AuthTokens } from '../types';
-import {
-  clearTokens,
-  getAccessToken,
-  getRefreshToken,
-  saveTokens,
-} from './tokenService';
+import { clearTokens, getAccessToken, getRefreshToken, saveTokens } from './tokenService';
 
 export const AUTH_BASE_URL = 'https://dummyjson.com';
 
@@ -39,15 +34,11 @@ type AuthFailureListener = () => void;
 let tokenRefreshListener: TokenRefreshListener | null = null;
 let authFailureListener: AuthFailureListener | null = null;
 
-export function setTokenRefreshListener(
-  listener: TokenRefreshListener | null
-): void {
+export function setTokenRefreshListener(listener: TokenRefreshListener | null): void {
   tokenRefreshListener = listener;
 }
 
-export function setAuthFailureListener(
-  listener: AuthFailureListener | null
-): void {
+export function setAuthFailureListener(listener: AuthFailureListener | null): void {
   authFailureListener = listener;
 }
 
@@ -102,15 +93,9 @@ authClient.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    const originalRequest = error.config as
-      | RetryableRequestConfig
-      | undefined;
+    const originalRequest = error.config as RetryableRequestConfig | undefined;
 
-    if (
-      error.response?.status !== 401 ||
-      !originalRequest ||
-      originalRequest._retry
-    ) {
+    if (error.response?.status !== 401 || !originalRequest || originalRequest._retry) {
       return Promise.reject(error);
     }
 
@@ -118,10 +103,7 @@ authClient.interceptors.response.use(
 
     try {
       const tokens = await requestSingleRefresh();
-      originalRequest.headers.set(
-        'Authorization',
-        `Bearer ${tokens.accessToken}`
-      );
+      originalRequest.headers.set('Authorization', `Bearer ${tokens.accessToken}`);
 
       return await authClient(originalRequest);
     } catch (refreshError) {
@@ -133,6 +115,6 @@ authClient.interceptors.response.use(
 
       return Promise.reject(refreshError);
     }
-  }
+  },
 );
 // ===== SEMANA 08 · FIN =====

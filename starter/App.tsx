@@ -4,12 +4,7 @@ import 'react-native-gesture-handler';
 
 // ===== SEMANA 01 · INICIO =====
 import React, { useEffect } from 'react';
-import {
-  ActivityIndicator,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 // ===== SEMANA 01 · FIN =====
 // ===== SEMANA 05 · INICIO =====
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -30,10 +25,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import * as Notifications from './src/services/notificationScheduler';
 
 import { NotificationCenter } from './src/components/NotificationCenter';
-import {
-  flushPendingNotificationNavigation,
-  navigationRef,
-} from './src/navigation/navigationRef';
+import { flushPendingNotificationNavigation, navigationRef } from './src/navigation/navigationRef';
 // ===== SEMANA 12 · FIN =====
 // ===== SEMANA 03 · INICIO =====
 import { RootNavigator } from './src/navigation/RootNavigator';
@@ -95,10 +87,7 @@ function BootstrapGate(): React.JSX.Element {
   }
 
   return (
-    <NavigationContainer
-      ref={navigationRef}
-      onReady={flushPendingNotificationNavigation}
-    >
+    <NavigationContainer ref={navigationRef} onReady={flushPendingNotificationNavigation}>
       <RootNavigator />
     </NavigationContainer>
   );

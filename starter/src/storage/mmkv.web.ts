@@ -63,9 +63,9 @@ function createWebMMKV(id: string): WebMMKV {
           return;
         }
 
-        const keys = Array.from({ length: store.length }, (_, index) =>
-          store.key(index)
-        ).filter((key): key is string => key !== null && key.startsWith(prefix));
+        const keys = Array.from({ length: store.length }, (_, index) => store.key(index)).filter(
+          (key): key is string => key !== null && key.startsWith(prefix),
+        );
 
         keys.forEach((key) => store.removeItem(key));
       } catch {}

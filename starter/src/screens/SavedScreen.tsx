@@ -1,13 +1,6 @@
 // ===== SEMANA 01 · INICIO =====
 import React, { useCallback, useMemo } from 'react';
-import {
-  View,
-  Text,
-  FlatList,
-  Image,
-  Pressable,
-  StyleSheet,
-} from 'react-native';
+import { View, Text, FlatList, Image, Pressable, StyleSheet } from 'react-native';
 import type { GestureResponderEvent, ListRenderItem } from 'react-native';
 // ===== SEMANA 01 · FIN =====
 // ===== SEMANA 03 · INICIO =====
@@ -51,7 +44,7 @@ export function SavedScreen(): React.JSX.Element {
   // ===== SEMANA 05 · INICIO =====
   const savedItems = useMemo(
     () => plays.filter((item) => savedIdSet.has(item.id)),
-    [plays, savedIdSet]
+    [plays, savedIdSet],
   );
 
   const handleRefresh = useCallback((): void => {
@@ -69,7 +62,7 @@ export function SavedScreen(): React.JSX.Element {
         },
       });
     },
-    [navigation]
+    [navigation],
   );
 
   const handleRemovePress = useCallback(
@@ -79,7 +72,7 @@ export function SavedScreen(): React.JSX.Element {
       removeId(id);
       // ===== SEMANA 05 · FIN =====
     },
-    [removeId]
+    [removeId],
   );
 
   const renderSavedItem: ListRenderItem<Item> = useCallback(
@@ -91,11 +84,7 @@ export function SavedScreen(): React.JSX.Element {
         accessibilityLabel={`Ver detalles de ${item.name}`}
       >
         {/* ===== SEMANA 12 · INICIO ===== */}
-        <Image
-          source={{ uri: item.imageUri }}
-          style={styles.cardImage}
-          resizeMode="cover"
-        />
+        <Image source={{ uri: item.imageUri }} style={styles.cardImage} resizeMode="cover" />
         {/* ===== SEMANA 12 · FIN ===== */}
 
         <View style={styles.cardContent}>
@@ -108,19 +97,12 @@ export function SavedScreen(): React.JSX.Element {
 
             <Pressable
               onPress={(event) => handleRemovePress(event, item.id)}
-              style={({ pressed }) => [
-                styles.removeButton,
-                pressed && styles.removeButtonPressed,
-              ]}
+              style={({ pressed }) => [styles.removeButton, pressed && styles.removeButtonPressed]}
               hitSlop={8}
               accessibilityRole="button"
               accessibilityLabel={`Quitar ${item.name} de guardados`}
             >
-              <Ionicons
-                name="bookmark"
-                size={SIZES.iconMd}
-                color={COLORS.accent}
-              />
+              <Ionicons name="bookmark" size={SIZES.iconMd} color={COLORS.accent} />
             </Pressable>
           </View>
 
@@ -140,38 +122,28 @@ export function SavedScreen(): React.JSX.Element {
 
           <View style={styles.cardFooter}>
             <Text style={styles.ratingText}>★ {item.rating.toFixed(1)}</Text>
-            <Text style={styles.priceText}>
-              ${item.price.toLocaleString('es-CO')} COP
-            </Text>
+            <Text style={styles.priceText}>${item.price.toLocaleString('es-CO')} COP</Text>
           </View>
           {/* ===== SEMANA 12 · FIN ===== */}
         </View>
       </Pressable>
     ),
-    [handleItemPress, handleRemovePress]
+    [handleItemPress, handleRemovePress],
   );
 
-  const renderSeparator = useCallback(
-    () => <View style={styles.separator} />,
-    []
-  );
+  const renderSeparator = useCallback(() => <View style={styles.separator} />, []);
 
   const renderEmpty = useCallback(
     () => (
       <View style={styles.emptyContainer}>
-        <Ionicons
-          name="bookmark-outline"
-          size={SIZES.iconXl}
-          color={COLORS.textMuted}
-        />
+        <Ionicons name="bookmark-outline" size={SIZES.iconXl} color={COLORS.textMuted} />
         <Text style={styles.emptyTitle}>Sin obras guardadas</Text>
         <Text style={styles.emptySubtitle}>
-          Usa el bookmark de la cartelera o del detalle para guardar una obra y
-          encontrarla aquí.
+          Usa el bookmark de la cartelera o del detalle para guardar una obra y encontrarla aquí.
         </Text>
       </View>
     ),
-    []
+    [],
   );
 
   // ===== SEMANA 05 · INICIO =====
@@ -211,8 +183,7 @@ export function SavedScreen(): React.JSX.Element {
               <Text style={styles.headerTitle}>Obras Guardadas</Text>
               <Text style={styles.headerSubtitle}>
                 {/* ===== SEMANA 05 · INICIO ===== */}
-                {savedIds.length}{' '}
-                {/* ===== SEMANA 05 · FIN ===== */}
+                {savedIds.length} {/* ===== SEMANA 05 · FIN ===== */}
                 {savedIds.length === 1
                   ? 'obra guardada en tu lista'
                   : 'obras guardadas en tu lista'}
@@ -221,10 +192,7 @@ export function SavedScreen(): React.JSX.Element {
 
             {savedIds.length > 0 && (
               <Pressable
-                style={({ pressed }) => [
-                  styles.clearButton,
-                  pressed && styles.clearButtonPressed,
-                ]}
+                style={({ pressed }) => [styles.clearButton, pressed && styles.clearButtonPressed]}
                 onPress={clearSaved}
                 accessibilityRole="button"
                 accessibilityLabel="Vaciar la lista de obras guardadas"
@@ -238,9 +206,7 @@ export function SavedScreen(): React.JSX.Element {
         {/* ===== SEMANA 07 · INICIO ===== */}
         {isOffline && (
           <View style={styles.offlineBanner}>
-            <Text style={styles.offlineText}>
-              ⚠️ Mostrando datos sin red — caché local
-            </Text>
+            <Text style={styles.offlineText}>⚠️ Mostrando datos sin red — caché local</Text>
           </View>
         )}
         {/* ===== SEMANA 07 · FIN ===== */}

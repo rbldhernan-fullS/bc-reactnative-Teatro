@@ -8,10 +8,7 @@ const usernameField = z
   .trim()
   .min(2, 'El usuario debe tener al menos 2 caracteres.')
   .max(50, 'El usuario no puede superar 50 caracteres.')
-  .regex(
-    /^[a-zA-Z0-9._-]+$/,
-    'Usa solo letras, números, punto, guion o guion bajo.'
-  );
+  .regex(/^[a-zA-Z0-9._-]+$/, 'Usa solo letras, números, punto, guion o guion bajo.');
 
 const passwordField = z
   .string()
@@ -36,11 +33,7 @@ export const registerSchema = z
       .min(2, 'El apellido debe tener al menos 2 caracteres.')
       .max(50, 'El apellido no puede superar 50 caracteres.'),
     username: usernameField,
-    email: z
-      .string()
-      .trim()
-      .email('Ingresa un correo electrónico válido.')
-      .toLowerCase(),
+    email: z.string().trim().email('Ingresa un correo electrónico válido.').toLowerCase(),
     password: passwordField,
     confirmPassword: z.string(),
   })

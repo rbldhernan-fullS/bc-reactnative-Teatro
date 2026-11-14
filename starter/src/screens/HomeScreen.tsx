@@ -1,11 +1,5 @@
 // ===== SEMANA 01 · INICIO =====
-import React, {
-  useState,
-  useMemo,
-  useCallback,
-  useEffect,
-  useRef,
-} from 'react';
+import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -92,10 +86,7 @@ interface StaggeredItemProps {
   children: React.ReactNode;
 }
 
-function StaggeredItem({
-  index,
-  children,
-}: StaggeredItemProps): React.JSX.Element {
+function StaggeredItem({ index, children }: StaggeredItemProps): React.JSX.Element {
   const progress = useSharedValue(0);
   const hasAnimated = useRef(false);
 
@@ -107,7 +98,7 @@ function StaggeredItem({
     hasAnimated.current = true;
     progress.value = withDelay(
       index * ENTRANCE_STAGGER_MS,
-      withTiming(1, { duration: ENTRANCE_DURATION_MS })
+      withTiming(1, { duration: ENTRANCE_DURATION_MS }),
     );
   }, [index, progress]);
 
@@ -144,13 +135,8 @@ export function HomeScreen(): React.JSX.Element {
   // ===== SEMANA 05 · FIN =====
 
   // ===== SEMANA 07 · INICIO =====
-  const {
-    sortOrder,
-    compactMode,
-    itemsPerPage,
-    onlyAvailable,
-    setOnlyAvailable,
-  } = usePreferences();
+  const { sortOrder, compactMode, itemsPerPage, onlyAvailable, setOnlyAvailable } =
+    usePreferences();
   // ===== SEMANA 07 · FIN =====
 
   // ===== SEMANA 05 · INICIO =====
@@ -192,7 +178,7 @@ export function HomeScreen(): React.JSX.Element {
         name: item.name,
       });
     },
-    [navigation]
+    [navigation],
   );
   // ===== SEMANA 03 · FIN =====
 
@@ -201,16 +187,14 @@ export function HomeScreen(): React.JSX.Element {
     (item: Item): void => {
       toggleSaved(item.id);
     },
-    [toggleSaved]
+    [toggleSaved],
   );
   // ===== SEMANA 05 · FIN =====
 
   // ===== SEMANA 10 · INICIO =====
   const handleDismiss = useCallback((item: Item): void => {
     animateListLayout();
-    setDismissedIds((current) =>
-      current.includes(item.id) ? current : [...current, item.id]
-    );
+    setDismissedIds((current) => (current.includes(item.id) ? current : [...current, item.id]));
   }, []);
 
   const handleRestoreDismissed = useCallback((): void => {
@@ -242,14 +226,14 @@ export function HomeScreen(): React.JSX.Element {
       // ===== SEMANA 07 · FIN =====
 
       return [item.name, item.subtitle, item.genre, item.hall].some((field) =>
-        normalizeText(field).includes(cleanQuery)
+        normalizeText(field).includes(cleanQuery),
       );
     });
 
     return result.sort((first, second) =>
       sortOrder === 'asc'
         ? first.name.localeCompare(second.name, 'es')
-        : second.name.localeCompare(first.name, 'es')
+        : second.name.localeCompare(first.name, 'es'),
     );
     // ===== SEMANA 04 · FIN =====
   }, [dismissedIdSet, plays, query, onlyAvailable, sortOrder]);
@@ -258,7 +242,7 @@ export function HomeScreen(): React.JSX.Element {
   // ===== SEMANA 07 · INICIO =====
   const visibleItems = useMemo(
     () => filteredItems.slice(0, visibleCount),
-    [filteredItems, visibleCount]
+    [filteredItems, visibleCount],
   );
   // ===== SEMANA 07 · FIN =====
 
@@ -283,7 +267,7 @@ export function HomeScreen(): React.JSX.Element {
       animateListLayout();
       setOnlyAvailable(value);
     },
-    [setOnlyAvailable]
+    [setOnlyAvailable],
   );
   // ===== SEMANA 09 · FIN =====
 
@@ -301,19 +285,10 @@ export function HomeScreen(): React.JSX.Element {
         />
       </StaggeredItem>
     ),
-    [
-      compactMode,
-      handleDismiss,
-      handleItemPress,
-      savedIdSet,
-      handleToggleSave,
-    ]
+    [compactMode, handleDismiss, handleItemPress, savedIdSet, handleToggleSave],
   );
 
-  const renderSeparator = useCallback(
-    () => <View style={styles.separator} />,
-    []
-  );
+  const renderSeparator = useCallback(() => <View style={styles.separator} />, []);
 
   const renderEmpty = useCallback(() => {
     // ===== SEMANA 05 · INICIO =====
@@ -337,8 +312,8 @@ export function HomeScreen(): React.JSX.Element {
           <Text style={styles.emptyIcon}>🎭</Text>
           <Text style={styles.emptyTitle}>Sin obras encontradas</Text>
           <Text style={styles.emptySubtitle}>
-            No hay funciones que coincidan con "{query}". Prueba buscando por
-            otro título, director o género teatral.
+            No hay funciones que coincidan con "{query}". Prueba buscando por otro título, director
+            o género teatral.
           </Text>
           <Pressable
             style={({ pressed }) => [
@@ -364,9 +339,8 @@ export function HomeScreen(): React.JSX.Element {
           <Text style={styles.emptyIcon}>🙈</Text>
           <Text style={styles.emptyTitle}>Cartelera descartada</Text>
           <Text style={styles.emptySubtitle}>
-            Descartaste {dismissedIds.length}{' '}
-            {dismissedIds.length === 1 ? 'obra' : 'obras'} de esta sesión.
-            Puedes restaurarlas cuando quieras.
+            Descartaste {dismissedIds.length} {dismissedIds.length === 1 ? 'obra' : 'obras'} de esta
+            sesión. Puedes restaurarlas cuando quieras.
           </Text>
           <Pressable
             style={({ pressed }) => [
@@ -389,8 +363,8 @@ export function HomeScreen(): React.JSX.Element {
         <Text style={styles.emptyTitle}>Sin funciones disponibles</Text>
         {/* ===== SEMANA 07 · FIN ===== */}
         <Text style={styles.emptySubtitle}>
-          Todas las obras de la cartelera están agotadas. Desactiva el filtro
-          para volver a ver la temporada completa.
+          Todas las obras de la cartelera están agotadas. Desactiva el filtro para volver a ver la
+          temporada completa.
         </Text>
         {/* ===== SEMANA 05 · INICIO ===== */}
         <Pressable
@@ -531,12 +505,9 @@ export function HomeScreen(): React.JSX.Element {
 
             <View style={styles.resultsBar}>
               <Text style={styles.resultsCount}>
-                {filteredItems.length}{' '}
-                {/* ===== SEMANA 07 · INICIO ===== */}
-                {filteredItems.length === 1
-                  ? 'obra disponible'
-                  : 'obras disponibles'}
-                  {/* ===== SEMANA 07 · FIN ===== */}
+                {filteredItems.length} {/* ===== SEMANA 07 · INICIO ===== */}
+                {filteredItems.length === 1 ? 'obra disponible' : 'obras disponibles'}
+                {/* ===== SEMANA 07 · FIN ===== */}
               </Text>
 
               {/* ===== SEMANA 07 · INICIO ===== */}
@@ -544,12 +515,8 @@ export function HomeScreen(): React.JSX.Element {
                 <Text style={styles.activeFilterBadge}>
                   {sortOrder === 'asc' ? 'A → Z' : 'Z → A'}
                 </Text>
-                {compactMode && (
-                  <Text style={styles.activeFilterBadge}>Compacto</Text>
-                )}
-                {onlyAvailable && (
-                  <Text style={styles.activeFilterBadge}>Con butacas</Text>
-                )}
+                {compactMode && <Text style={styles.activeFilterBadge}>Compacto</Text>}
+                {onlyAvailable && <Text style={styles.activeFilterBadge}>Con butacas</Text>}
               </View>
               {/* ===== SEMANA 07 · FIN ===== */}
             </View>
@@ -593,25 +560,18 @@ export function HomeScreen(): React.JSX.Element {
             >
               <Text style={styles.dismissedText}>
                 {dismissedIds.length}{' '}
-                {dismissedIds.length === 1
-                  ? 'obra descartada'
-                  : 'obras descartadas'}
+                {dismissedIds.length === 1 ? 'obra descartada' : 'obras descartadas'}
               </Text>
               <Text style={styles.dismissedAction}>Restaurar</Text>
             </Pressable>
           )}
 
           <View style={styles.swipeHint}>
-            <Text style={styles.swipeHintText}>
-              Desliza → guardar · ← descartar
-            </Text>
+            <Text style={styles.swipeHintText}>Desliza → guardar · ← descartar</Text>
           </View>
           {/* ===== SEMANA 10 · FIN ===== */}
 
-          <TouchableWithoutFeedback
-            onPress={Keyboard.dismiss}
-            accessible={false}
-          >
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
             <View style={styles.listWrapper}>
               <FlatList
                 data={visibleItems}

@@ -15,9 +15,7 @@ function isValidCalendarDate(value: string): boolean {
   const date = new Date(Date.UTC(year, month - 1, day));
 
   return (
-    date.getUTCFullYear() === year &&
-    date.getUTCMonth() === month - 1 &&
-    date.getUTCDate() === day
+    date.getUTCFullYear() === year && date.getUTCMonth() === month - 1 && date.getUTCDate() === day
   );
 }
 
@@ -55,10 +53,7 @@ export const playSchema = z.object({
     .positive('El precio debe ser mayor que cero.')
     .max(1_000_000, 'El precio no puede superar 1.000.000 COP.'),
 
-  duration: z
-    .string()
-    .trim()
-    .regex(DURATION_PATTERN, 'Usa el formato "120 min".'),
+  duration: z.string().trim().regex(DURATION_PATTERN, 'Usa el formato "120 min".'),
 
   availableSeats: z.coerce
     .number({ error: 'El aforo debe ser un número.' })
@@ -71,10 +66,7 @@ export const playSchema = z.object({
     .min(0, 'La calificación mínima es 0.')
     .max(5, 'La calificación máxima es 5.'),
 
-  imageUri: z
-    .string()
-    .trim()
-    .url('Ingresa una URL válida para el afiche.'),
+  imageUri: z.string().trim().url('Ingresa una URL válida para el afiche.'),
 
   synopsis: z
     .string()
@@ -123,10 +115,7 @@ export function toCreatePlayPayload(values: PlayFormValues): CreatePlayPayload {
   return values;
 }
 
-export function toUpdatePlayPayload(
-  id: string,
-  values: PlayFormValues
-): UpdatePlayPayload {
+export function toUpdatePlayPayload(id: string, values: PlayFormValues): UpdatePlayPayload {
   return { id, ...values };
 }
 // ===== SEMANA 06 · FIN =====

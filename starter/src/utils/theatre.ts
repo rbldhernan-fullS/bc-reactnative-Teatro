@@ -25,10 +25,7 @@ export function getHallCapacity(hall: TheatreHall): number {
   return layout.rows * layout.seatsPerRow;
 }
 
-export function getHallOccupancy(
-  hall: TheatreHall,
-  availableSeats: number
-): number {
+export function getHallOccupancy(hall: TheatreHall, availableSeats: number): number {
   const capacity = getHallCapacity(hall);
   const occupiedSeats = capacity - availableSeats;
   return Math.min(1, Math.max(0, occupiedSeats / capacity));
@@ -47,15 +44,10 @@ function hashString(value: string): number {
   return hash >>> 0;
 }
 
-export function buildSeatMap(
-  item: Pick<Item, 'id' | 'hall' | 'availableSeats'>
-): Seat[] {
+export function buildSeatMap(item: Pick<Item, 'id' | 'hall' | 'availableSeats'>): Seat[] {
   const layout = HALL_LAYOUT[item.hall];
   const totalSeats = layout.rows * layout.seatsPerRow;
-  const availableSeats = Math.min(
-    totalSeats,
-    Math.max(0, item.availableSeats)
-  );
+  const availableSeats = Math.min(totalSeats, Math.max(0, item.availableSeats));
   const occupiedCount = totalSeats - availableSeats;
   const occupiedIndices = new Set<number>();
 
@@ -113,10 +105,7 @@ function toRadians(degrees: number): number {
   return (degrees * Math.PI) / 180;
 }
 
-export function getDistanceInMeters(
-  from: VenueCoordinates,
-  to: VenueCoordinates
-): number {
+export function getDistanceInMeters(from: VenueCoordinates, to: VenueCoordinates): number {
   const deltaLatitude = toRadians(to.latitude - from.latitude);
   const deltaLongitude = toRadians(to.longitude - from.longitude);
   const fromLatitude = toRadians(from.latitude);
@@ -124,9 +113,7 @@ export function getDistanceInMeters(
 
   const haversine =
     Math.sin(deltaLatitude / 2) ** 2 +
-    Math.cos(fromLatitude) *
-      Math.cos(toLatitude) *
-      Math.sin(deltaLongitude / 2) ** 2;
+    Math.cos(fromLatitude) * Math.cos(toLatitude) * Math.sin(deltaLongitude / 2) ** 2;
 
   return 2 * EARTH_RADIUS_METERS * Math.asin(Math.sqrt(haversine));
 }
@@ -143,9 +130,7 @@ export function formatDistance(meters: number): string {
   return `${(meters / 1000).toFixed(1)} km`;
 }
 
-export function getVenueDirectionsUrl(
-  venue: TheatreVenue = TEATRO_COLON_VENUE
-): string {
+export function getVenueDirectionsUrl(venue: TheatreVenue = TEATRO_COLON_VENUE): string {
   return `https://www.google.com/maps/dir/?api=1&destination=${venue.latitude},${venue.longitude}&travelmode=walking`;
 }
 // ===== SEMANA 11 · FIN =====

@@ -9,17 +9,9 @@ import {
   scheduleShowReminder,
   type NotificationPermissionState,
 } from '../services/notifications';
-import {
-  useNotificationStore,
-  type ReceivedNotification,
-} from '../stores/notificationStore';
+import { useNotificationStore, type ReceivedNotification } from '../stores/notificationStore';
 import { useReminderStore } from '../stores/reminderStore';
-import type {
-  Item,
-  ReminderKind,
-  ScheduleOutcome,
-  ShowReminder,
-} from '../types';
+import type { Item, ReminderKind, ScheduleOutcome, ShowReminder } from '../types';
 
 export interface UseNotificationsResult {
   permission: NotificationPermissionState;
@@ -38,15 +30,9 @@ export interface UseNotificationsResult {
 
   openSystemSettings: () => Promise<void>;
 
-  scheduleCartelera: (
-    play: Item,
-    change: 'created' | 'updated'
-  ) => Promise<ScheduleOutcome>;
+  scheduleCartelera: (play: Item, change: 'created' | 'updated') => Promise<ScheduleOutcome>;
 
-  scheduleReminder: (
-    play: Item,
-    kind: ReminderKind
-  ) => Promise<ScheduleOutcome>;
+  scheduleReminder: (play: Item, kind: ReminderKind) => Promise<ScheduleOutcome>;
 
   cancelReminder: (itemId: string) => Promise<boolean>;
 
@@ -60,19 +46,13 @@ export function useNotifications(): UseNotificationsResult {
   const canAskAgain = useNotificationStore((state) => state.canAskAgain);
   const pushToken = useNotificationStore((state) => state.pushToken);
   const projectId = useNotificationStore((state) => state.projectId);
-  const isPhysicalDevice = useNotificationStore(
-    (state) => state.isPhysicalDevice
-  );
+  const isPhysicalDevice = useNotificationStore((state) => state.isPhysicalDevice);
   const isRegistering = useNotificationStore((state) => state.isRegistering);
   const error = useNotificationStore((state) => state.error);
   const lastReceived = useNotificationStore((state) => state.lastReceived);
-  const refreshPermission = useNotificationStore(
-    (state) => state.refreshPermission
-  );
+  const refreshPermission = useNotificationStore((state) => state.refreshPermission);
   const registerForPush = useNotificationStore((state) => state.registerForPush);
-  const openSystemSettings = useNotificationStore(
-    (state) => state.openSystemSettings
-  );
+  const openSystemSettings = useNotificationStore((state) => state.openSystemSettings);
   const clearError = useNotificationStore((state) => state.clearError);
 
   const reminders = useReminderStore((state) => state.reminders);
@@ -81,7 +61,7 @@ export function useNotifications(): UseNotificationsResult {
   const scheduleCartelera = useCallback(
     (play: Item, change: 'created' | 'updated'): Promise<ScheduleOutcome> =>
       scheduleCarteleraNotification(play, change),
-    []
+    [],
   );
 
   const scheduleReminder = useCallback(
@@ -90,10 +70,7 @@ export function useNotifications(): UseNotificationsResult {
       const outcome = await scheduleShowReminder(play, kind);
 
       if (outcome.ok) {
-        if (
-          previous &&
-          previous.notificationId !== outcome.notificationId
-        ) {
+        if (previous && previous.notificationId !== outcome.notificationId) {
           await cancelScheduledNotification(previous.notificationId);
         }
 
@@ -108,26 +85,21 @@ export function useNotifications(): UseNotificationsResult {
 
       return outcome;
     },
-    [saveReminder]
+    [saveReminder],
   );
 
-  const cancelReminder = useCallback(
-    async (itemId: string): Promise<boolean> => {
-      const current = useReminderStore.getState().reminders[itemId];
+  const cancelReminder = useCallback(async (itemId: string): Promise<boolean> => {
+    const current = useReminderStore.getState().reminders[itemId];
 
-      if (!current) {
-        return false;
-      }
+    if (!current) {
+      return false;
+    }
 
-      const cancelled = await cancelScheduledNotification(
-        current.notificationId
-      );
+    const cancelled = await cancelScheduledNotification(current.notificationId);
 
-      useReminderStore.getState().removeReminder(itemId);
-      return cancelled;
-    },
-    []
-  );
+    useReminderStore.getState().removeReminder(itemId);
+    return cancelled;
+  }, []);
 
   const cancelAllReminders = useCallback(async (): Promise<number> => {
     const active = Object.values(useReminderStore.getState().reminders);
@@ -137,9 +109,7 @@ export function useNotifications(): UseNotificationsResult {
     }
 
     await Promise.all(
-      active.map((reminder) =>
-        cancelScheduledNotification(reminder.notificationId)
-      )
+      active.map((reminder) => cancelScheduledNotification(reminder.notificationId)),
     );
 
     useReminderStore.getState().clearReminders();

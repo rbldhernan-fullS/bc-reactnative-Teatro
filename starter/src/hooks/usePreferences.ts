@@ -2,11 +2,7 @@
 import { useCallback } from 'react';
 // ===== SEMANA 01 · FIN =====
 // ===== SEMANA 07 · INICIO =====
-import {
-  useMMKVBoolean,
-  useMMKVNumber,
-  useMMKVString,
-} from '../storage/mmkvHooks';
+import { useMMKVBoolean, useMMKVNumber, useMMKVString } from '../storage/mmkvHooks';
 
 import { storage } from '../storage/mmkv';
 
@@ -51,26 +47,14 @@ function normalizeItemsPerPage(value: number | undefined): ItemsPerPage {
 }
 
 export function usePreferences() {
-  const [storedSortOrder, setSortOrder] = useMMKVString(
-    PREF_KEYS.SORT_ORDER,
-    storage
-  );
-  const [storedCompactMode, setCompactMode] = useMMKVBoolean(
-    PREF_KEYS.COMPACT_MODE,
-    storage
-  );
-  const [storedItemsPerPage, setItemsPerPage] = useMMKVNumber(
-    PREF_KEYS.ITEMS_PER_PAGE,
-    storage
-  );
-  const [storedOnlyAvailable, setOnlyAvailable] = useMMKVBoolean(
-    PREF_KEYS.ONLY_AVAILABLE,
-    storage
-  );
+  const [storedSortOrder, setSortOrder] = useMMKVString(PREF_KEYS.SORT_ORDER, storage);
+  const [storedCompactMode, setCompactMode] = useMMKVBoolean(PREF_KEYS.COMPACT_MODE, storage);
+  const [storedItemsPerPage, setItemsPerPage] = useMMKVNumber(PREF_KEYS.ITEMS_PER_PAGE, storage);
+  const [storedOnlyAvailable, setOnlyAvailable] = useMMKVBoolean(PREF_KEYS.ONLY_AVAILABLE, storage);
   // ===== SEMANA 12 · INICIO =====
   const [storedRemindersEnabled, setStoredRemindersEnabled] = useMMKVBoolean(
     PREF_KEYS.REMINDERS_ENABLED,
-    storage
+    storage,
   );
   // ===== SEMANA 12 · FIN =====
 
@@ -82,13 +66,7 @@ export function usePreferences() {
     // ===== SEMANA 12 · INICIO =====
     setStoredRemindersEnabled(DEFAULT_PREFERENCES.remindersEnabled);
     // ===== SEMANA 12 · FIN =====
-  }, [
-    setCompactMode,
-    setItemsPerPage,
-    setOnlyAvailable,
-    setSortOrder,
-    setStoredRemindersEnabled,
-  ]);
+  }, [setCompactMode, setItemsPerPage, setOnlyAvailable, setSortOrder, setStoredRemindersEnabled]);
 
   return {
     sortOrder: normalizeSortOrder(storedSortOrder),
@@ -103,10 +81,8 @@ export function usePreferences() {
     onlyAvailable: storedOnlyAvailable ?? DEFAULT_PREFERENCES.onlyAvailable,
     setOnlyAvailable: (value: boolean): void => setOnlyAvailable(value),
 
-    remindersEnabled:
-      storedRemindersEnabled ?? DEFAULT_PREFERENCES.remindersEnabled,
-    setRemindersEnabled: (value: boolean): void =>
-      setStoredRemindersEnabled(value),
+    remindersEnabled: storedRemindersEnabled ?? DEFAULT_PREFERENCES.remindersEnabled,
+    setRemindersEnabled: (value: boolean): void => setStoredRemindersEnabled(value),
 
     resetPreferences,
   };

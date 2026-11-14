@@ -5,11 +5,7 @@ import type {
   NotificationResponse,
 } from 'expo-notifications';
 
-export type {
-  Notification,
-  NotificationPermissionsStatus,
-  NotificationResponse,
-};
+export type { Notification, NotificationPermissionsStatus, NotificationResponse };
 
 export const AndroidImportance = {
   MIN: 1,
@@ -46,8 +42,7 @@ const deniedPermission = {
   android: undefined,
 } as unknown as NotificationPermissionsStatus;
 
-export const webNotSupportedMessage =
-  'Las notificaciones no están disponibles en la versión web.';
+export const webNotSupportedMessage = 'Las notificaciones no están disponibles en la versión web.';
 
 export function setNotificationHandler(): void {}
 
@@ -73,9 +68,7 @@ export async function scheduleNotificationAsync(): Promise<string> {
 
 export async function cancelScheduledNotificationAsync(): Promise<void> {}
 
-export async function getAllScheduledNotificationsAsync(): Promise<
-  Notification[]
-> {
+export async function getAllScheduledNotificationsAsync(): Promise<Notification[]> {
   return [];
 }
 

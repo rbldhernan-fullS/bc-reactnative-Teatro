@@ -37,14 +37,8 @@ export const ItemCard = React.memo(function ItemCard({
   return (
     <View style={styles.card}>
       {/* ===== SEMANA 02 · INICIO ===== */}
-      <View
-        style={[styles.imageWrapper, compact && styles.imageWrapperCompact]}
-      >
-        <Image
-          source={{ uri: item.imageUri }}
-          style={styles.cardImage}
-          resizeMode="cover"
-        />
+      <View style={[styles.imageWrapper, compact && styles.imageWrapperCompact]}>
+        <Image source={{ uri: item.imageUri }} style={styles.cardImage} resizeMode="cover" />
         <View style={styles.genreBadge}>
           <Text style={styles.genreBadgeText}>{item.genre}</Text>
         </View>
@@ -64,9 +58,7 @@ export const ItemCard = React.memo(function ItemCard({
           hitSlop={8}
           accessibilityRole="button"
           accessibilityLabel={
-            saved
-              ? `Quitar ${item.name} de guardados`
-              : `Guardar ${item.name} en guardados`
+            saved ? `Quitar ${item.name} de guardados` : `Guardar ${item.name} en guardados`
           }
         >
           <Ionicons
@@ -81,10 +73,7 @@ export const ItemCard = React.memo(function ItemCard({
 
       <View style={[styles.cardBody, compact && styles.cardBodyCompact]}>
         {/* ===== SEMANA 02 · INICIO ===== */}
-        <Text
-          style={[styles.cardTitle, compact && styles.cardTitleCompact]}
-          numberOfLines={1}
-        >
+        <Text style={[styles.cardTitle, compact && styles.cardTitleCompact]} numberOfLines={1}>
           {item.name}
         </Text>
         {/* ===== SEMANA 02 · FIN ===== */}
@@ -107,13 +96,9 @@ export const ItemCard = React.memo(function ItemCard({
         {compact ? (
           <View style={styles.compactFooter}>
             {/* ===== SEMANA 07 · INICIO ===== */}
-            <Text style={styles.compactSeats}>
-              {item.availableSeats} butacas
-            </Text>
+            <Text style={styles.compactSeats}>{item.availableSeats} butacas</Text>
             {/* ===== SEMANA 07 · FIN ===== */}
-            <Text style={styles.priceValue}>
-              ${item.price.toLocaleString('es-CO')} COP
-            </Text>
+            <Text style={styles.priceValue}>${item.price.toLocaleString('es-CO')} COP</Text>
           </View>
         ) : (
           <>
@@ -128,16 +113,12 @@ export const ItemCard = React.memo(function ItemCard({
             <View style={styles.cardFooter}>
               <View style={styles.seatsContainer}>
                 <Text style={styles.seatsLabel}>Disponibles</Text>
-                <Text style={styles.seatsValue}>
-                  {item.availableSeats} butacas
-                </Text>
+                <Text style={styles.seatsValue}>{item.availableSeats} butacas</Text>
               </View>
 
               <View style={styles.priceContainer}>
                 <Text style={styles.priceLabel}>Entrada general</Text>
-                <Text style={styles.priceValue}>
-                  ${item.price.toLocaleString('es-CO')} COP
-                </Text>
+                <Text style={styles.priceValue}>${item.price.toLocaleString('es-CO')} COP</Text>
               </View>
             </View>
           </>

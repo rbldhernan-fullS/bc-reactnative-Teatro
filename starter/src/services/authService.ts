@@ -3,12 +3,7 @@ import axios from 'axios';
 // ===== SEMANA 05 · FIN =====
 
 // ===== SEMANA 08 · INICIO =====
-import type {
-  AuthSession,
-  AuthUser,
-  LoginCredentials,
-  RegisterData,
-} from '../types';
+import type { AuthSession, AuthUser, LoginCredentials, RegisterData } from '../types';
 import { authClient, publicAuthClient } from './authClient';
 
 const REGISTER_DELAY_MS = 700;
@@ -17,9 +12,7 @@ interface AuthErrorBody {
   message?: string;
 }
 
-export async function login(
-  credentials: LoginCredentials
-): Promise<AuthSession> {
+export async function login(credentials: LoginCredentials): Promise<AuthSession> {
   const { data } = await publicAuthClient.post<AuthSession>('/auth/login', {
     username: credentials.username,
     password: credentials.password,

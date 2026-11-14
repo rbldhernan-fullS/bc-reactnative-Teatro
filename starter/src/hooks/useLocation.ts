@@ -18,9 +18,7 @@ export interface UseLocationResult {
   toggleWatching: () => void;
 }
 
-function formatGeocodedAddress(
-  entry: Location.LocationGeocodedAddress | undefined
-): string | null {
+function formatGeocodedAddress(entry: Location.LocationGeocodedAddress | undefined): string | null {
   if (!entry) {
     return null;
   }
@@ -33,19 +31,16 @@ function formatGeocodedAddress(
     .filter((part): part is string => Boolean(part))
     .join(' ');
 
-  const parts = [street, entry.district, entry.city, entry.region].filter(
-    (part): part is string => Boolean(part)
+  const parts = [street, entry.district, entry.city, entry.region].filter((part): part is string =>
+    Boolean(part),
   );
 
   return parts.length > 0 ? parts.join(', ') : null;
 }
 
 export function useLocation(): UseLocationResult {
-  const [permission, setPermission] =
-    useState<Location.LocationPermissionResponse | null>(null);
-  const [coords, setCoords] = useState<Location.LocationObjectCoords | null>(
-    null
-  );
+  const [permission, setPermission] = useState<Location.LocationPermissionResponse | null>(null);
+  const [coords, setCoords] = useState<Location.LocationObjectCoords | null>(null);
   const [address, setAddress] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [requesting, setRequesting] = useState(false);
@@ -70,7 +65,7 @@ export function useLocation(): UseLocationResult {
         setAddress(null);
       }
     },
-    []
+    [],
   );
 
   const loadPosition = useCallback(async (): Promise<void> => {
@@ -86,7 +81,7 @@ export function useLocation(): UseLocationResult {
       await resolveAddress(position.coords);
     } catch {
       setError(
-        'No pudimos obtener tu ubicación. Revisa que el GPS esté activo e inténtalo de nuevo.'
+        'No pudimos obtener tu ubicación. Revisa que el GPS esté activo e inténtalo de nuevo.',
       );
     } finally {
       setLoading(false);
@@ -192,7 +187,7 @@ export function useLocation(): UseLocationResult {
         if (active) {
           setCoords(position.coords);
         }
-      }
+      },
     )
       .then((created) => {
         if (active) {

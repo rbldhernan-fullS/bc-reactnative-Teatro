@@ -74,7 +74,7 @@ export function AnimatedButton({
         .onFinalize(() => {
           scale.value = withSpring(1, PRESS_OUT_SPRING);
         }),
-    [disabled, onPress, scale]
+    [disabled, onPress, scale],
   );
 
   const animatedStyle = useAnimatedStyle(() => ({

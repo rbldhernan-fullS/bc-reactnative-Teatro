@@ -29,11 +29,9 @@ export function NotificationCenter(): null {
   }, []);
 
   useEffect(() => {
-    const subscription = Notifications.addNotificationReceivedListener(
-      (notification) => {
-        useNotificationStore.getState().markReceived(notification);
-      }
-    );
+    const subscription = Notifications.addNotificationReceivedListener((notification) => {
+      useNotificationStore.getState().markReceived(notification);
+    });
 
     return () => {
       subscription.remove();
@@ -41,14 +39,11 @@ export function NotificationCenter(): null {
   }, []);
 
   useEffect(() => {
-    const subscription =
-      Notifications.addNotificationResponseReceivedListener((response) => {
-        const payload = parseNotificationPayload(
-          response.notification.request.content.data
-        );
+    const subscription = Notifications.addNotificationResponseReceivedListener((response) => {
+      const payload = parseNotificationPayload(response.notification.request.content.data);
 
-        navigateFromNotification(payload ?? { screen: 'HomeList' });
-      });
+      navigateFromNotification(payload ?? { screen: 'HomeList' });
+    });
 
     return () => {
       subscription.remove();
@@ -64,9 +59,7 @@ export function NotificationCenter(): null {
           return;
         }
 
-        const payload = parseNotificationPayload(
-          response.notification.request.content.data
-        );
+        const payload = parseNotificationPayload(response.notification.request.content.data);
 
         navigateFromNotification(payload ?? { screen: 'HomeList' });
 

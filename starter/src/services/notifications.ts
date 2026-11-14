@@ -39,10 +39,7 @@ const MONTHS_ES = [
   'dic',
 ] as const;
 
-export type NotificationPermissionState =
-  | 'granted'
-  | 'denied'
-  | 'undetermined';
+export type NotificationPermissionState = 'granted' | 'denied' | 'undetermined';
 
 export interface NotificationPermissionSnapshot {
   granted: boolean;
@@ -63,7 +60,7 @@ function normalizePermissionStatus(value: string): NotificationPermissionState {
 }
 
 function toPermissionSnapshot(
-  response: Notifications.NotificationPermissionsStatus
+  response: Notifications.NotificationPermissionsStatus,
 ): NotificationPermissionSnapshot {
   return {
     granted: response.granted,
@@ -78,7 +75,7 @@ export async function getNotificationPermission(): Promise<NotificationPermissio
 }
 
 export async function ensureNotificationPermission(
-  request: boolean
+  request: boolean,
 ): Promise<NotificationPermissionSnapshot> {
   const current = await Notifications.getPermissionsAsync();
 
@@ -111,9 +108,7 @@ export function getEasProjectId(): string | null {
   return null;
 }
 
-export async function requestExpoPushToken(
-  projectId: string
-): Promise<string> {
+export async function requestExpoPushToken(projectId: string): Promise<string> {
   const token = await Notifications.getExpoPushTokenAsync({ projectId });
   return token.data;
 }
@@ -124,17 +119,14 @@ export async function configureNotificationChannel(): Promise<void> {
   }
 
   try {
-    await Notifications.setNotificationChannelAsync(
-      TEATRO_NOTIFICATION_CHANNEL,
-      {
-        name: 'Funciones del Teatro Colón',
-        description: 'Recordatorios y novedades de la cartelera.',
-        importance: Notifications.AndroidImportance.HIGH,
-        lightColor: '#d4a24c',
-        vibrationPattern: [0, 250, 250, 250],
-        sound: 'default',
-      }
-    );
+    await Notifications.setNotificationChannelAsync(TEATRO_NOTIFICATION_CHANNEL, {
+      name: 'Funciones del Teatro Colón',
+      description: 'Recordatorios y novedades de la cartelera.',
+      importance: Notifications.AndroidImportance.HIGH,
+      lightColor: '#d4a24c',
+      vibrationPattern: [0, 250, 250, 250],
+      sound: 'default',
+    });
   } catch {}
 }
 
@@ -155,7 +147,7 @@ export function getShowDate(play: Item): Date | null {
     Number(hour),
     Number(minute),
     0,
-    0
+    0,
   );
 
   return Number.isNaN(showDate.getTime()) ? null : showDate;
@@ -186,10 +178,7 @@ export function formatScheduleDate(timestamp: number): string {
   return `${day} ${month} · ${hours}:${minutes}`;
 }
 
-function buildPayload(
-  play: Item,
-  kind: NotificationKind
-): NotificationPayload {
+function buildPayload(play: Item, kind: NotificationKind): NotificationPayload {
   return {
     screen: 'HomeDetail',
     kind,
@@ -199,29 +188,23 @@ function buildPayload(
 }
 
 function immediateTrigger(): Notifications.NotificationTriggerInput {
-  return Platform.OS === 'android'
-    ? { channelId: TEATRO_NOTIFICATION_CHANNEL }
-    : null;
+  return Platform.OS === 'android' ? { channelId: TEATRO_NOTIFICATION_CHANNEL } : null;
 }
 
 function dateTrigger(timestamp: number): Notifications.NotificationTriggerInput {
   return {
     type: Notifications.SchedulableTriggerInputTypes.DATE,
     date: timestamp,
-    channelId:
-      Platform.OS === 'android' ? TEATRO_NOTIFICATION_CHANNEL : undefined,
+    channelId: Platform.OS === 'android' ? TEATRO_NOTIFICATION_CHANNEL : undefined,
   };
 }
 
-function timeIntervalTrigger(
-  seconds: number
-): Notifications.NotificationTriggerInput {
+function timeIntervalTrigger(seconds: number): Notifications.NotificationTriggerInput {
   return {
     type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
     seconds,
     repeats: false,
-    channelId:
-      Platform.OS === 'android' ? TEATRO_NOTIFICATION_CHANNEL : undefined,
+    channelId: Platform.OS === 'android' ? TEATRO_NOTIFICATION_CHANNEL : undefined,
   };
 }
 
@@ -230,7 +213,7 @@ async function scheduleLocal(
   body: string,
   payload: NotificationPayload,
   trigger: Notifications.NotificationTriggerInput,
-  scheduledAt: number
+  scheduledAt: number,
 ): Promise<ScheduleOutcome> {
   try {
     const notificationId = await Notifications.scheduleNotificationAsync({
@@ -251,40 +234,30 @@ async function scheduleLocal(
 
 export async function scheduleCarteleraNotification(
   play: Item,
-  change: 'created' | 'updated'
+  change: 'created' | 'updated',
 ): Promise<ScheduleOutcome> {
   const permission = await ensureNotificationPermission(false);
 
   if (!permission.granted) {
     return {
       ok: false,
-      reason:
-        'Activa las notificaciones en Ajustes para recibir avisos de la cartelera.',
+      reason: 'Activa las notificaciones en Ajustes para recibir avisos de la cartelera.',
     };
   }
 
-  const title =
-    change === 'created'
-      ? '🎭 Nueva obra en cartelera'
-      : '📝 Ficha actualizada';
+  const title = change === 'created' ? '🎭 Nueva obra en cartelera' : '📝 Ficha actualizada';
 
   const body =
     change === 'created'
       ? `"${play.name}" se suma a la temporada en la ${play.hall}.`
       : `Los datos de "${play.name}" cambiaron. Consulta la nueva función.`;
 
-  return scheduleLocal(
-    title,
-    body,
-    buildPayload(play, 'event'),
-    immediateTrigger(),
-    Date.now()
-  );
+  return scheduleLocal(title, body, buildPayload(play, 'event'), immediateTrigger(), Date.now());
 }
 
 export async function scheduleShowReminder(
   play: Item,
-  kind: ReminderKind
+  kind: ReminderKind,
 ): Promise<ScheduleOutcome> {
   const permission = await ensureNotificationPermission(true);
 
@@ -304,7 +277,7 @@ export async function scheduleShowReminder(
       `Así llegará el aviso de "${play.name}" 2 horas antes de la función.`,
       buildPayload(play, 'reminder'),
       timeIntervalTrigger(DEMO_REMINDER_SECONDS),
-      scheduledAt
+      scheduledAt,
     );
   }
 
@@ -330,7 +303,7 @@ export async function scheduleShowReminder(
     `"${play.name}" inicia a las ${play.time} en la ${play.hall}.`,
     buildPayload(play, 'reminder'),
     dateTrigger(reminderDate.getTime()),
-    reminderDate.getTime()
+    reminderDate.getTime(),
   );
 }
 
@@ -340,8 +313,7 @@ export async function scheduleTestNotification(): Promise<ScheduleOutcome> {
   if (!permission.granted) {
     return {
       ok: false,
-      reason:
-        'Sin permiso de notificaciones no podemos mostrar el aviso de prueba.',
+      reason: 'Sin permiso de notificaciones no podemos mostrar el aviso de prueba.',
     };
   }
 
@@ -350,7 +322,7 @@ export async function scheduleTestNotification(): Promise<ScheduleOutcome> {
     'Recibirás recordatorios de tus funciones en el Teatro Colón.',
     { screen: 'HomeList', kind: 'test' },
     immediateTrigger(),
-    Date.now()
+    Date.now(),
   );
 }
 
@@ -360,8 +332,7 @@ export async function scheduleTestReminder(): Promise<ScheduleOutcome> {
   if (!permission.granted) {
     return {
       ok: false,
-      reason:
-        'Sin permiso de notificaciones no podemos programar el recordatorio de prueba.',
+      reason: 'Sin permiso de notificaciones no podemos programar el recordatorio de prueba.',
     };
   }
 
@@ -372,13 +343,11 @@ export async function scheduleTestReminder(): Promise<ScheduleOutcome> {
     'Este es el aviso que recibirás 2 horas antes de cada función.',
     { screen: 'HomeList', kind: 'test' },
     timeIntervalTrigger(DEMO_REMINDER_SECONDS),
-    scheduledAt
+    scheduledAt,
   );
 }
 
-export async function cancelScheduledNotification(
-  notificationId: string
-): Promise<boolean> {
+export async function cancelScheduledNotification(notificationId: string): Promise<boolean> {
   try {
     await Notifications.cancelScheduledNotificationAsync(notificationId);
     return true;
@@ -389,8 +358,7 @@ export async function cancelScheduledNotification(
 
 export async function getScheduledNotificationIds(): Promise<string[] | null> {
   try {
-    const scheduled =
-      await Notifications.getAllScheduledNotificationsAsync();
+    const scheduled = await Notifications.getAllScheduledNotificationsAsync();
 
     return scheduled.map((notification) => notification.identifier);
   } catch {
@@ -399,18 +367,14 @@ export async function getScheduledNotificationIds(): Promise<string[] | null> {
 }
 
 function isNotificationScreen(value: unknown): value is NotificationScreen {
-  return (
-    value === 'HomeDetail' || value === 'HomeList' || value === 'Settings'
-  );
+  return value === 'HomeDetail' || value === 'HomeList' || value === 'Settings';
 }
 
 function isNotificationKind(value: unknown): value is NotificationKind {
   return value === 'event' || value === 'reminder' || value === 'test';
 }
 
-export function parseNotificationPayload(
-  data: unknown
-): NotificationPayload | null {
+export function parseNotificationPayload(data: unknown): NotificationPayload | null {
   if (!data || typeof data !== 'object') {
     return null;
   }
@@ -422,8 +386,7 @@ export function parseNotificationPayload(
     return null;
   }
 
-  const itemId =
-    typeof record.itemId === 'string' ? record.itemId : undefined;
+  const itemId = typeof record.itemId === 'string' ? record.itemId : undefined;
   const name = typeof record.name === 'string' ? record.name : undefined;
   const kind = isNotificationKind(record.kind) ? record.kind : undefined;
 

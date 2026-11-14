@@ -1,12 +1,6 @@
 // ===== SEMANA 01 · INICIO =====
 import React from 'react';
-import {
-  ActivityIndicator,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 // ===== SEMANA 01 · FIN =====
 // ===== SEMANA 06 · INICIO =====
 import type { Control, FieldErrors } from 'react-hook-form';
@@ -176,13 +170,10 @@ export function PlayForm({
       <View style={styles.posterSection}>
         <Text style={styles.posterLabel}>Afiche local de la obra</Text>
         <Text style={styles.posterHint}>
-          Toma una foto con la cámara o elige una imagen de la galería. El
-          afiche local tiene prioridad sobre la URL en este dispositivo.
+          Toma una foto con la cámara o elige una imagen de la galería. El afiche local tiene
+          prioridad sobre la URL en este dispositivo.
         </Text>
-        <PhotoPicker
-          targetId={posterTargetId}
-          fallbackUri={posterFallbackUri}
-        />
+        <PhotoPicker targetId={posterTargetId} fallbackUri={posterFallbackUri} />
       </View>
       {/* ===== SEMANA 11 · FIN ===== */}
 
@@ -197,9 +188,7 @@ export function PlayForm({
         errorMessage={errors.synopsis?.message}
       />
 
-      {serverError ? (
-        <Text style={styles.serverError}>{serverError}</Text>
-      ) : null}
+      {serverError ? <Text style={styles.serverError}>{serverError}</Text> : null}
 
       <Pressable
         style={({ pressed }) => [

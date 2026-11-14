@@ -1,13 +1,6 @@
 // ===== SEMANA 01 · INICIO =====
 import React from 'react';
-import {
-  ActivityIndicator,
-  Linking,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { ActivityIndicator, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 // ===== SEMANA 01 · FIN =====
 // ===== SEMANA 03 · INICIO =====
 import { Ionicons } from '@expo/vector-icons';
@@ -67,9 +60,7 @@ export function PermissionGate({
         )}
       </View>
 
-      <Text style={styles.title}>
-        {isChecking ? 'Comprobando permiso…' : title}
-      </Text>
+      <Text style={styles.title}>{isChecking ? 'Comprobando permiso…' : title}</Text>
 
       <Text style={styles.description}>
         {isChecking ? 'Consultando el estado actual del permiso.' : description}
@@ -77,23 +68,17 @@ export function PermissionGate({
 
       {!isChecking && !canAskAgain ? (
         <Text style={styles.deniedHint}>
-          {deniedHint ??
-            'El permiso está bloqueado. Actívalo desde los ajustes del sistema.'}
+          {deniedHint ?? 'El permiso está bloqueado. Actívalo desde los ajustes del sistema.'}
         </Text>
       ) : null}
 
       {!isChecking ? (
         <Pressable
-          style={({ pressed }) => [
-            styles.action,
-            (pressed || requesting) && styles.actionPressed,
-          ]}
+          style={({ pressed }) => [styles.action, (pressed || requesting) && styles.actionPressed]}
           onPress={canAskAgain ? onRequest : () => void handleOpenSettings()}
           disabled={requesting}
           accessibilityRole="button"
-          accessibilityLabel={
-            canAskAgain ? 'Permitir acceso' : 'Abrir ajustes del sistema'
-          }
+          accessibilityLabel={canAskAgain ? 'Permitir acceso' : 'Abrir ajustes del sistema'}
         >
           {requesting ? (
             <ActivityIndicator color={COLORS.background} />

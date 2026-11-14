@@ -19,12 +19,7 @@ import {
   setAuthFailureListener,
   setTokenRefreshListener,
 } from '../services/authClient';
-import {
-  clearTokens,
-  getAccessToken,
-  getRefreshToken,
-  saveTokens,
-} from '../services/tokenService';
+import { clearTokens, getAccessToken, getRefreshToken, saveTokens } from '../services/tokenService';
 import type { AuthUser, LoginCredentials, RegisterData } from '../types';
 
 export interface AuthState {
@@ -202,8 +197,8 @@ export const useAuthStore = create<AuthState>()(
         user: state.user,
         isAuthenticated: state.isAuthenticated,
       }),
-    }
-  )
+    },
+  ),
 );
 
 setTokenRefreshListener((tokens) => {

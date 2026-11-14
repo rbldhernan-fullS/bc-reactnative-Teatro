@@ -1,13 +1,6 @@
 // ===== SEMANA 01 · INICIO =====
 import React, { useRef, useState } from 'react';
-import {
-  ActivityIndicator,
-  Alert,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { ActivityIndicator, Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 // ===== SEMANA 01 · FIN =====
 // ===== SEMANA 03 · INICIO =====
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -15,12 +8,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 // ===== SEMANA 03 · FIN =====
 // ===== SEMANA 11 · INICIO =====
-import {
-  CameraView,
-  useCameraPermissions,
-  type CameraType,
-  type FlashMode,
-} from 'expo-camera';
+import { CameraView, useCameraPermissions, type CameraType, type FlashMode } from 'expo-camera';
 
 import { PermissionGate } from '../components/PermissionGate';
 import { usePosterStore } from '../stores/posterStore';
@@ -68,10 +56,7 @@ export function CameraScreen(): React.JSX.Element {
       });
 
       if (!photo) {
-        Alert.alert(
-          'Captura vacía',
-          'La cámara no devolvió una imagen. Inténtalo de nuevo.'
-        );
+        Alert.alert('Captura vacía', 'La cámara no devolvió una imagen. Inténtalo de nuevo.');
         return;
       }
 
@@ -80,7 +65,7 @@ export function CameraScreen(): React.JSX.Element {
     } catch {
       Alert.alert(
         'No se pudo capturar',
-        'Cierra la cámara y vuelve a intentarlo. Si el problema continúa, usa la galería.'
+        'Cierra la cámara y vuelve a intentarlo. Si el problema continúa, usa la galería.',
       );
     } finally {
       setCapturing(false);
@@ -92,12 +77,7 @@ export function CameraScreen(): React.JSX.Element {
   return (
     <View style={styles.screen}>
       {granted ? (
-        <CameraView
-          ref={cameraRef}
-          style={styles.camera}
-          facing={facing}
-          flash={flash}
-        />
+        <CameraView ref={cameraRef} style={styles.camera} facing={facing} flash={flash} />
       ) : null}
 
       {!granted ? (
@@ -117,10 +97,7 @@ export function CameraScreen(): React.JSX.Element {
 
       <View style={[styles.topBar, { paddingTop: insets.top + SPACING.sm }]}>
         <Pressable
-          style={({ pressed }) => [
-            styles.iconButton,
-            pressed && styles.iconButtonPressed,
-          ]}
+          style={({ pressed }) => [styles.iconButton, pressed && styles.iconButtonPressed]}
           onPress={handleClose}
           accessibilityRole="button"
           accessibilityLabel="Cerrar la cámara"
@@ -138,9 +115,7 @@ export function CameraScreen(): React.JSX.Element {
               ]}
               onPress={handleFlashToggle}
               accessibilityRole="button"
-              accessibilityLabel={
-                flash === 'on' ? 'Apagar el flash' : 'Encender el flash'
-              }
+              accessibilityLabel={flash === 'on' ? 'Apagar el flash' : 'Encender el flash'}
             >
               <Ionicons
                 name={flash === 'on' ? 'flash' : 'flash-off'}
@@ -150,10 +125,7 @@ export function CameraScreen(): React.JSX.Element {
             </Pressable>
 
             <Pressable
-              style={({ pressed }) => [
-                styles.iconButton,
-                pressed && styles.iconButtonPressed,
-              ]}
+              style={({ pressed }) => [styles.iconButton, pressed && styles.iconButtonPressed]}
               onPress={handleFlip}
               accessibilityRole="button"
               accessibilityLabel="Cambiar entre cámara frontal y trasera"
@@ -170,9 +142,7 @@ export function CameraScreen(): React.JSX.Element {
 
       {granted ? (
         <View style={[styles.bottomBar, { paddingBottom: insets.bottom + SPACING.lg }]}>
-          <Text style={styles.hint}>
-            Encuadra el afiche y toca el botón dorado
-          </Text>
+          <Text style={styles.hint}>Encuadra el afiche y toca el botón dorado</Text>
 
           <Pressable
             style={({ pressed }) => [

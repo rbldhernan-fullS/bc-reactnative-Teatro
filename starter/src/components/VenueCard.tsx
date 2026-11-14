@@ -51,7 +51,7 @@ export function VenueCard({ hall }: VenueCardProps): React.JSX.Element {
     } catch {
       Alert.alert(
         'Mapas no disponible',
-        'No pudimos abrir la aplicación de mapas en este dispositivo.'
+        'No pudimos abrir la aplicación de mapas en este dispositivo.',
       );
     }
   }
@@ -59,7 +59,7 @@ export function VenueCard({ hall }: VenueCardProps): React.JSX.Element {
   const distance = coords
     ? getDistanceInMeters(
         { latitude: coords.latitude, longitude: coords.longitude },
-        TEATRO_COLON_VENUE
+        TEATRO_COLON_VENUE,
       )
     : null;
 
@@ -140,10 +140,7 @@ export function VenueCard({ hall }: VenueCardProps): React.JSX.Element {
 
           <View style={styles.actions}>
             <Pressable
-              style={({ pressed }) => [
-                styles.action,
-                pressed && styles.actionPressed,
-              ]}
+              style={({ pressed }) => [styles.action, pressed && styles.actionPressed]}
               onPress={() => {
                 void refresh();
               }}
@@ -153,16 +150,11 @@ export function VenueCard({ hall }: VenueCardProps): React.JSX.Element {
               accessibilityState={{ disabled: loading }}
             >
               <Ionicons name="refresh" size={SIZES.iconSm} color={COLORS.accent} />
-              <Text style={styles.actionText}>
-                {loading ? 'Actualizando…' : 'Actualizar'}
-              </Text>
+              <Text style={styles.actionText}>{loading ? 'Actualizando…' : 'Actualizar'}</Text>
             </Pressable>
 
             <Pressable
-              style={({ pressed }) => [
-                styles.action,
-                pressed && styles.actionPressed,
-              ]}
+              style={({ pressed }) => [styles.action, pressed && styles.actionPressed]}
               onPress={() => {
                 void handleOpenMaps();
               }}

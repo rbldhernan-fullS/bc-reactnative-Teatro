@@ -64,9 +64,7 @@ export const usePosterStore = create<PosterStore>()((set, get) => ({
   },
 }));
 
-export function selectPoster(
-  targetId: string
-): (state: PosterStore) => string | undefined {
+export function selectPoster(targetId: string): (state: PosterStore) => string | undefined {
   return (state) => state.posters[targetId];
 }
 // ===== SEMANA 11 · FIN =====

@@ -80,8 +80,8 @@ export const useReminderStore = create<ReminderStore>()(
       partialize: (state): PersistedReminderState => ({
         reminders: state.reminders,
       }),
-    }
-  )
+    },
+  ),
 );
 
 export const selectReminder =
@@ -91,4 +91,4 @@ export const selectReminder =
 
 export const selectReminderCount = (state: ReminderStore): number =>
   Object.keys(state.reminders).length;
-  // ===== SEMANA 12 · FIN =====
+// ===== SEMANA 12 · FIN =====

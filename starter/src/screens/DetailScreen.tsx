@@ -179,9 +179,7 @@ export function DetailScreen(): React.JSX.Element {
     return (
       <View style={[styles.screenWrapper, styles.notFoundContainer]}>
         <Text style={styles.notFoundTitle}>Obra no encontrada</Text>
-        <Text style={styles.notFoundSubtitle}>
-          La obra que buscas ya no está en cartelera.
-        </Text>
+        <Text style={styles.notFoundSubtitle}>La obra que buscas ya no está en cartelera.</Text>
         <Pressable
           style={styles.bookButton}
           onPress={() => navigation.goBack()}
@@ -234,8 +232,8 @@ export function DetailScreen(): React.JSX.Element {
         Alert.alert(
           'Recordatorio programado',
           `Te avisaremos el ${formatScheduleDate(
-            outcome.scheduledAt
-          )}, 2 horas antes de "${name}".`
+            outcome.scheduledAt,
+          )}, 2 horas antes de "${name}".`,
         );
         return;
       }
@@ -255,7 +253,7 @@ export function DetailScreen(): React.JSX.Element {
       if (outcome.ok) {
         Alert.alert(
           'Prueba programada',
-          `El aviso de "${name}" llegará en 10 segundos. Mantén la app abierta para verlo en primer plano.`
+          `El aviso de "${name}" llegará en 10 segundos. Mantén la app abierta para verlo en primer plano.`,
         );
         return;
       }
@@ -273,7 +271,7 @@ export function DetailScreen(): React.JSX.Element {
       cancelled ? 'Recordatorio cancelado' : 'Recordatorio retirado',
       cancelled
         ? `Ya no recibirás el aviso de "${name}".`
-        : 'El aviso ya no estaba programado en el sistema; el registro local quedó limpio.'
+        : 'El aviso ya no estaba programado en el sistema; el registro local quedó limpio.',
     );
   }
 
@@ -329,11 +327,7 @@ export function DetailScreen(): React.JSX.Element {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.imageContainer}>
-          <Image
-            source={{ uri: posterUri }}
-            style={styles.image}
-            resizeMode="cover"
-          />
+          <Image source={{ uri: posterUri }} style={styles.image} resizeMode="cover" />
           <View style={styles.imageOverlay} />
 
           <View style={styles.badgesRow}>
@@ -365,9 +359,7 @@ export function DetailScreen(): React.JSX.Element {
             accessibilityRole="button"
             accessibilityState={{ selected: isSaved }}
             accessibilityLabel={
-              isSaved
-                ? `Quitar ${name} de guardados`
-                : `Guardar ${name} en guardados`
+              isSaved ? `Quitar ${name} de guardados` : `Guardar ${name} en guardados`
             }
           >
             <Ionicons
@@ -375,12 +367,7 @@ export function DetailScreen(): React.JSX.Element {
               size={SIZES.iconSm}
               color={isSaved ? COLORS.accent : COLORS.textPrimary}
             />
-            <Text
-              style={[
-                styles.savePillText,
-                isSaved && styles.savePillTextActive,
-              ]}
-            >
+            <Text style={[styles.savePillText, isSaved && styles.savePillTextActive]}>
               {isSaved ? 'Guardada' : 'Guardar'}
             </Text>
           </Pressable>
@@ -422,9 +409,7 @@ export function DetailScreen(): React.JSX.Element {
           <View style={styles.availabilityBanner}>
             <Text style={styles.availabilityIcon}>🎭</Text>
             <View style={styles.availabilityTextWrapper}>
-              <Text style={styles.availabilityTitle}>
-                Aforo y Disponibilidad
-              </Text>
+              <Text style={styles.availabilityTitle}>Aforo y Disponibilidad</Text>
               <Text style={styles.availabilitySubtitle}>
                 {availableSeats > 10
                   ? `${availableSeats} butacas disponibles en esta función`
@@ -447,11 +432,7 @@ export function DetailScreen(): React.JSX.Element {
           {/* ===== SEMANA 11 · INICIO ===== */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Afiche de la obra</Text>
-            <PhotoPicker
-              targetId={id}
-              fallbackUri={imageUri}
-              showPreview={false}
-            />
+            <PhotoPicker targetId={id} fallbackUri={imageUri} showPreview={false} />
           </View>
 
           <VenueCard hall={hall} />
@@ -464,11 +445,7 @@ export function DetailScreen(): React.JSX.Element {
 
               {reminder ? (
                 <View style={styles.reminderBadge}>
-                  <Ionicons
-                    name="notifications"
-                    size={12}
-                    color={COLORS.background}
-                  />
+                  <Ionicons name="notifications" size={12} color={COLORS.background} />
                   <Text style={styles.reminderBadgeText}>Activo</Text>
                 </View>
               ) : null}
@@ -476,9 +453,7 @@ export function DetailScreen(): React.JSX.Element {
 
             <Text style={styles.reminderDescription}>
               {reminder
-                ? `Aviso programado para el ${formatScheduleDate(
-                    reminder.scheduledAt
-                  )}${
+                ? `Aviso programado para el ${formatScheduleDate(reminder.scheduledAt)}${
                     reminder.kind === 'demo'
                       ? ' (prueba de 10 s).'
                       : ', 2 horas antes de la función.'
@@ -510,17 +485,14 @@ export function DetailScreen(): React.JSX.Element {
                     size={SIZES.iconSm}
                     color={COLORS.accent}
                   />
-                  <Text style={styles.reminderActionText}>
-                    Cancelar recordatorio
-                  </Text>
+                  <Text style={styles.reminderActionText}>Cancelar recordatorio</Text>
                 </Pressable>
               ) : (
                 <Pressable
                   style={({ pressed }) => [
                     styles.reminderAction,
                     pressed && styles.reminderActionPressed,
-                    (!remindersEnabled || isScheduling) &&
-                      styles.reminderActionDisabled,
+                    (!remindersEnabled || isScheduling) && styles.reminderActionDisabled,
                   ]}
                   onPress={() => {
                     void handleScheduleReminder();
@@ -541,9 +513,7 @@ export function DetailScreen(): React.JSX.Element {
                       color={COLORS.accent}
                     />
                   )}
-                  <Text style={styles.reminderActionText}>
-                    Recordar 2 h antes
-                  </Text>
+                  <Text style={styles.reminderActionText}>Recordar 2 h antes</Text>
                 </Pressable>
               )}
 
@@ -551,8 +521,7 @@ export function DetailScreen(): React.JSX.Element {
                 style={({ pressed }) => [
                   styles.reminderAction,
                   pressed && styles.reminderActionPressed,
-                  (!remindersEnabled || isScheduling) &&
-                    styles.reminderActionDisabled,
+                  (!remindersEnabled || isScheduling) && styles.reminderActionDisabled,
                 ]}
                 onPress={() => {
                   void handleDemoReminder();
@@ -564,11 +533,7 @@ export function DetailScreen(): React.JSX.Element {
                   disabled: !remindersEnabled || isScheduling,
                 }}
               >
-                <Ionicons
-                  name="timer-outline"
-                  size={SIZES.iconSm}
-                  color={COLORS.accent}
-                />
+                <Ionicons name="timer-outline" size={SIZES.iconSm} color={COLORS.accent} />
                 <Text style={styles.reminderActionText}>Probar en 10 s</Text>
               </Pressable>
             </View>
@@ -616,11 +581,7 @@ export function DetailScreen(): React.JSX.Element {
                 <ActivityIndicator color={COLORS.error} />
               ) : (
                 <>
-                  <Ionicons
-                    name="trash-outline"
-                    size={16}
-                    color={COLORS.error}
-                  />
+                  <Ionicons name="trash-outline" size={16} color={COLORS.error} />
                   <Text style={styles.deletePlayText}>Eliminar obra</Text>
                 </>
               )}
@@ -630,17 +591,11 @@ export function DetailScreen(): React.JSX.Element {
         </View>
       </Animated.ScrollView>
 
-      <View
-        style={[
-          styles.bottomBar,
-          { paddingBottom: SPACING.md + insets.bottom },
-        ]}
-      >
+      <View style={[styles.bottomBar, { paddingBottom: SPACING.md + insets.bottom }]}>
         <View style={styles.priceColumn}>
           <Text style={styles.priceCaption}>Entrada General</Text>
           <Text style={styles.priceNumber}>
-            ${price.toLocaleString('es-CO')}{' '}
-            <Text style={styles.priceCurrency}>COP</Text>
+            ${price.toLocaleString('es-CO')} <Text style={styles.priceCurrency}>COP</Text>
           </Text>
         </View>
 

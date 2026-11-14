@@ -61,12 +61,7 @@ export const AnimatedCard = React.memo(function AnimatedCard({
         accessibilityRole="button"
         accessibilityLabel={`Obra ${item.name}, género ${item.genre}, precio ${item.price} pesos`}
       >
-        <ItemCard
-          item={item}
-          saved={saved}
-          onToggleSave={onToggleSave}
-          compact={compact}
-        />
+        <ItemCard item={item} saved={saved} onToggleSave={onToggleSave} compact={compact} />
       </Pressable>
     </Animated.View>
   );

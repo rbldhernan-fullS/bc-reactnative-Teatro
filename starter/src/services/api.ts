@@ -44,12 +44,12 @@ apiClient.interceptors.response.use(
         '[API Error]',
         error.response?.status ?? 'sin respuesta',
         error.config?.method?.toUpperCase(),
-        error.config?.url
+        error.config?.url,
       );
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 export function getApiErrorMessage(error: unknown): string {

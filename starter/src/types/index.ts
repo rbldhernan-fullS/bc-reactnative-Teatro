@@ -12,11 +12,7 @@ export const THEATRE_GENRES = [
 
 export type TheatreGenre = (typeof THEATRE_GENRES)[number];
 
-export const THEATRE_HALLS = [
-  'Sala Principal',
-  'Sala de Cámara',
-  'Teatro Experimental',
-] as const;
+export const THEATRE_HALLS = ['Sala Principal', 'Sala de Cámara', 'Teatro Experimental'] as const;
 
 export type TheatreHall = (typeof THEATRE_HALLS)[number];
 // ===== SEMANA 06 · FIN =====
@@ -147,4 +143,4 @@ export type ScheduleOutcome =
       ok: false;
       reason: string;
     };
-    // ===== SEMANA 12 · FIN =====
+// ===== SEMANA 12 · FIN =====
