@@ -1,11 +1,9 @@
 // ===== SEMANA 01 · INICIO =====
-import React, { useMemo } from 'react';
-import { StyleSheet, Text } from 'react-native';
+import React from 'react';
+import { Pressable, StyleSheet, Text } from 'react-native';
 // ===== SEMANA 01 · FIN =====
 // ===== SEMANA 10 · INICIO =====
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
-  runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
@@ -33,15 +31,22 @@ interface AnimatedButtonProps {
 
 // ===== SEMANA 10 · INICIO =====
 const PRESSED_SCALE = 0.95;
-// ===== SEMANA 10 · FIN =====
 
-// ===== SEMANA 09 · INICIO =====
 const PRESS_OUT_SPRING = {
   damping: 10,
   stiffness: 240,
   mass: 0.7,
 } as const;
 
+/**
+ * Botón con animación de pulsación.
+ *
+ * Usa `Pressable` en lugar de `Gesture.Tap` + `GestureDetector`: en web los
+ * gestos de react-native-gesture-handler emitían
+ * `Cannot record touch end without a touch start` y dejaban el botón como un
+ * `div` sin activación por teclado. Con `Pressable` es un botón real en ambas
+ * plataformas y la animación se conserva.
+ */
 export function AnimatedButton({
   label,
   onPress,
@@ -51,39 +56,32 @@ export function AnimatedButton({
   disabled = false,
   accessibilityLabel,
 }: AnimatedButtonProps): React.JSX.Element {
-  // ===== SEMANA 10 · INICIO =====
   const scale = useSharedValue(1);
-  // ===== SEMANA 10 · FIN =====
-  const isPrimary = variant === 'primary';
-
-  // ===== SEMANA 10 · INICIO =====
-  const tapGesture = useMemo(
-    () =>
-      Gesture.Tap()
-        .enabled(!disabled)
-        .onBegin(() => {
-          scale.value = withTiming(PRESSED_SCALE, { duration: 90 });
-        })
-        .onEnd((_event, success) => {
-          scale.value = withSpring(1, PRESS_OUT_SPRING);
-
-          if (success) {
-            runOnJS(onPress)();
-          }
-        })
-        .onFinalize(() => {
-          scale.value = withSpring(1, PRESS_OUT_SPRING);
-        }),
-    [disabled, onPress, scale],
-  );
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
   }));
-  // ===== SEMANA 10 · FIN =====
+
+  function handlePressIn(): void {
+    scale.value = withTiming(PRESSED_SCALE, { duration: 90 });
+  }
+
+  function handlePressOut(): void {
+    scale.value = withSpring(1, PRESS_OUT_SPRING);
+  }
+
+  const isPrimary = variant === 'primary';
 
   return (
-    <GestureDetector gesture={tapGesture}>
+    <Pressable
+      onPress={onPress}
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
+      disabled={disabled}
+      accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel ?? label}
+      accessibilityState={{ disabled }}
+    >
       <Animated.View
         style={[
           styles.base,
@@ -92,10 +90,6 @@ export function AnimatedButton({
           disabled && styles.disabled,
           animatedStyle,
         ]}
-        accessible
-        accessibilityRole="button"
-        accessibilityLabel={accessibilityLabel ?? label}
-        accessibilityState={{ disabled }}
       >
         {icon ? (
           <Ionicons
@@ -114,9 +108,10 @@ export function AnimatedButton({
           {label}
         </Text>
       </Animated.View>
-    </GestureDetector>
+    </Pressable>
   );
 }
+// ===== SEMANA 10 · FIN =====
 
 const styles = StyleSheet.create({
   base: {
@@ -158,4 +153,3 @@ const styles = StyleSheet.create({
     color: COLORS.accent,
   },
 });
-// ===== SEMANA 09 · FIN =====
