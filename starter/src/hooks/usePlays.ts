@@ -13,6 +13,9 @@ import {
 import { readPlaysCache, writePlaysCache } from '../storage/playsCache';
 import type { CreatePlayPayload, Item, PlaysWithSource, UpdatePlayPayload } from '../types';
 // ===== SEMANA 07 · FIN =====
+// ===== SEMANA 05 · INICIO =====
+import { isNotFoundError } from '../services/api';
+// ===== SEMANA 05 · FIN =====
 
 // ===== SEMANA 05 · INICIO =====
 export const PLAYS_QUERY_KEY = ['plays'] as const;
@@ -47,6 +50,8 @@ export function usePlayById(id: string) {
     queryKey: [...PLAYS_QUERY_KEY, id],
     queryFn: () => fetchPlayById(id),
     enabled: id.length > 0,
+    // Un 404 no se reintenta: la obra no existe y reintentar solo llena la consola (E‑07).
+    retry: (failureCount, error) => !isNotFoundError(error) && failureCount < 2,
   });
 }
 

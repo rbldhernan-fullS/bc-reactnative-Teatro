@@ -11,6 +11,7 @@ import {
   extractAuthUser,
   getAuthErrorMessage,
   getProfile,
+  isUnauthorizedError,
   login as loginRequest,
   register as registerRequest,
 } from '../services/authService';
@@ -160,14 +161,15 @@ export const useAuthStore = create<AuthState>()(
               isBootstrapping: false,
               error: null,
             });
-          } catch {
+          } catch (error) {
             const refreshToken = await getRefreshToken();
 
-            if (!refreshToken) {
+            // Si el perfil devuelve 401, el interceptor ya intentó refrescar y
+            // falló: la sesión no es válida y se cierra en lugar de dejar al
+            // usuario dentro con datos antiguos (E‑08).
+            if (isUnauthorizedError(error) || !refreshToken) {
+              await get().logout();
               set({
-                user: null,
-                accessToken: null,
-                isAuthenticated: false,
                 isBootstrapping: false,
                 error: 'Tu sesión expiró. Inicia sesión de nuevo.',
               });

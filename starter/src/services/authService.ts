@@ -52,6 +52,10 @@ export function extractAuthUser(session: AuthSession): AuthUser {
   };
 }
 
+export function isUnauthorizedError(error: unknown): boolean {
+  return axios.isAxiosError(error) && error.response?.status === 401;
+}
+
 export function getAuthErrorMessage(error: unknown): string {
   if (axios.isAxiosError<AuthErrorBody>(error)) {
     if (!error.response) {

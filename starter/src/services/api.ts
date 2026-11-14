@@ -40,17 +40,26 @@ apiClient.interceptors.response.use(
   (response) => response,
   (error: unknown) => {
     if (__DEV__ && axios.isAxiosError(error)) {
-      console.error(
-        '[API Error]',
-        error.response?.status ?? 'sin respuesta',
-        error.config?.method?.toUpperCase(),
-        error.config?.url,
-      );
+      const status = error.response?.status;
+      const method = error.config?.method?.toUpperCase();
+      const url = error.config?.url;
+
+      // Un 404 es un caso de negocio (la obra no existe), no una caída de la
+      // API: se registra como aviso para no ensuciar la consola con errores (E‑07).
+      if (status === 404) {
+        console.warn('[API] recurso no encontrado', method, url);
+      } else {
+        console.warn('[API] error de red', status ?? 'sin respuesta', method, url);
+      }
     }
 
     return Promise.reject(error);
   },
 );
+
+export function isNotFoundError(error: unknown): boolean {
+  return axios.isAxiosError(error) && error.response?.status === 404;
+}
 
 export function getApiErrorMessage(error: unknown): string {
   if (axios.isAxiosError(error)) {
