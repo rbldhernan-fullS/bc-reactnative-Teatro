@@ -1,6 +1,12 @@
 // ===== SEMANA 04 · INICIO =====
 import React from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import {
+  Pressable,
+  StyleSheet,
+  View,
+  type AccessibilityActionEvent,
+  type AccessibilityActionInfo,
+} from 'react-native';
 // ===== SEMANA 04 · FIN =====
 // ===== SEMANA 04 · INICIO =====
 import type { Item } from '../types';
@@ -16,6 +22,21 @@ interface PressableCardProps {
   compact?: boolean;
   onPressIn?: () => void;
   onPressOut?: () => void;
+  /**
+   * Etiqueta y acciones accesibles del área pulsable. La variante web las usa
+   * para explicar las flechas del teclado sin añadir un contenedor enfocable:
+   * un `View` con `accessibilityRole="button"` se renderiza como `<button>` y
+   * anidaría el botón de la tarjeta (E‑01).
+   */
+  accessibilityLabel?: string;
+  accessibilityActions?: readonly AccessibilityActionInfo[];
+  onAccessibilityAction?: (event: AccessibilityActionEvent) => void;
+  /**
+   * Acción extra que se pinta a la izquierda del botón de guardar, dentro de la
+   * misma fila absoluta. Sigue siendo hermana del área pulsable, así que no hay
+   * botones anidados. La variante web la usa para el descartar discreto.
+   */
+  trailingAction?: React.ReactNode;
 }
 
 const SAVE_BUTTON_TOP_MARGIN = 48;
@@ -27,7 +48,10 @@ const SAVE_BUTTON_TOP_MARGIN = 48;
  *
  *   <div>                      ← contenedor relativo
  *     <button>…tarjeta…</button>   ← navega al detalle
- *     <button>guardar</button>     ← acción independiente
+ *     <div>                         ← fila de acciones (hermana)
+ *       <button>descartar</button>
+ *       <button>guardar</button>
+ *     </div>
  *   </div>
  *
  * Así se elimina el error `<button> cannot be a descendant of <button>` (E‑01)
@@ -41,6 +65,10 @@ export const PressableCard = React.memo(function PressableCard({
   compact = false,
   onPressIn,
   onPressOut,
+  accessibilityLabel,
+  accessibilityActions,
+  onAccessibilityAction,
+  trailingAction,
 }: PressableCardProps): React.JSX.Element {
   const imageHeight = compact ? SIZES.cardImageCompactHeight : SIZES.cardImageHeight;
 
@@ -52,17 +80,21 @@ export const PressableCard = React.memo(function PressableCard({
         onPressOut={onPressOut}
         style={({ pressed }) => [styles.pressTarget, pressed && styles.pressTargetPressed]}
         accessibilityRole="button"
-        accessibilityLabel={`Obra ${item.name}, género ${item.genre}, precio ${item.price} pesos`}
+        accessibilityLabel={
+          accessibilityLabel ??
+          `Obra ${item.name}, género ${item.genre}, precio ${item.price} pesos`
+        }
+        accessibilityActions={accessibilityActions}
+        onAccessibilityAction={onAccessibilityAction}
       >
         <ItemCard item={item} compact={compact} />
       </Pressable>
 
-      <SaveButton
-        itemName={item.name}
-        saved={saved}
-        onPress={() => onToggleSave(item)}
-        style={[styles.saveButton, { top: imageHeight - SAVE_BUTTON_TOP_MARGIN }]}
-      />
+      <View style={[styles.actionRow, { top: imageHeight - SAVE_BUTTON_TOP_MARGIN }]}>
+        {trailingAction}
+
+        <SaveButton itemName={item.name} saved={saved} onPress={() => onToggleSave(item)} />
+      </View>
     </View>
   );
 });
@@ -79,9 +111,12 @@ const styles = StyleSheet.create({
   pressTargetPressed: {
     opacity: 0.92,
   },
-  saveButton: {
+  actionRow: {
     position: 'absolute',
     right: SPACING.sm,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.xs,
   },
 });
 // ===== SEMANA 04 · FIN =====

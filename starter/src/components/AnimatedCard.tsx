@@ -1,5 +1,6 @@
 // ===== SEMANA 01 · INICIO =====
 import React from 'react';
+import type { AccessibilityActionEvent, AccessibilityActionInfo } from 'react-native';
 // ===== SEMANA 01 · FIN =====
 // ===== SEMANA 10 · INICIO =====
 import Animated, {
@@ -20,6 +21,10 @@ interface AnimatedCardProps {
   saved: boolean;
   onToggleSave: (item: Item) => void;
   compact?: boolean;
+  trailingAction?: React.ReactNode;
+  accessibilityLabel?: string;
+  accessibilityActions?: readonly AccessibilityActionInfo[];
+  onAccessibilityAction?: (event: AccessibilityActionEvent) => void;
 }
 
 const PRESS_OUT_SPRING = {
@@ -35,6 +40,10 @@ export const AnimatedCard = React.memo(function AnimatedCard({
   saved,
   onToggleSave,
   compact = false,
+  trailingAction,
+  accessibilityLabel,
+  accessibilityActions,
+  onAccessibilityAction,
 }: AnimatedCardProps): React.JSX.Element {
   // ===== SEMANA 10 · INICIO =====
   const scale = useSharedValue(1);
@@ -62,6 +71,10 @@ export const AnimatedCard = React.memo(function AnimatedCard({
         compact={compact}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
+        trailingAction={trailingAction}
+        accessibilityLabel={accessibilityLabel}
+        accessibilityActions={accessibilityActions}
+        onAccessibilityAction={onAccessibilityAction}
       />
     </Animated.View>
   );
