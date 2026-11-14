@@ -567,7 +567,7 @@ export function HomeScreen(): React.JSX.Element {
           )}
 
           <View style={styles.swipeHint}>
-            <Text style={styles.swipeHintText}>Desliza → guardar · ← descartar</Text>
+            <Text style={styles.swipeHintText}>← Guardar · Descartar →</Text>
           </View>
           {/* ===== SEMANA 10 · FIN ===== */}
 
