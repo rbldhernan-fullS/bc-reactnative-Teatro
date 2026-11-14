@@ -2,12 +2,12 @@
 import React from 'react';
 import {
   ActivityIndicator,
-  Alert,
   Linking,
   Pressable,
   StyleSheet,
   Switch,
   Text,
+  TextInput,
   View,
 } from 'react-native';
 // ===== SEMANA 01 · FIN =====
@@ -18,6 +18,7 @@ import { Ionicons } from '@expo/vector-icons';
 // ===== SEMANA 11 · INICIO =====
 import { PermissionGate } from './PermissionGate';
 import { useLocation } from '../hooks/useLocation';
+import { notify } from '../platform/notify';
 import type { TheatreHall } from '../types';
 import {
   TEATRO_COLON_VENUE,
@@ -43,16 +44,14 @@ export function VenueCard({ hall }: VenueCardProps): React.JSX.Element {
     requestAccess,
     refresh,
     toggleWatching,
+    setAddress,
   } = useLocation();
 
   async function handleOpenMaps(): Promise<void> {
     try {
       await Linking.openURL(getVenueDirectionsUrl());
     } catch {
-      Alert.alert(
-        'Mapas no disponible',
-        'No pudimos abrir la aplicación de mapas en este dispositivo.',
-      );
+      notify('Mapas no disponible', 'No pudimos abrir la aplicación de mapas en este dispositivo.');
     }
   }
 
@@ -110,12 +109,21 @@ export function VenueCard({ hall }: VenueCardProps): React.JSX.Element {
                 </Text>
               </View>
 
-              <Text style={styles.addressLabel}>Tu ubicación</Text>
-              <Text style={styles.addressValue}>
-                {address ?? 'Dirección no disponible en este dispositivo'}
-              </Text>
+              <Text style={styles.addressLabel}>Tu dirección</Text>
+              <TextInput
+                value={address ?? ''}
+                onChangeText={(text) => setAddress(text.length > 0 ? text : null)}
+                style={styles.addressInput}
+                placeholder="Escribe una referencia (barrio, calle…)"
+                placeholderTextColor={COLORS.textMuted}
+                accessibilityLabel="Dirección o referencia de tu ubicación"
+              />
               <Text style={styles.coordsValue}>
                 {coords.latitude.toFixed(5)}, {coords.longitude.toFixed(5)}
+              </Text>
+              <Text style={styles.addressHint}>
+                La dirección es manual: el servicio de geocodificación inversa ya no está disponible
+                en el SDK y no se envía a ningún servidor.
               </Text>
 
               <View style={styles.watchRow}>
@@ -245,9 +253,20 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     letterSpacing: TYPOGRAPHY.letterSpacing.wide,
   },
-  addressValue: {
+  addressInput: {
     fontSize: TYPOGRAPHY.size.sm,
     color: COLORS.textPrimary,
+    backgroundColor: COLORS.surfaceAlt,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    borderRadius: RADIUS.sm,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
+  },
+  addressHint: {
+    fontSize: TYPOGRAPHY.size.xs,
+    color: COLORS.textMuted,
+    lineHeight: TYPOGRAPHY.lineHeight.base,
   },
   coordsValue: {
     fontSize: TYPOGRAPHY.size.xs,
