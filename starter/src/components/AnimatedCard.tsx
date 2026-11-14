@@ -1,6 +1,5 @@
 // ===== SEMANA 01 · INICIO =====
 import React from 'react';
-import { Pressable } from 'react-native';
 // ===== SEMANA 01 · FIN =====
 // ===== SEMANA 10 · INICIO =====
 import Animated, {
@@ -13,7 +12,7 @@ import Animated, {
 // ===== SEMANA 09 · INICIO =====
 import type { Item } from '../types';
 import { SIZES } from '../theme';
-import { ItemCard } from './ItemCard';
+import { PressableCard } from './PressableCard';
 
 interface AnimatedCardProps {
   item: Item;
@@ -28,6 +27,7 @@ const PRESS_OUT_SPRING = {
   stiffness: 220,
   mass: 0.7,
 } as const;
+// ===== SEMANA 09 · FIN =====
 
 export const AnimatedCard = React.memo(function AnimatedCard({
   item,
@@ -54,15 +54,15 @@ export const AnimatedCard = React.memo(function AnimatedCard({
 
   return (
     <Animated.View style={animatedStyle}>
-      <Pressable
-        onPress={() => onPress(item)}
+      <PressableCard
+        item={item}
+        saved={saved}
+        onPress={onPress}
+        onToggleSave={onToggleSave}
+        compact={compact}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
-        accessibilityRole="button"
-        accessibilityLabel={`Obra ${item.name}, género ${item.genre}, precio ${item.price} pesos`}
-      >
-        <ItemCard item={item} saved={saved} onToggleSave={onToggleSave} compact={compact} />
-      </Pressable>
+      />
     </Animated.View>
   );
 });

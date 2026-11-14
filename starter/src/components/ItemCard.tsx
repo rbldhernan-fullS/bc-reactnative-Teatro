@@ -1,11 +1,7 @@
 // ===== SEMANA 01 · INICIO =====
 import React from 'react';
-import { View, Text, Image, Pressable, StyleSheet } from 'react-native';
-import type { GestureResponderEvent } from 'react-native';
+import { View, Text, Image, StyleSheet } from 'react-native';
 // ===== SEMANA 01 · FIN =====
-// ===== SEMANA 03 · INICIO =====
-import { Ionicons } from '@expo/vector-icons';
-// ===== SEMANA 03 · FIN =====
 // ===== SEMANA 04 · INICIO =====
 import type { Item } from '../types';
 import { COLORS, TYPOGRAPHY, SPACING, RADIUS, SIZES } from '../theme';
@@ -14,26 +10,19 @@ import { COLORS, TYPOGRAPHY, SPACING, RADIUS, SIZES } from '../theme';
 // ===== SEMANA 01 · INICIO =====
 interface ItemCardProps {
   item: Item;
-  saved: boolean;
-  onToggleSave: (item: Item) => void;
   compact?: boolean;
 }
 
+/**
+ * Tarjeta **presentacional**: solo pinta la obra.
+ *
+ * El área pulsable y el botón de guardar viven en `PressableCard`, para que el
+ * botón sea hermano del contenedor y no un `<button>` anidado (corrección E‑01).
+ */
 export const ItemCard = React.memo(function ItemCard({
   item,
-  saved,
-  onToggleSave,
   compact = false,
 }: ItemCardProps): React.JSX.Element {
-  // ===== SEMANA 04 · INICIO =====
-  function handleSavePress(event: GestureResponderEvent): void {
-    // stopPropagation evita que, en web, pulsar «guardar» dispare también la
-    // navegación de la tarjeta (el contenedor es presionable). En nativo es inofensivo.
-    event.stopPropagation();
-    onToggleSave(item);
-  }
-  // ===== SEMANA 04 · FIN =====
-
   return (
     <View style={styles.card}>
       {/* ===== SEMANA 02 · INICIO ===== */}
@@ -46,28 +35,6 @@ export const ItemCard = React.memo(function ItemCard({
         <View style={styles.ratingBadge}>
           <Text style={styles.ratingBadgeText}>★ {item.rating.toFixed(1)}</Text>
         </View>
-
-        {/* ===== SEMANA 04 · INICIO ===== */}
-        <Pressable
-          onPress={handleSavePress}
-          style={({ pressed }) => [
-            styles.saveButton,
-            saved && styles.saveButtonActive,
-            pressed && styles.saveButtonPressed,
-          ]}
-          hitSlop={8}
-          accessibilityRole="button"
-          accessibilityLabel={
-            saved ? `Quitar ${item.name} de guardados` : `Guardar ${item.name} en guardados`
-          }
-        >
-          <Ionicons
-            name={saved ? 'bookmark' : 'bookmark-outline'}
-            size={SIZES.iconMd}
-            color={saved ? COLORS.accent : COLORS.textPrimary}
-          />
-        </Pressable>
-        {/* ===== SEMANA 04 · FIN ===== */}
       </View>
       {/* ===== SEMANA 02 · FIN ===== */}
 
@@ -133,8 +100,6 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: COLORS.surface,
     borderRadius: RADIUS.lg,
-    marginHorizontal: SPACING.base,
-    marginVertical: SPACING.xs,
     borderWidth: 1,
     borderColor: COLORS.border,
     overflow: 'hidden',
@@ -183,22 +148,6 @@ const styles = StyleSheet.create({
     fontSize: TYPOGRAPHY.size.xs,
     fontWeight: TYPOGRAPHY.weight.bold,
     color: COLORS.accent,
-  },
-  saveButton: {
-    position: 'absolute',
-    right: SPACING.sm,
-    bottom: SPACING.sm,
-    padding: SPACING.sm,
-    borderRadius: RADIUS.full,
-    backgroundColor: COLORS.overlay,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-  },
-  saveButtonActive: {
-    borderColor: COLORS.accent,
-  },
-  saveButtonPressed: {
-    opacity: 0.7,
   },
   cardBody: {
     padding: SPACING.base,
