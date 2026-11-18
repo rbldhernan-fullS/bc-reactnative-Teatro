@@ -7,16 +7,16 @@ import { useRoute } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 // ===== SEMANA 03 · FIN =====
 // ===== SEMANA 10 · INICIO =====
-import type { Seat } from '../types';
-import type { SeatMapScreenProps } from '../navigation/types';
-import { AnimatedButton } from '../components/AnimatedButton';
-import { ScreenState } from '../components/ScreenState';
-import { SeatMapViewport } from '../components/SeatMapViewport';
-import { notify } from '../platform/notify';
+import type { Seat } from '../../../types';
+import type { SeatMapScreenProps } from '../../../navigation/types';
+import { AnimatedButton } from '../../../components/AnimatedButton';
+import { ScreenState } from '../../../components/ScreenState';
+import { SeatMapViewport } from '../components/seatmap/SeatMapViewport';
+import { notify } from '../../../platform/notify';
 import { usePlayById } from '../hooks/usePlays';
-import { getApiErrorMessage } from '../services/http';
-import { COLORS, TYPOGRAPHY, SPACING, RADIUS } from '../theme';
-import { HALL_LAYOUT, buildSeatMap, getHallCapacity } from '../utils/theatre';
+import { getApiErrorMessage } from '../../../services/http';
+import { COLORS, TYPOGRAPHY, SPACING, RADIUS } from '../../../theme';
+import { HALL_LAYOUT, buildSeatMap, getHallCapacity } from '../../../utils/theatre';
 
 const SEAT_SIZE = 22;
 const SEAT_GAP = 5;

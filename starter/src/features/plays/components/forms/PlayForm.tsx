@@ -10,16 +10,16 @@ import { Ionicons } from '@expo/vector-icons';
 // ===== SEMANA 03 · FIN =====
 
 // ===== SEMANA 06 · INICIO =====
-import { FormChips } from './FormChips';
-import { FormField } from './FormField';
+import { FormChips } from '../../../../components/FormChips';
+import { FormField } from '../../../../components/FormField';
 // ===== SEMANA 06 · FIN =====
 // ===== SEMANA 11 · INICIO =====
-import { PhotoPicker } from './PhotoPicker';
+import { PhotoPicker } from '../../../../components/PhotoPicker';
 // ===== SEMANA 11 · FIN =====
 // ===== SEMANA 06 · INICIO =====
-import type { PlayFormInput } from '../schemas/playSchema';
-import { THEATRE_GENRES, THEATRE_HALLS } from '../types';
-import { COLORS, RADIUS, SIZES, SPACING, TYPOGRAPHY } from '../theme';
+import type { PlayFormInput } from '../../schemas/playSchema';
+import { THEATRE_GENRES, THEATRE_HALLS } from '../../../../types';
+import { COLORS, RADIUS, SIZES, SPACING, TYPOGRAPHY } from '../../../../theme';
 
 interface PlayFormProps {
   control: Control<PlayFormInput>;

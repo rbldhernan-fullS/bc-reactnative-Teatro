@@ -21,13 +21,13 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import { COLORS, RADIUS, SPACING, TYPOGRAPHY } from '../theme';
+import { COLORS, RADIUS, SPACING, TYPOGRAPHY } from '../../../../theme';
 import {
   SEAT_MAP_MIN_INITIAL_SCALE,
   clampScale,
   clampTranslation,
   getFitScale,
-} from '../utils/seatMap';
+} from '../../../../utils/seatMap';
 
 interface SeatMapViewportProps {
   contentWidth: number;

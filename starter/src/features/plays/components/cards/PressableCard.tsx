@@ -9,8 +9,8 @@ import {
 } from 'react-native';
 // ===== SEMANA 04 · FIN =====
 // ===== SEMANA 04 · INICIO =====
-import type { Item } from '../types';
-import { RADIUS, SIZES, SPACING } from '../theme';
+import type { Item } from '../../../../types';
+import { RADIUS, SIZES, SPACING } from '../../../../theme';
 import { ItemCard } from './ItemCard';
 import { SaveButton } from './SaveButton';
 

@@ -6,7 +6,7 @@ import { z } from 'zod';
 // ===== SEMANA 06 · FIN =====
 
 // ===== SEMANA 07 · INICIO =====
-import { playSchema } from '../schemas/playSchema';
+import { playSchema } from '../features/plays/schemas/playSchema';
 import type { Item } from '../types';
 
 const CACHE_KEY = '@teatro/plays_cache_v1';

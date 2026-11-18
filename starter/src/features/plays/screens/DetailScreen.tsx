@@ -17,52 +17,52 @@ import Animated, {
 } from 'react-native-reanimated';
 // ===== SEMANA 10 · FIN =====
 // ===== SEMANA 04 · INICIO =====
-import type { DetailScreenProps } from '../navigation/types';
+import type { DetailScreenProps } from '../../../navigation/types';
 // ===== SEMANA 04 · FIN =====
 // ===== SEMANA 12 · INICIO =====
-import type { Item } from '../types';
+import type { Item } from '../../../types';
 // ===== SEMANA 12 · FIN =====
 // ===== SEMANA 09 · INICIO =====
-import { AnimatedButton } from '../components/AnimatedButton';
+import { AnimatedButton } from '../../../components/AnimatedButton';
 // ===== SEMANA 09 · FIN =====
 // ===== SEMANA 11 · INICIO =====
-import { PhotoPicker } from '../components/PhotoPicker';
+import { PhotoPicker } from '../../../components/PhotoPicker';
 // ===== SEMANA 11 · FIN =====
 // ===== SEMANA 09 · INICIO =====
-import { ProgressBar } from '../components/ProgressBar';
+import { ProgressBar } from '../../../components/ProgressBar';
 // ===== SEMANA 09 · FIN =====
 // ===== SEMANA 05 · INICIO =====
-import { ScreenState } from '../components/ScreenState';
+import { ScreenState } from '../../../components/ScreenState';
 // ===== SEMANA 05 · FIN =====
 // ===== SEMANA 11 · INICIO =====
-import { VenueCard } from '../components/VenueCard';
+import { VenueCard } from '../../../components/VenueCard';
 // ===== SEMANA 11 · FIN =====
 // ===== SEMANA 05 · INICIO =====
 import { usePlayById } from '../hooks/usePlays';
 // ===== SEMANA 05 · FIN =====
 // ===== SEMANA 12 · INICIO =====
-import { useNotifications } from '../hooks/useNotifications';
+import { useNotifications } from '../../../hooks/useNotifications';
 import { useDeletePlay } from '../hooks/usePlays';
-import { usePreferences } from '../hooks/usePreferences';
+import { usePreferences } from '../../../hooks/usePreferences';
 // ===== SEMANA 12 · FIN =====
 // ===== SEMANA 05 · INICIO =====
-import { getApiErrorMessage, isNotFoundError } from '../services/http';
+import { getApiErrorMessage, isNotFoundError } from '../../../services/http';
 // ===== SEMANA 05 · FIN =====
 // ===== SEMANA 12 · INICIO =====
-import { formatScheduleDate } from '../services/notifications';
+import { formatScheduleDate } from '../../../services/notifications';
 // ===== SEMANA 12 · FIN =====
 // ===== SEMANA 12 · INICIO =====
-import { confirm, notify, notifyError } from '../platform/notify';
+import { confirm, notify, notifyError } from '../../../platform/notify';
 // ===== SEMANA 12 · FIN =====
 // ===== SEMANA 04 · INICIO =====
-import { COLORS, TYPOGRAPHY, SPACING, RADIUS, SIZES } from '../theme';
-import { selectIsSaved, useSavedStore } from '../stores/savedStore';
+import { COLORS, TYPOGRAPHY, SPACING, RADIUS, SIZES } from '../../../theme';
+import { selectIsSaved, useSavedStore } from '../../../stores/savedStore';
 // ===== SEMANA 04 · FIN =====
 // ===== SEMANA 11 · INICIO =====
-import { selectPoster, usePosterStore } from '../stores/posterStore';
+import { selectPoster, usePosterStore } from '../../../stores/posterStore';
 // ===== SEMANA 11 · FIN =====
 // ===== SEMANA 09 · INICIO =====
-import { getHallCapacity, getHallOccupancy } from '../utils/theatre';
+import { getHallCapacity, getHallOccupancy } from '../../../utils/theatre';
 // ===== SEMANA 09 · FIN =====
 
 // ===== SEMANA 03 · INICIO =====

@@ -1,23 +1,17 @@
 // ===== SEMANA 05 · INICIO =====
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import {
-  createPlay,
-  deletePlay,
-  fetchPlayById,
-  fetchPlays,
-  updatePlay,
-} from '../services/playsApi';
+import { createPlay, deletePlay, fetchPlayById, fetchPlays, updatePlay } from '../api/playsApi';
 // ===== SEMANA 05 · FIN =====
 // ===== SEMANA 07 · INICIO =====
-import { readPlaysCache, writePlaysCache } from '../storage/playsCache';
-import type { CreatePlayPayload, Item, PlaysWithSource, UpdatePlayPayload } from '../types';
+import { readPlaysCache, writePlaysCache } from '../../../storage/playsCache';
+import type { CreatePlayPayload, Item, PlaysWithSource, UpdatePlayPayload } from '../../../types';
 // ===== SEMANA 07 · FIN =====
 // ===== SEMANA 05 · INICIO =====
-import { isNotFoundError } from '../services/http';
+import { isNotFoundError } from '../../../services/http';
 // ===== SEMANA 05 · FIN =====
 // ===== SEMANA 12 · INICIO =====
-import { logger } from '../utils/logger';
+import { logger } from '../../../utils/logger';
 // ===== SEMANA 12 · FIN =====
 
 // ===== SEMANA 05 · INICIO =====

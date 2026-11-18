@@ -13,7 +13,7 @@ import type { Item } from '../types';
 // ===== SEMANA 04 · FIN =====
 // ===== SEMANA 05 · INICIO =====
 import { ScreenState } from '../components/ScreenState';
-import { usePlays } from '../hooks/usePlays';
+import { usePlays } from '../features/plays/hooks/usePlays';
 import { getApiErrorMessage } from '../services/http';
 // ===== SEMANA 05 · FIN =====
 // ===== SEMANA 04 · INICIO =====

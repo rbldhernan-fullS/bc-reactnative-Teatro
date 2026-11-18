@@ -11,8 +11,8 @@ import Animated, {
 } from 'react-native-reanimated';
 // ===== SEMANA 10 · FIN =====
 // ===== SEMANA 09 · INICIO =====
-import type { Item } from '../types';
-import { SIZES } from '../theme';
+import type { Item } from '../../../../types';
+import { SIZES } from '../../../../theme';
 import { PressableCard } from './PressableCard';
 
 interface AnimatedCardProps {

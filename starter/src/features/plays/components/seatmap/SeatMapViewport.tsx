@@ -9,14 +9,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 
-import { COLORS, RADIUS, SPACING, TYPOGRAPHY } from '../theme';
+import { COLORS, RADIUS, SPACING, TYPOGRAPHY } from '../../../../theme';
 import {
   SEAT_MAP_MAX_SCALE,
   SEAT_MAP_MIN_SCALE,
   SEAT_MAP_MIN_INITIAL_SCALE,
   clampTranslation,
   getFitScale,
-} from '../utils/seatMap';
+} from '../../../../utils/seatMap';
 
 interface SeatMapViewportProps {
   contentWidth: number;

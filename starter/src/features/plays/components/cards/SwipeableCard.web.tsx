@@ -16,9 +16,9 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import type { Item } from '../types';
-import { COLORS, RADIUS, SIZES, SPACING } from '../theme';
-import { SWIPE_MAX_ROTATION, SWIPE_SNAP_SPRING, SWIPE_THRESHOLD } from '../utils/swipe';
+import type { Item } from '../../../../types';
+import { COLORS, RADIUS, SIZES, SPACING } from '../../../../theme';
+import { SWIPE_MAX_ROTATION, SWIPE_SNAP_SPRING, SWIPE_THRESHOLD } from '../../../../utils/swipe';
 import { AnimatedCard } from './AnimatedCard';
 import { SwipeActionPanels } from './SwipeActionPanels';
 

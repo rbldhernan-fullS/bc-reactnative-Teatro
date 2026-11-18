@@ -10,14 +10,14 @@ import { Ionicons } from '@expo/vector-icons';
 // ===== SEMANA 03 · FIN =====
 
 // ===== SEMANA 08 · INICIO =====
-import { DetailScreen } from '../screens/DetailScreen';
+import { DetailScreen } from '../features/plays/screens/DetailScreen';
 import { SavedScreen } from '../screens/SavedScreen';
-import { HomeScreen } from '../screens/HomeScreen';
-import { CreateScreen } from '../screens/CreateScreen';
-import { EditScreen } from '../screens/EditScreen';
+import { HomeScreen } from '../features/plays/screens/HomeScreen';
+import { CreateScreen } from '../features/plays/screens/CreateScreen';
+import { EditScreen } from '../features/plays/screens/EditScreen';
 // ===== SEMANA 08 · FIN =====
 // ===== SEMANA 10 · INICIO =====
-import { SeatMapScreen } from '../screens/SeatMapScreen';
+import { SeatMapScreen } from '../features/plays/screens/SeatMapScreen';
 // ===== SEMANA 10 · FIN =====
 // ===== SEMANA 11 · INICIO =====
 import { CameraScreen } from '../screens/CameraScreen';

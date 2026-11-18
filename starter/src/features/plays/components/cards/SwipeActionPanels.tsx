@@ -13,8 +13,8 @@ import Animated, {
   type SharedValue,
 } from 'react-native-reanimated';
 
-import { COLORS, RADIUS, SIZES, SPACING, TYPOGRAPHY } from '../theme';
-import { SWIPE_LABEL_REVEAL, SWIPE_THRESHOLD } from '../utils/swipe';
+import { COLORS, RADIUS, SIZES, SPACING, TYPOGRAPHY } from '../../../../theme';
+import { SWIPE_LABEL_REVEAL, SWIPE_THRESHOLD } from '../../../../utils/swipe';
 
 interface SwipeActionPanelsProps {
   /** Desplazamiento horizontal actual de la tarjeta. */

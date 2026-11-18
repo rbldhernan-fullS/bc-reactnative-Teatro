@@ -2,7 +2,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import type { Item } from '../types';
+import type { Item } from '../../../../types';
 // ===== SEMANA 01 · FIN =====
 // ===== SEMANA 10 · INICIO =====
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -15,7 +15,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 
-import { SWIPE_MAX_ROTATION, SWIPE_SNAP_SPRING, SWIPE_THRESHOLD } from '../utils/swipe';
+import { SWIPE_MAX_ROTATION, SWIPE_SNAP_SPRING, SWIPE_THRESHOLD } from '../../../../utils/swipe';
 import { AnimatedCard } from './AnimatedCard';
 import { SwipeActionPanels } from './SwipeActionPanels';
 

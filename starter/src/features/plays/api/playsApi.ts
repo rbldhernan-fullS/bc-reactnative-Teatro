@@ -1,7 +1,7 @@
 // ===== SEMANA 05 · INICIO =====
-import { env } from '../config/env';
-import type { CreatePlayPayload, Item, UpdatePlayPayload } from '../types';
-import { createHttpClient } from './http';
+import { env } from '../../../config/env';
+import type { CreatePlayPayload, Item, UpdatePlayPayload } from '../../../types';
+import { createHttpClient } from '../../../services/http';
 
 interface PlayDto extends Omit<Item, 'id'> {
   id: number | string;

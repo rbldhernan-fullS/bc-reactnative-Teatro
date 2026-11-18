@@ -1,7 +1,7 @@
 // ===== SEMANA 06 · INICIO =====
 import { z } from 'zod';
-import { THEATRE_GENRES, THEATRE_HALLS } from '../types';
-import type { CreatePlayPayload, Item, UpdatePlayPayload } from '../types';
+import { THEATRE_GENRES, THEATRE_HALLS } from '../../../types';
+import type { CreatePlayPayload, Item, UpdatePlayPayload } from '../../../types';
 
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 const TIME_PATTERN = /^([01]\d|2[0-3]):[0-5]\d$/;

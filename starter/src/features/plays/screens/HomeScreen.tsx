@@ -31,32 +31,32 @@ import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 // ===== SEMANA 03 · FIN =====
 // ===== SEMANA 02 · INICIO =====
-import type { Item } from '../types';
+import type { Item } from '../../../types';
 // ===== SEMANA 02 · FIN =====
 // ===== SEMANA 10 · INICIO =====
-import { SwipeableCard } from '../components/SwipeableCard';
+import { SwipeableCard } from '../components/cards/SwipeableCard';
 // ===== SEMANA 10 · FIN =====
 // ===== SEMANA 09 · INICIO =====
-import { AnimatedButton } from '../components/AnimatedButton';
+import { AnimatedButton } from '../../../components/AnimatedButton';
 // ===== SEMANA 09 · FIN =====
 // ===== SEMANA 05 · INICIO =====
-import { ScreenState } from '../components/ScreenState';
+import { ScreenState } from '../../../components/ScreenState';
 import { usePlays } from '../hooks/usePlays';
 // ===== SEMANA 05 · FIN =====
 // ===== SEMANA 07 · INICIO =====
-import { usePreferences } from '../hooks/usePreferences';
+import { usePreferences } from '../../../hooks/usePreferences';
 // ===== SEMANA 07 · FIN =====
 // ===== SEMANA 05 · INICIO =====
-import { getApiErrorMessage } from '../services/http';
+import { getApiErrorMessage } from '../../../services/http';
 // ===== SEMANA 05 · FIN =====
 // ===== SEMANA 04 · INICIO =====
-import { useSavedStore } from '../stores/savedStore';
+import { useSavedStore } from '../../../stores/savedStore';
 // ===== SEMANA 04 · FIN =====
 // ===== SEMANA 09 · INICIO =====
-import { COLORS, TYPOGRAPHY, SPACING, RADIUS } from '../theme';
+import { COLORS, TYPOGRAPHY, SPACING, RADIUS } from '../../../theme';
 // ===== SEMANA 09 · FIN =====
 // ===== SEMANA 04 · INICIO =====
-import type { HomeStackParamList } from '../navigation/types';
+import type { HomeStackParamList } from '../../../navigation/types';
 // ===== SEMANA 04 · FIN =====
 
 // ===== SEMANA 03 · INICIO =====

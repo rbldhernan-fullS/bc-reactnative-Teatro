@@ -3,8 +3,8 @@ import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 // ===== SEMANA 01 · FIN =====
 // ===== SEMANA 04 · INICIO =====
-import type { Item } from '../types';
-import { COLORS, TYPOGRAPHY, SPACING, RADIUS, SIZES } from '../theme';
+import type { Item } from '../../../../types';
+import { COLORS, TYPOGRAPHY, SPACING, RADIUS, SIZES } from '../../../../theme';
 // ===== SEMANA 04 · FIN =====
 
 // ===== SEMANA 01 · INICIO =====

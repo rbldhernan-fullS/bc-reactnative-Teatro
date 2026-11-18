@@ -10,14 +10,14 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-import { PlayForm } from '../components/PlayForm';
+import { PlayForm } from '../components/forms/PlayForm';
 // ===== SEMANA 06 · FIN =====
 // ===== SEMANA 05 · INICIO =====
 import { useCreatePlay } from '../hooks/usePlays';
 // ===== SEMANA 05 · FIN =====
 // ===== SEMANA 12 · INICIO =====
-import { useNotifications } from '../hooks/useNotifications';
-import { logger } from '../utils/logger';
+import { useNotifications } from '../../../hooks/useNotifications';
+import { logger } from '../../../utils/logger';
 // ===== SEMANA 12 · FIN =====
 // ===== SEMANA 06 · INICIO =====
 import {
@@ -30,16 +30,16 @@ import {
 } from '../schemas/playSchema';
 // ===== SEMANA 06 · FIN =====
 // ===== SEMANA 11 · INICIO =====
-import { POSTER_DRAFT_ID, usePosterStore } from '../stores/posterStore';
+import { POSTER_DRAFT_ID, usePosterStore } from '../../../stores/posterStore';
 // ===== SEMANA 11 · FIN =====
 // ===== SEMANA 05 · INICIO =====
-import { getApiErrorMessage } from '../services/http';
+import { getApiErrorMessage } from '../../../services/http';
 // ===== SEMANA 05 · FIN =====
 // ===== SEMANA 06 · INICIO =====
-import { COLORS, SPACING } from '../theme';
+import { COLORS, SPACING } from '../../../theme';
 // ===== SEMANA 06 · FIN =====
 // ===== SEMANA 05 · INICIO =====
-import type { HomeStackParamList } from '../navigation/types';
+import type { HomeStackParamList } from '../../../navigation/types';
 
 type CreateNavProp = NativeStackNavigationProp<HomeStackParamList, 'Create'>;
 

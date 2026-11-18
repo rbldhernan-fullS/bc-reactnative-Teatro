@@ -7,7 +7,7 @@ import type { StyleProp, ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 // ===== SEMANA 03 · FIN =====
 // ===== SEMANA 04 · INICIO =====
-import { COLORS, RADIUS, SIZES, SPACING } from '../theme';
+import { COLORS, RADIUS, SIZES, SPACING } from '../../../../theme';
 
 interface SaveButtonProps {
   itemName: string;

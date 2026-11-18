@@ -10,12 +10,12 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-import { PlayForm } from '../components/PlayForm';
-import { ScreenState } from '../components/ScreenState';
+import { PlayForm } from '../components/forms/PlayForm';
+import { ScreenState } from '../../../components/ScreenState';
 // ===== SEMANA 06 · FIN =====
 // ===== SEMANA 12 · INICIO =====
-import { useNotifications } from '../hooks/useNotifications';
-import { logger } from '../utils/logger';
+import { useNotifications } from '../../../hooks/useNotifications';
+import { logger } from '../../../utils/logger';
 // ===== SEMANA 12 · FIN =====
 // ===== SEMANA 06 · INICIO =====
 import { usePlayById, useUpdatePlay } from '../hooks/usePlays';
@@ -27,9 +27,9 @@ import {
   type PlayFormInput,
   type PlayFormValues,
 } from '../schemas/playSchema';
-import { getApiErrorMessage } from '../services/http';
-import { COLORS, SPACING } from '../theme';
-import type { EditScreenProps, HomeStackParamList } from '../navigation/types';
+import { getApiErrorMessage } from '../../../services/http';
+import { COLORS, SPACING } from '../../../theme';
+import type { EditScreenProps, HomeStackParamList } from '../../../navigation/types';
 
 type EditNavProp = NativeStackNavigationProp<HomeStackParamList, 'Edit'>;
 
