@@ -1,8 +1,6 @@
 // ===== SEMANA 01 · INICIO =====
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  Pressable,
-  StyleSheet,
   Text,
   View,
   type LayoutChangeEvent,
@@ -10,9 +8,6 @@ import {
   type ViewStyle,
 } from 'react-native';
 // ===== SEMANA 01 · FIN =====
-// ===== SEMANA 03 · INICIO =====
-import { Ionicons } from '@expo/vector-icons';
-// ===== SEMANA 03 · FIN =====
 // ===== SEMANA 10 · INICIO =====
 import Animated, {
   useAnimatedStyle,
@@ -21,7 +16,8 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import { COLORS, RADIUS, SPACING, TYPOGRAPHY } from '../../../../theme';
+import { ZoomControls } from './ZoomControls';
+import { styles } from './webViewportStyles';
 import {
   SEAT_MAP_MIN_INITIAL_SCALE,
   clampScale,
@@ -270,37 +266,11 @@ export function SeatMapViewport({
           {children}
         </Animated.View>
 
-        <View style={styles.controls}>
-          <View style={styles.zoomRow}>
-            <Pressable
-              style={({ pressed }) => [styles.controlButton, pressed && styles.controlPressed]}
-              onPress={() => zoomBy(1 / ZOOM_STEP)}
-              accessibilityRole="button"
-              accessibilityLabel="Alejar el mapa"
-            >
-              <Ionicons name="remove" size={16} color={COLORS.accent} />
-            </Pressable>
-
-            <Pressable
-              style={({ pressed }) => [styles.controlButton, pressed && styles.controlPressed]}
-              onPress={() => zoomBy(ZOOM_STEP)}
-              accessibilityRole="button"
-              accessibilityLabel="Acercar el mapa"
-            >
-              <Ionicons name="add" size={16} color={COLORS.accent} />
-            </Pressable>
-          </View>
-
-          <Pressable
-            style={({ pressed }) => [styles.resetButton, pressed && styles.controlPressed]}
-            onPress={handleResetView}
-            accessibilityRole="button"
-            accessibilityLabel="Centrar y restablecer el zoom"
-          >
-            <Ionicons name="scan-outline" size={16} color={COLORS.accent} />
-            <Text style={styles.controlText}>Centrar</Text>
-          </Pressable>
-        </View>
+        <ZoomControls
+          onZoomIn={() => zoomBy(ZOOM_STEP)}
+          onZoomOut={() => zoomBy(1 / ZOOM_STEP)}
+          onReset={handleResetView}
+        />
       </View>
 
       <Text style={styles.hint}>
@@ -310,68 +280,3 @@ export function SeatMapViewport({
   );
 }
 // ===== SEMANA 10 · FIN =====
-
-const styles = StyleSheet.create({
-  viewport: {
-    flex: 1,
-    marginHorizontal: SPACING.base,
-    borderRadius: RADIUS.lg,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    backgroundColor: COLORS.surface,
-    overflow: 'hidden',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  mapContent: {
-    alignItems: 'center',
-    paddingVertical: SPACING.sm,
-  },
-  controls: {
-    position: 'absolute',
-    top: SPACING.sm,
-    right: SPACING.sm,
-    alignItems: 'flex-end',
-    gap: SPACING.xs,
-  },
-  zoomRow: {
-    flexDirection: 'row',
-    gap: SPACING.xs,
-  },
-  controlButton: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: 30,
-    height: 30,
-    borderRadius: RADIUS.full,
-    borderWidth: 1,
-    borderColor: COLORS.accent,
-    backgroundColor: COLORS.overlay,
-  },
-  resetButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: SPACING.xxs,
-    paddingHorizontal: SPACING.sm,
-    paddingVertical: SPACING.xs,
-    borderRadius: RADIUS.full,
-    borderWidth: 1,
-    borderColor: COLORS.accent,
-    backgroundColor: COLORS.overlay,
-  },
-  controlPressed: {
-    opacity: 0.7,
-  },
-  controlText: {
-    fontSize: TYPOGRAPHY.size.xs,
-    fontWeight: TYPOGRAPHY.weight.semibold,
-    color: COLORS.accent,
-  },
-  hint: {
-    textAlign: 'center',
-    fontSize: TYPOGRAPHY.size.xs,
-    color: COLORS.textMuted,
-    paddingVertical: SPACING.sm,
-    paddingHorizontal: SPACING.base,
-  },
-});

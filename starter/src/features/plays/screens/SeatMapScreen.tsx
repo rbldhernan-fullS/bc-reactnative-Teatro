@@ -1,6 +1,6 @@
 // ===== SEMANA 01 · INICIO =====
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 // ===== SEMANA 01 · FIN =====
 // ===== SEMANA 03 · INICIO =====
 import { useRoute } from '@react-navigation/native';
@@ -9,23 +9,32 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 // ===== SEMANA 10 · INICIO =====
 import type { Seat } from '../../../types';
 import type { SeatMapScreenProps } from '../../../navigation/types';
-import { AnimatedButton } from '../../../components/ui/AnimatedButton';
-import { ScreenState } from '../../../components/ui/ScreenState';
 import { SeatMapViewport } from '../components/seatmap/SeatMapViewport';
+import { Stage } from '../components/seatmap/Stage';
+import { Seat as SeatButton } from '../components/seatmap/Seat';
+import { SeatLegend } from '../components/seatmap/SeatLegend';
+import { BookingSummary } from '../components/seatmap/BookingSummary';
+import { SeatMapStates } from '../components/seatmap/SeatMapStates';
+import { MAX_SEATS_PER_BOOKING, getSeatMapMetrics } from '../components/seatmap/layout';
+import { styles } from '../components/seatmap/seatmapStyles';
 import { notify } from '../../../platform/notify';
+// ===== SEMANA 10 · FIN =====
+// ===== SEMANA 05 · INICIO =====
 import { usePlayById } from '../hooks/usePlays';
 import { getApiErrorMessage } from '../../../services/http';
-import { COLORS, TYPOGRAPHY, SPACING, RADIUS } from '../../../theme';
+// ===== SEMANA 05 · FIN =====
+// ===== SEMANA 09 · INICIO =====
 import { HALL_LAYOUT, buildSeatMap, getHallCapacity } from '../../../utils/theatre';
+// ===== SEMANA 09 · FIN =====
 
-const SEAT_SIZE = 22;
-const SEAT_GAP = 5;
-const ROW_LABEL_WIDTH = 24;
-const AISLE_EXTRA = SPACING.md;
-const STAGE_HEIGHT = 34;
-const ROW_HEIGHT = SEAT_SIZE + SEAT_GAP;
-const MAX_SEATS_PER_BOOKING = 8;
-
+// ===== SEMANA 10 · INICIO =====
+/**
+ * Mapa de butacas.
+ *
+ * La pantalla conserva la selección (con su límite y el antirrebote tras
+ * arrastrar) y compone el mapa con los componentes de `components/seatmap`:
+ * escenario, leyenda, butaca, resumen de reserva y estados previos.
+ */
 export function SeatMapScreen(): React.JSX.Element {
   const route = useRoute<SeatMapScreenProps['route']>();
   const insets = useSafeAreaInsets();
@@ -56,8 +65,7 @@ export function SeatMapScreen(): React.JSX.Element {
     return Array.from(grouped.entries());
   }, [seats]);
 
-  const contentWidth = ROW_LABEL_WIDTH + layout.seatsPerRow * (SEAT_SIZE + SEAT_GAP) + AISLE_EXTRA;
-  const contentHeight = STAGE_HEIGHT + layout.rows * ROW_HEIGHT + SPACING.sm;
+  const { contentWidth, contentHeight } = getSeatMapMetrics(layout);
 
   const handleMapDragEnd = useCallback((): void => {
     dragEndedAt.current = Date.now();
@@ -108,49 +116,32 @@ export function SeatMapScreen(): React.JSX.Element {
     );
     setSelectedIds([]);
   }, [item, selectedIds]);
+  // ===== SEMANA 10 · FIN =====
 
+  // ===== SEMANA 05 · INICIO =====
   if (isLoading) {
-    return (
-      <View style={styles.screen}>
-        <ScreenState
-          loading
-          title="Preparando el mapa"
-          message="Consultando la sala y las butacas disponibles."
-        />
-      </View>
-    );
+    return <SeatMapStates status="loading" onRetry={() => void refetch()} />;
   }
 
   if (isError) {
     return (
-      <View style={styles.screen}>
-        <ScreenState
-          icon="cloud-offline-outline"
-          title="No se pudo cargar la sala"
-          message={getApiErrorMessage(error)}
-          actionLabel="Reintentar"
-          onAction={() => {
-            void refetch();
-          }}
-        />
-      </View>
+      <SeatMapStates
+        status="error"
+        message={getApiErrorMessage(error)}
+        onRetry={() => void refetch()}
+      />
     );
   }
 
   if (!item) {
-    return (
-      <View style={styles.screen}>
-        <ScreenState
-          icon="ticket-outline"
-          title="Función no encontrada"
-          message="La obra que intentas reservar ya no está en cartelera."
-        />
-      </View>
-    );
+    return <SeatMapStates status="missing" onRetry={() => void refetch()} />;
   }
+  // ===== SEMANA 05 · FIN =====
 
+  // ===== SEMANA 10 · INICIO =====
   const total = selectedIds.length * item.price;
   const capacity = getHallCapacity(item.hall);
+  const aisleNumber = Math.ceil(layout.seatsPerRow / 2) + 1;
 
   return (
     <View style={styles.screen}>
@@ -164,234 +155,39 @@ export function SeatMapScreen(): React.JSX.Element {
         </Text>
       </View>
 
-      <View style={styles.legendRow}>
-        <View style={styles.legendItem}>
-          <View style={[styles.legendDot, styles.legendAvailable]} />
-          <Text style={styles.legendText}>Disponible</Text>
-        </View>
-        <View style={styles.legendItem}>
-          <View style={[styles.legendDot, styles.legendSelected]} />
-          <Text style={styles.legendText}>Seleccionada</Text>
-        </View>
-        <View style={styles.legendItem}>
-          <View style={[styles.legendDot, styles.legendOccupied]} />
-          <Text style={styles.legendText}>Ocupada</Text>
-        </View>
-      </View>
+      <SeatLegend />
 
       <SeatMapViewport
         contentWidth={contentWidth}
         contentHeight={contentHeight}
         onDragEnd={handleMapDragEnd}
       >
-        <Text style={styles.stageLabel}>ESCENARIO</Text>
+        <Stage />
 
         {rows.map(([row, rowSeats]) => (
           <View key={row} style={styles.seatRow}>
             <Text style={styles.rowLabel}>{row}</Text>
 
-            {rowSeats.map((seat) => {
-              const isSelected = selectedIdSet.has(seat.id);
-              const isOccupied = seat.status === 'occupied';
-              const isAisleSeat = seat.number === Math.ceil(layout.seatsPerRow / 2) + 1;
-
-              return (
-                <Pressable
-                  key={seat.id}
-                  onPress={() => handleSeatPress(seat)}
-                  disabled={isOccupied}
-                  style={[
-                    styles.seat,
-                    isAisleSeat && styles.aisleSeat,
-                    isOccupied && styles.seatOccupied,
-                    isSelected && styles.seatSelected,
-                  ]}
-                  accessibilityRole="button"
-                  accessibilityState={{
-                    disabled: isOccupied,
-                    selected: isSelected,
-                  }}
-                  accessibilityLabel={`Fila ${seat.row}, butaca ${seat.number}${
-                    isOccupied ? ', ocupada' : isSelected ? ', seleccionada' : ', disponible'
-                  }`}
-                >
-                  <Text
-                    style={[
-                      styles.seatNumber,
-                      isOccupied && styles.seatNumberOccupied,
-                      isSelected && styles.seatNumberSelected,
-                    ]}
-                  >
-                    {seat.number}
-                  </Text>
-                </Pressable>
-              );
-            })}
+            {rowSeats.map((seat) => (
+              <SeatButton
+                key={seat.id}
+                seat={seat}
+                isSelected={selectedIdSet.has(seat.id)}
+                isAisle={seat.number === aisleNumber}
+                onPress={handleSeatPress}
+              />
+            ))}
           </View>
         ))}
       </SeatMapViewport>
 
-      <View style={[styles.bottomBar, { paddingBottom: SPACING.md + insets.bottom }]}>
-        <View style={styles.summary}>
-          <Text style={styles.summaryLabel}>
-            {selectedIds.length} {selectedIds.length === 1 ? 'butaca' : 'butacas'}
-          </Text>
-          <Text style={styles.summaryTotal}>
-            ${total.toLocaleString('es-CO')} <Text style={styles.summaryCurrency}>COP</Text>
-          </Text>
-        </View>
-
-        <AnimatedButton
-          label="Confirmar"
-          onPress={handleConfirm}
-          disabled={selectedIds.length === 0}
-          accessibilityLabel="Confirmar la reserva de butacas"
-        />
-      </View>
+      <BookingSummary
+        selectedCount={selectedIds.length}
+        total={total}
+        bottomInset={insets.bottom}
+        onConfirm={handleConfirm}
+      />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-  },
-  header: {
-    paddingHorizontal: SPACING.base,
-    paddingTop: SPACING.md,
-    paddingBottom: SPACING.sm,
-    gap: SPACING.xxs,
-  },
-  title: {
-    fontSize: TYPOGRAPHY.size.lg,
-    fontWeight: TYPOGRAPHY.weight.bold,
-    color: COLORS.textPrimary,
-  },
-  subtitle: {
-    fontSize: TYPOGRAPHY.size.xs,
-    color: COLORS.textSecondary,
-  },
-  availability: {
-    fontSize: TYPOGRAPHY.size.xs,
-    fontWeight: TYPOGRAPHY.weight.semibold,
-    color: COLORS.accent,
-  },
-  legendRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: SPACING.base,
-    paddingHorizontal: SPACING.base,
-    paddingBottom: SPACING.sm,
-  },
-  legendItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: SPACING.xs,
-  },
-  legendDot: {
-    width: 10,
-    height: 10,
-    borderRadius: RADIUS.full,
-    borderWidth: 1,
-  },
-  legendAvailable: {
-    backgroundColor: COLORS.surfaceAlt,
-    borderColor: COLORS.border,
-  },
-  legendSelected: {
-    backgroundColor: COLORS.accent,
-    borderColor: COLORS.accentHover,
-  },
-  legendOccupied: {
-    backgroundColor: COLORS.borderLight,
-    borderColor: COLORS.border,
-  },
-  legendText: {
-    fontSize: TYPOGRAPHY.size.xs,
-    color: COLORS.textMuted,
-  },
-  stageLabel: {
-    width: '100%',
-    textAlign: 'center',
-    fontSize: TYPOGRAPHY.size.xs,
-    letterSpacing: TYPOGRAPHY.letterSpacing.wide,
-    color: COLORS.textMuted,
-    marginBottom: SPACING.sm,
-  },
-  seatRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    height: ROW_HEIGHT,
-  },
-  rowLabel: {
-    width: ROW_LABEL_WIDTH,
-    textAlign: 'center',
-    fontSize: TYPOGRAPHY.size.xs,
-    fontWeight: TYPOGRAPHY.weight.semibold,
-    color: COLORS.textMuted,
-  },
-  seat: {
-    width: SEAT_SIZE,
-    height: SEAT_SIZE,
-    borderRadius: RADIUS.xs,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    backgroundColor: COLORS.surfaceAlt,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: SEAT_GAP,
-  },
-  aisleSeat: {
-    marginLeft: SPACING.md,
-  },
-  seatOccupied: {
-    backgroundColor: COLORS.borderLight,
-    borderColor: COLORS.border,
-    opacity: 0.45,
-  },
-  seatSelected: {
-    backgroundColor: COLORS.accent,
-    borderColor: COLORS.accentHover,
-  },
-  seatNumber: {
-    fontSize: 8,
-    fontWeight: TYPOGRAPHY.weight.semibold,
-    color: COLORS.textSecondary,
-  },
-  seatNumberOccupied: {
-    color: COLORS.textMuted,
-  },
-  seatNumberSelected: {
-    color: COLORS.background,
-    fontWeight: TYPOGRAPHY.weight.bold,
-  },
-  bottomBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: SPACING.base,
-    paddingTop: SPACING.md,
-    backgroundColor: COLORS.surface,
-    borderTopWidth: 1,
-    borderTopColor: COLORS.border,
-    gap: SPACING.md,
-  },
-  summary: {
-    flex: 1,
-  },
-  summaryLabel: {
-    fontSize: TYPOGRAPHY.size.xs,
-    color: COLORS.textMuted,
-  },
-  summaryTotal: {
-    fontSize: TYPOGRAPHY.size.lg,
-    fontWeight: TYPOGRAPHY.weight.bold,
-    color: COLORS.accent,
-  },
-  summaryCurrency: {
-    fontSize: TYPOGRAPHY.size.xs,
-    color: COLORS.textSecondary,
-  },
-});
 // ===== SEMANA 10 · FIN =====
