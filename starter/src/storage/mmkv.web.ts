@@ -1,4 +1,6 @@
 // ===== SEMANA 07 · INICIO =====
+import { logger } from '../utils/logger';
+
 interface WebMMKV {
   getString: (key: string) => string | undefined;
   getBoolean: (key: string) => boolean | undefined;
@@ -33,7 +35,10 @@ function createWebMMKV(id: string): WebMMKV {
   const write = (key: string, value: string): void => {
     try {
       store?.setItem(prefix + key, value);
-    } catch {}
+    } catch (error) {
+      // localStorage lleno o bloqueado: la preferencia se queda solo en memoria.
+      logger.debug('No se pudo guardar la preferencia', key, error);
+    }
   };
 
   return {
@@ -55,7 +60,9 @@ function createWebMMKV(id: string): WebMMKV {
     remove: (key) => {
       try {
         store?.removeItem(prefix + key);
-      } catch {}
+      } catch (error) {
+        logger.debug('No se pudo borrar la preferencia', key, error);
+      }
     },
     clearAll: () => {
       try {
@@ -68,7 +75,9 @@ function createWebMMKV(id: string): WebMMKV {
         );
 
         keys.forEach((key) => store.removeItem(key));
-      } catch {}
+      } catch (error) {
+        logger.debug('No se pudo vaciar el almacenamiento de preferencias', error);
+      }
     },
   };
 }

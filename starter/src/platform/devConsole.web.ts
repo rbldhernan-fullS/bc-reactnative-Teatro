@@ -29,10 +29,8 @@ if (__DEV__) {
   if (!host.__rnwTouchWarningFiltered) {
     host.__rnwTouchWarningFiltered = true;
 
-    // eslint-disable-next-line no-console
     const originalWarn = console.warn.bind(console);
 
-    // eslint-disable-next-line no-console
     console.warn = (...args: unknown[]): void => {
       const [first] = args;
 

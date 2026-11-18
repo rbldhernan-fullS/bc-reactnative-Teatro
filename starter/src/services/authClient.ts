@@ -6,6 +6,7 @@ import type { InternalAxiosRequestConfig } from 'axios';
 // ===== SEMANA 08 · INICIO =====
 import type { AuthTokens } from '../types';
 import { env } from '../config/env';
+import { logger } from '../utils/logger';
 import { clearTokens, getAccessToken, getRefreshToken, saveTokens } from './tokenService';
 
 export const AUTH_BASE_URL = env.authUrl;
@@ -110,7 +111,10 @@ authClient.interceptors.response.use(
     } catch (refreshError) {
       try {
         await clearTokens();
-      } catch {}
+      } catch (clearError) {
+        // Si el almacenamiento falla, igualmente cerramos sesión en memoria.
+        logger.debug('No se pudieron borrar los tokens caducados', clearError);
+      }
 
       authFailureListener?.();
 

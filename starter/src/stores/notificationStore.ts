@@ -20,6 +20,7 @@ import {
   type NotificationPermissionState,
 } from '../services/notifications';
 import { useReminderStore } from './reminderStore';
+import { logger } from '../utils/logger';
 import type { NotificationPayload } from '../types';
 
 export interface ReceivedNotification {
@@ -134,7 +135,10 @@ export const useNotificationStore = create<NotificationState>()((set) => ({
   openSystemSettings: async (): Promise<void> => {
     try {
       await Linking.openSettings();
-    } catch {}
+    } catch (error) {
+      // En web no hay ajustes de aplicación: solo se anota en modo detallado.
+      logger.debug('No se pudieron abrir los ajustes del sistema', error);
+    }
   },
 
   markReceived: (notification: Notifications.Notification): void => {

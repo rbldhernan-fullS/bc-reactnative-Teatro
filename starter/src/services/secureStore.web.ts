@@ -1,4 +1,6 @@
 // ===== SEMANA 07 · INICIO =====
+import { logger } from '../utils/logger';
+
 const PREFIX = 'teatro-secure:';
 
 function getLocalStorage(): Storage | null {
@@ -24,12 +26,17 @@ export async function getItemAsync(key: string): Promise<string | null> {
 export async function setItemAsync(key: string, value: string): Promise<void> {
   try {
     getLocalStorage()?.setItem(PREFIX + key, value);
-  } catch {}
+  } catch (error) {
+    // Cuota llena o almacenamiento bloqueado: la sesión sigue en memoria.
+    logger.debug('No se pudo guardar el valor seguro', key, error);
+  }
 }
 
 export async function deleteItemAsync(key: string): Promise<void> {
   try {
     getLocalStorage()?.removeItem(PREFIX + key);
-  } catch {}
+  } catch (error) {
+    logger.debug('No se pudo borrar el valor seguro', key, error);
+  }
 }
 // ===== SEMANA 07 · FIN =====

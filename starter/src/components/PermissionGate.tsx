@@ -7,7 +7,9 @@ import { Ionicons } from '@expo/vector-icons';
 // ===== SEMANA 03 · FIN =====
 // ===== SEMANA 11 · INICIO =====
 import { COLORS, RADIUS, SIZES, SPACING, TYPOGRAPHY } from '../theme';
-
+// ===== SEMANA 12 · INICIO =====
+import { logger } from '../utils/logger';
+// ===== SEMANA 12 · FIN =====
 export type PermissionStatus = 'granted' | 'denied' | 'undetermined';
 
 export interface PermissionSnapshot {
@@ -47,7 +49,10 @@ export function PermissionGate({
   async function handleOpenSettings(): Promise<void> {
     try {
       await Linking.openSettings();
-    } catch {}
+    } catch (error) {
+      // En web no existe una pantalla de ajustes del sistema: es esperado.
+      logger.debug('No se pudieron abrir los ajustes del sistema', error);
+    }
   }
 
   return (

@@ -16,6 +16,9 @@ import type { CreatePlayPayload, Item, PlaysWithSource, UpdatePlayPayload } from
 // ===== SEMANA 05 · INICIO =====
 import { isNotFoundError } from '../services/api';
 // ===== SEMANA 05 · FIN =====
+// ===== SEMANA 12 · INICIO =====
+import { logger } from '../utils/logger';
+// ===== SEMANA 12 · FIN =====
 
 // ===== SEMANA 05 · INICIO =====
 export const PLAYS_QUERY_KEY = ['plays'] as const;
@@ -29,7 +32,10 @@ export function usePlays() {
 
         try {
           await writePlaysCache(plays);
-        } catch {}
+        } catch (cacheError) {
+          // La caché es una mejora opcional: si falla, la lista ya está en memoria.
+          logger.debug('No se pudo guardar la caché de la cartelera', cacheError);
+        }
 
         return { plays, source: 'network' };
       } catch (error) {

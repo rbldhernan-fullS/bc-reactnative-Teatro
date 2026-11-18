@@ -21,6 +21,7 @@ import {
   setTokenRefreshListener,
 } from '../services/authClient';
 import { clearTokens, getAccessToken, getRefreshToken, saveTokens } from '../services/tokenService';
+import { logger } from '../utils/logger';
 import type { AuthUser, LoginCredentials, RegisterData } from '../types';
 
 export interface AuthState {
@@ -110,7 +111,10 @@ export const useAuthStore = create<AuthState>()(
 
         try {
           await clearTokens();
-        } catch {}
+        } catch (error) {
+          // El cierre de sesión debe completarse aunque falle el almacenamiento.
+          logger.debug('No se pudieron borrar los tokens al cerrar sesión', error);
+        }
 
         set({
           user: null,

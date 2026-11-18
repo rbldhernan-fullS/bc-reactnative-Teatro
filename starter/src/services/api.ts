@@ -3,6 +3,7 @@ import axios from 'axios';
 // ===== SEMANA 05 · FIN =====
 // ===== SEMANA 12 · INICIO =====
 import { env } from '../config/env';
+import { logger } from '../utils/logger';
 // ===== SEMANA 12 · FIN =====
 
 // ===== SEMANA 05 · INICIO =====
@@ -27,11 +28,11 @@ apiClient.interceptors.response.use(
       const url = error.config?.url;
 
       // Un 404 es un caso de negocio (la obra no existe), no una caída de la
-      // API: se registra como aviso para no ensuciar la consola con errores (E‑07).
+      // API: se registra como detalle para no ensuciar la consola (E‑07).
       if (status === 404) {
-        console.warn('[API] recurso no encontrado', method, url);
+        logger.debug('[API] recurso no encontrado', method, url);
       } else {
-        console.warn('[API] error de red', status ?? 'sin respuesta', method, url);
+        logger.warn('[API] error de red', status ?? 'sin respuesta', method, url);
       }
     }
 

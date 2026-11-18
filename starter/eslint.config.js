@@ -63,5 +63,13 @@ module.exports = tseslint.config(
       '@typescript-eslint/ban-ts-comment': 'warn',
     },
   },
+  {
+    // Única capa autorizada a escribir en la consola: el logger centraliza la
+    // salida y `devConsole.web.ts` es el filtro que la limpia en desarrollo.
+    files: ['src/utils/logger.ts', 'src/platform/devConsole.web.ts'],
+    rules: {
+      'no-console': 'off',
+    },
+  },
   prettier,
 );

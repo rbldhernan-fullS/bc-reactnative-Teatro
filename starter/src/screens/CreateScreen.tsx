@@ -17,6 +17,7 @@ import { useCreatePlay } from '../hooks/usePlays';
 // ===== SEMANA 05 · FIN =====
 // ===== SEMANA 12 · INICIO =====
 import { useNotifications } from '../hooks/useNotifications';
+import { logger } from '../utils/logger';
 // ===== SEMANA 12 · FIN =====
 // ===== SEMANA 06 · INICIO =====
 import {
@@ -86,7 +87,10 @@ export function CreateScreen(): React.JSX.Element {
       // ===== SEMANA 06 · INICIO =====
       navigation.goBack();
       // ===== SEMANA 06 · FIN =====
-    } catch {}
+    } catch (error) {
+      // El formulario ya muestra el error de la mutación; aquí solo se registra.
+      logger.warn('No se pudo publicar la obra', error);
+    }
   }
 
   // ===== SEMANA 06 · INICIO =====

@@ -31,6 +31,9 @@ import type { LoginFormValues } from '../schemas/authSchema';
 import { useAuthStore } from '../stores/authStore';
 import { COLORS, RADIUS, SIZES, SPACING, TYPOGRAPHY } from '../theme';
 import type { LoginScreenProps } from '../navigation/types';
+// ===== SEMANA 12 · INICIO =====
+import { logger } from '../utils/logger';
+// ===== SEMANA 12 · FIN =====
 
 const DEMO_USERNAME = 'emilys';
 const DEMO_PASSWORD = 'emilyspass';
@@ -59,7 +62,10 @@ export function LoginScreen({ navigation }: LoginScreenProps): React.JSX.Element
   const onSubmit = async (values: LoginFormValues): Promise<void> => {
     try {
       await login(values);
-    } catch {}
+    } catch (error) {
+      // El store ya publica el mensaje en `error`; aquí solo se registra.
+      logger.warn('No se pudo iniciar sesión', error);
+    }
   };
 
   const handleFillDemo = useCallback((): void => {

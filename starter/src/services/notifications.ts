@@ -5,6 +5,7 @@ import { Platform } from 'react-native';
 import Constants from 'expo-constants';
 // ===== SEMANA 05 · FIN =====
 // ===== SEMANA 12 · INICIO =====
+import { logger } from '../utils/logger';
 import * as Notifications from './notificationScheduler';
 
 import type {
@@ -127,7 +128,10 @@ export async function configureNotificationChannel(): Promise<void> {
       vibrationPattern: [0, 250, 250, 250],
       sound: 'default',
     });
-  } catch {}
+  } catch (error) {
+    // Solo Android usa canales; en web/iOS el fallo no impide programar nada.
+    logger.warn('No se pudo preparar el canal de notificaciones', error);
+  }
 }
 
 export function getShowDate(play: Item): Date | null {

@@ -15,6 +15,7 @@ import { ScreenState } from '../components/ScreenState';
 // ===== SEMANA 06 · FIN =====
 // ===== SEMANA 12 · INICIO =====
 import { useNotifications } from '../hooks/useNotifications';
+import { logger } from '../utils/logger';
 // ===== SEMANA 12 · FIN =====
 // ===== SEMANA 06 · INICIO =====
 import { usePlayById, useUpdatePlay } from '../hooks/usePlays';
@@ -69,7 +70,10 @@ export function EditScreen(): React.JSX.Element {
       // ===== SEMANA 12 · FIN =====
 
       navigation.goBack();
-    } catch {}
+    } catch (error) {
+      // El formulario ya muestra el error de la mutación; aquí solo se registra.
+      logger.warn('No se pudo actualizar la obra', error);
+    }
   }
 
   if (isLoading) {
