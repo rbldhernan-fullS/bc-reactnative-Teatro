@@ -1,26 +1,34 @@
 // ===== SEMANA 01 · INICIO =====
 import React, { useCallback, useMemo } from 'react';
-import { View, Text, FlatList, Image, Pressable, StyleSheet } from 'react-native';
+import { View, Text, FlatList, Pressable } from 'react-native';
 import type { ListRenderItem } from 'react-native';
 // ===== SEMANA 01 · FIN =====
 // ===== SEMANA 03 · INICIO =====
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
-import { Ionicons } from '@expo/vector-icons';
 // ===== SEMANA 03 · FIN =====
 // ===== SEMANA 04 · INICIO =====
 import type { Item } from '../../../types';
+import type { SavedScreenNavigationProp } from '../../../navigation/types';
+import { useSavedStore } from '../../../stores/savedStore';
+import { SavedCard } from '../components/SavedCard';
+import { SavedEmptyState } from '../components/SavedEmptyState';
+import { styles } from '../styles';
 // ===== SEMANA 04 · FIN =====
 // ===== SEMANA 05 · INICIO =====
 import { ScreenState } from '../../../components/ui/ScreenState';
 import { usePlays } from '../../plays/hooks/usePlays';
 import { getApiErrorMessage } from '../../../services/http';
 // ===== SEMANA 05 · FIN =====
-// ===== SEMANA 04 · INICIO =====
-import { COLORS, TYPOGRAPHY, SPACING, RADIUS, SIZES } from '../../../theme';
-import type { SavedScreenNavigationProp } from '../../../navigation/types';
-import { useSavedStore } from '../../../stores/savedStore';
 
+// ===== SEMANA 04 · INICIO =====
+/**
+ * Obras guardadas.
+ *
+ * La pantalla filtra la cartelera con los ids del store y compone la lista con
+ * `SavedCard` y `SavedEmptyState`; el detalle se abre en la pestaña Cartelera
+ * para no duplicar la ficha (E‑09).
+ */
 export function SavedScreen(): React.JSX.Element {
   const navigation = useNavigation<SavedScreenNavigationProp>();
 
@@ -79,87 +87,11 @@ export function SavedScreen(): React.JSX.Element {
   }, [navigation]);
 
   const renderSavedItem: ListRenderItem<Item> = useCallback(
-    ({ item }) => (
-      <View style={styles.card}>
-        <Pressable
-          style={({ pressed }) => [styles.cardPressTarget, pressed && styles.cardPressed]}
-          onPress={() => handleItemPress(item)}
-          accessibilityRole="button"
-          accessibilityLabel={`Ver detalles de ${item.name}`}
-        >
-          {/* ===== SEMANA 12 · INICIO ===== */}
-          <Image source={{ uri: item.imageUri }} style={styles.cardImage} resizeMode="cover" />
-          {/* ===== SEMANA 12 · FIN ===== */}
-
-          <View style={styles.cardContent}>
-            <View style={styles.cardHeaderRow}>
-              {/* ===== SEMANA 12 · INICIO ===== */}
-              <View style={styles.genreBadge}>
-                <Text style={styles.genreBadgeText}>{item.genre}</Text>
-              </View>
-              {/* ===== SEMANA 12 · FIN ===== */}
-              <View style={styles.removeButtonSlot} />
-            </View>
-
-            {/* ===== SEMANA 12 · INICIO ===== */}
-            <Text style={styles.itemName} numberOfLines={1}>
-              {item.name}
-            </Text>
-            <Text style={styles.itemSubtitle} numberOfLines={1}>
-              {item.subtitle}
-            </Text>
-
-            <View style={styles.metaRow}>
-              <Text style={styles.metaText}>🏛 {item.hall}</Text>
-              <Text style={styles.metaDot}>•</Text>
-              <Text style={styles.metaText}>📅 {item.date}</Text>
-            </View>
-
-            <View style={styles.cardFooter}>
-              <Text style={styles.ratingText}>★ {item.rating.toFixed(1)}</Text>
-              <Text style={styles.priceText}>${item.price.toLocaleString('es-CO')} COP</Text>
-            </View>
-            {/* ===== SEMANA 12 · FIN ===== */}
-          </View>
-        </Pressable>
-
-        {/* Hermano del área pulsable: evita el <button> anidado (E‑01). */}
-        <Pressable
-          onPress={() => handleRemovePress(item.id)}
-          style={({ pressed }) => [styles.removeButton, pressed && styles.removeButtonPressed]}
-          hitSlop={8}
-          accessibilityRole="button"
-          accessibilityLabel={`Quitar ${item.name} de guardados`}
-        >
-          <Ionicons name="bookmark" size={SIZES.iconMd} color={COLORS.accent} />
-        </Pressable>
-      </View>
-    ),
+    ({ item }) => <SavedCard item={item} onPress={handleItemPress} onRemove={handleRemovePress} />,
     [handleItemPress, handleRemovePress],
   );
 
   const renderSeparator = useCallback(() => <View style={styles.separator} />, []);
-
-  const renderEmpty = useCallback(
-    () => (
-      <View style={styles.emptyContainer}>
-        <Ionicons name="bookmark-outline" size={SIZES.iconXl} color={COLORS.textMuted} />
-        <Text style={styles.emptyTitle}>Sin obras guardadas</Text>
-        <Text style={styles.emptySubtitle}>
-          Usa el bookmark de la cartelera o del detalle para guardar una obra y encontrarla aquí.
-        </Text>
-        <Pressable
-          style={({ pressed }) => [styles.emptyButton, pressed && styles.emptyButtonPressed]}
-          onPress={handleEmptyAction}
-          accessibilityRole="button"
-          accessibilityLabel="Ver la cartelera de obras"
-        >
-          <Text style={styles.emptyButtonText}>Ver cartelera</Text>
-        </Pressable>
-      </View>
-    ),
-    [handleEmptyAction],
-  );
 
   // ===== SEMANA 05 · INICIO =====
   if (savedIds.length > 0 && isLoading) {
@@ -230,7 +162,7 @@ export function SavedScreen(): React.JSX.Element {
           data={savedItems}
           keyExtractor={(item) => item.id}
           renderItem={renderSavedItem}
-          ListEmptyComponent={renderEmpty}
+          ListEmptyComponent={<SavedEmptyState onShowCartelera={handleEmptyAction} />}
           ItemSeparatorComponent={renderSeparator}
           contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
@@ -241,210 +173,4 @@ export function SavedScreen(): React.JSX.Element {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-  },
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-  },
-  header: {
-    paddingHorizontal: SPACING.base,
-    paddingTop: SPACING.base,
-    paddingBottom: SPACING.md,
-    backgroundColor: COLORS.surface,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
-  },
-  headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: SPACING.md,
-  },
-  headerTextBlock: {
-    flex: 1,
-  },
-  headerTitle: {
-    fontSize: TYPOGRAPHY.size.xxl,
-    fontWeight: TYPOGRAPHY.weight.bold,
-    color: COLORS.accent,
-  },
-  headerSubtitle: {
-    fontSize: TYPOGRAPHY.size.sm,
-    color: COLORS.textSecondary,
-    marginTop: SPACING.xxs,
-  },
-  clearButton: {
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.xs,
-    borderRadius: RADIUS.full,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    backgroundColor: COLORS.surfaceAlt,
-  },
-  clearButtonPressed: {
-    opacity: 0.7,
-  },
-  clearButtonText: {
-    fontSize: TYPOGRAPHY.size.xs,
-    fontWeight: TYPOGRAPHY.weight.semibold,
-    color: COLORS.textSecondary,
-  },
-  offlineBanner: {
-    paddingHorizontal: SPACING.base,
-    paddingVertical: SPACING.sm,
-    backgroundColor: COLORS.surfaceWarm,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.warning,
-  },
-  offlineText: {
-    fontSize: TYPOGRAPHY.size.xs,
-    fontWeight: TYPOGRAPHY.weight.semibold,
-    color: COLORS.warning,
-  },
-  listContent: {
-    padding: SPACING.base,
-    flexGrow: 1,
-  },
-  separator: {
-    height: SPACING.md,
-  },
-  card: {
-    position: 'relative',
-    backgroundColor: COLORS.surface,
-    borderRadius: RADIUS.lg,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    overflow: 'hidden',
-  },
-  cardPressTarget: {
-    flexDirection: 'row',
-  },
-  cardPressed: {
-    backgroundColor: COLORS.surfaceAlt,
-    opacity: 0.9,
-  },
-  cardImage: {
-    width: SIZES.favoriteImageWidth,
-    height: SIZES.favoriteImageHeight,
-    backgroundColor: COLORS.borderLight,
-  },
-  cardContent: {
-    flex: 1,
-    padding: SPACING.md,
-    justifyContent: 'space-between',
-  },
-  cardHeaderRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: SPACING.xs,
-  },
-  genreBadge: {
-    backgroundColor: COLORS.accentDim,
-    paddingHorizontal: SPACING.sm,
-    paddingVertical: SPACING.xxs,
-    borderRadius: RADIUS.full,
-  },
-  genreBadgeText: {
-    color: COLORS.accent,
-    fontSize: TYPOGRAPHY.size.xs,
-    fontWeight: TYPOGRAPHY.weight.semibold,
-  },
-  removeButton: {
-    position: 'absolute',
-    top: SPACING.md,
-    right: SPACING.md,
-    padding: SPACING.xxs,
-    borderRadius: RADIUS.full,
-  },
-  removeButtonSlot: {
-    width: SIZES.iconMd + SPACING.xxs * 2,
-  },
-  removeButtonPressed: {
-    backgroundColor: COLORS.surfaceAlt,
-    opacity: 0.7,
-  },
-  itemName: {
-    fontSize: TYPOGRAPHY.size.md,
-    fontWeight: TYPOGRAPHY.weight.bold,
-    color: COLORS.textPrimary,
-  },
-  itemSubtitle: {
-    fontSize: TYPOGRAPHY.size.xs,
-    color: COLORS.textSecondary,
-    marginTop: SPACING.xxs,
-  },
-  metaRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: SPACING.xs,
-    marginVertical: SPACING.xs,
-  },
-  metaText: {
-    fontSize: TYPOGRAPHY.size.xs,
-    color: COLORS.textMuted,
-  },
-  metaDot: {
-    fontSize: TYPOGRAPHY.size.xs,
-    color: COLORS.textMuted,
-  },
-  cardFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: SPACING.xs,
-  },
-  ratingText: {
-    color: COLORS.accent,
-    fontSize: TYPOGRAPHY.size.xs,
-    fontWeight: TYPOGRAPHY.weight.bold,
-  },
-  priceText: {
-    color: COLORS.textPrimary,
-    fontSize: TYPOGRAPHY.size.sm,
-    fontWeight: TYPOGRAPHY.weight.bold,
-  },
-  emptyContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: SPACING.xxxl,
-    paddingHorizontal: SPACING.xl,
-  },
-  emptyTitle: {
-    fontSize: TYPOGRAPHY.size.lg,
-    fontWeight: TYPOGRAPHY.weight.bold,
-    color: COLORS.textPrimary,
-    marginTop: SPACING.md,
-    marginBottom: SPACING.xs,
-  },
-  emptySubtitle: {
-    fontSize: TYPOGRAPHY.size.sm,
-    color: COLORS.textMuted,
-    textAlign: 'center',
-    lineHeight: TYPOGRAPHY.lineHeight.base,
-  },
-  emptyButton: {
-    marginTop: SPACING.lg,
-    paddingHorizontal: SPACING.lg,
-    paddingVertical: SPACING.sm,
-    borderRadius: RADIUS.full,
-    borderWidth: 1,
-    borderColor: COLORS.accent,
-    backgroundColor: COLORS.accentDim,
-  },
-  emptyButtonPressed: {
-    opacity: 0.7,
-  },
-  emptyButtonText: {
-    fontSize: TYPOGRAPHY.size.sm,
-    fontWeight: TYPOGRAPHY.weight.semibold,
-    color: COLORS.accent,
-  },
-});
 // ===== SEMANA 04 · FIN =====
