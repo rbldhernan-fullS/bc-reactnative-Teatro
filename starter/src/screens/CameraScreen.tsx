@@ -173,7 +173,7 @@ export function CameraScreen(): React.JSX.Element {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#000000',
+    backgroundColor: COLORS.backdrop,
   },
   camera: {
     position: 'absolute',

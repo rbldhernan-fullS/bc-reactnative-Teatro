@@ -263,7 +263,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     gap: SPACING.sm,
-    backgroundColor: '#3a1518',
+    backgroundColor: COLORS.dangerSoft,
     borderWidth: 1,
     borderColor: COLORS.error,
     borderRadius: RADIUS.md,

@@ -41,7 +41,7 @@ export function ProgressBar({ progress, label, caption }: ProgressBarProps): Rea
     backgroundColor: interpolateColor(
       progressValue.value,
       [0, 0.6, 1],
-      [COLORS.success, '#facc15', COLORS.error],
+      [COLORS.success, COLORS.star, COLORS.error],
     ),
   }));
   // ===== SEMANA 10 · FIN =====

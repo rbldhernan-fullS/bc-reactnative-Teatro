@@ -14,12 +14,21 @@ export const COLORS = {
   accent: '#d4a24c',
   accentDim: '#d4a24c33',
   accentHover: '#e5b565',
+  star: '#facc15',
+  backdrop: '#000000',
 
   success: '#3fb950',
   warning: '#f0883e',
   error: '#f85149',
   errorDim: '#f8514926',
   info: '#58a6ff',
+
+  // Fondos suaves de estado (aviso, error, correcto). Antes eran literales
+  // hex repetidos en seis pantallas; ahora el tema es la única fuente.
+  surfaceWarm: '#3a2210',
+  dangerSoft: '#3a1518',
+  successSoft: '#1f3323',
+  errorSoft: '#3a1a1a',
 
   overlay: 'rgba(20, 9, 12, 0.75)',
 } as const;

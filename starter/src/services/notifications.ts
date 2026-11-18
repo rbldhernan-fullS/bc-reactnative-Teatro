@@ -5,6 +5,7 @@ import { Platform } from 'react-native';
 import Constants from 'expo-constants';
 // ===== SEMANA 05 · FIN =====
 // ===== SEMANA 12 · INICIO =====
+import { COLORS } from '../theme';
 import { logger } from '../utils/logger';
 import * as Notifications from './notificationScheduler';
 
@@ -124,7 +125,7 @@ export async function configureNotificationChannel(): Promise<void> {
       name: 'Funciones del Teatro Colón',
       description: 'Recordatorios y novedades de la cartelera.',
       importance: Notifications.AndroidImportance.HIGH,
-      lightColor: '#d4a24c',
+      lightColor: COLORS.accent,
       vibrationPattern: [0, 250, 250, 250],
       sound: 'default',
     });

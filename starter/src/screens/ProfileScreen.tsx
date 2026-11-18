@@ -357,7 +357,7 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.md,
   },
   logoutButtonPressed: {
-    backgroundColor: '#3a1518',
+    backgroundColor: COLORS.dangerSoft,
     opacity: 0.9,
   },
   logoutText: {

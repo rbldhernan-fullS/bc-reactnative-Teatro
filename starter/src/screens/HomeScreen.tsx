@@ -710,7 +710,7 @@ const styles = StyleSheet.create({
     gap: SPACING.sm,
     paddingHorizontal: SPACING.base,
     paddingVertical: SPACING.sm,
-    backgroundColor: '#3a2210',
+    backgroundColor: COLORS.surfaceWarm,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.warning,
   },

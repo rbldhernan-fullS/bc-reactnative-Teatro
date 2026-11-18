@@ -938,7 +938,7 @@ const styles = StyleSheet.create({
   },
   statusSaved: {
     color: COLORS.success,
-    backgroundColor: '#1f3323',
+    backgroundColor: COLORS.successSoft,
   },
   statusEmpty: {
     color: COLORS.textMuted,
@@ -946,7 +946,7 @@ const styles = StyleSheet.create({
   },
   statusDenied: {
     color: COLORS.error,
-    backgroundColor: '#3a1a1a',
+    backgroundColor: COLORS.errorSoft,
   },
   notificationCard: {
     backgroundColor: COLORS.surface,
