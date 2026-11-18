@@ -7,14 +7,14 @@ import {
   fetchPlayById,
   fetchPlays,
   updatePlay,
-} from '../services/theatreApi';
+} from '../services/playsApi';
 // ===== SEMANA 05 · FIN =====
 // ===== SEMANA 07 · INICIO =====
 import { readPlaysCache, writePlaysCache } from '../storage/playsCache';
 import type { CreatePlayPayload, Item, PlaysWithSource, UpdatePlayPayload } from '../types';
 // ===== SEMANA 07 · FIN =====
 // ===== SEMANA 05 · INICIO =====
-import { isNotFoundError } from '../services/api';
+import { isNotFoundError } from '../services/http';
 // ===== SEMANA 05 · FIN =====
 // ===== SEMANA 12 · INICIO =====
 import { logger } from '../utils/logger';

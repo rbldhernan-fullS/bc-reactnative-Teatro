@@ -33,7 +33,7 @@ import {
 import { POSTER_DRAFT_ID, usePosterStore } from '../stores/posterStore';
 // ===== SEMANA 11 · FIN =====
 // ===== SEMANA 05 · INICIO =====
-import { getApiErrorMessage } from '../services/api';
+import { getApiErrorMessage } from '../services/http';
 // ===== SEMANA 05 · FIN =====
 // ===== SEMANA 06 · INICIO =====
 import { COLORS, SPACING } from '../theme';

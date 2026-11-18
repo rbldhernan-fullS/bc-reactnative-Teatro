@@ -13,13 +13,11 @@ import {
   getProfile,
   isUnauthorizedError,
   login as loginRequest,
-  register as registerRequest,
-} from '../services/authService';
-import {
   refreshAuthTokens,
+  register as registerRequest,
   setAuthFailureListener,
   setTokenRefreshListener,
-} from '../services/authClient';
+} from '../services/authApi';
 import { clearTokens, getAccessToken, getRefreshToken, saveTokens } from '../services/tokenService';
 import { logger } from '../utils/logger';
 import type { AuthUser, LoginCredentials, RegisterData } from '../types';

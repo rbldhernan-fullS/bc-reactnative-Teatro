@@ -47,7 +47,7 @@ import { usePlays } from '../hooks/usePlays';
 import { usePreferences } from '../hooks/usePreferences';
 // ===== SEMANA 07 · FIN =====
 // ===== SEMANA 05 · INICIO =====
-import { getApiErrorMessage } from '../services/api';
+import { getApiErrorMessage } from '../services/http';
 // ===== SEMANA 05 · FIN =====
 // ===== SEMANA 04 · INICIO =====
 import { useSavedStore } from '../stores/savedStore';

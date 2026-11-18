@@ -14,7 +14,7 @@ import type { Item } from '../types';
 // ===== SEMANA 05 · INICIO =====
 import { ScreenState } from '../components/ScreenState';
 import { usePlays } from '../hooks/usePlays';
-import { getApiErrorMessage } from '../services/api';
+import { getApiErrorMessage } from '../services/http';
 // ===== SEMANA 05 · FIN =====
 // ===== SEMANA 04 · INICIO =====
 import { COLORS, TYPOGRAPHY, SPACING, RADIUS, SIZES } from '../theme';

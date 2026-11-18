@@ -14,7 +14,7 @@ import { ScreenState } from '../components/ScreenState';
 import { SeatMapViewport } from '../components/SeatMapViewport';
 import { notify } from '../platform/notify';
 import { usePlayById } from '../hooks/usePlays';
-import { getApiErrorMessage } from '../services/api';
+import { getApiErrorMessage } from '../services/http';
 import { COLORS, TYPOGRAPHY, SPACING, RADIUS } from '../theme';
 import { HALL_LAYOUT, buildSeatMap, getHallCapacity } from '../utils/theatre';
 

@@ -46,7 +46,7 @@ import { useDeletePlay } from '../hooks/usePlays';
 import { usePreferences } from '../hooks/usePreferences';
 // ===== SEMANA 12 · FIN =====
 // ===== SEMANA 05 · INICIO =====
-import { getApiErrorMessage, isNotFoundError } from '../services/api';
+import { getApiErrorMessage, isNotFoundError } from '../services/http';
 // ===== SEMANA 05 · FIN =====
 // ===== SEMANA 12 · INICIO =====
 import { formatScheduleDate } from '../services/notifications';

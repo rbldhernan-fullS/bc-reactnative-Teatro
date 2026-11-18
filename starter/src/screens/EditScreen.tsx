@@ -27,7 +27,7 @@ import {
   type PlayFormInput,
   type PlayFormValues,
 } from '../schemas/playSchema';
-import { getApiErrorMessage } from '../services/api';
+import { getApiErrorMessage } from '../services/http';
 import { COLORS, SPACING } from '../theme';
 import type { EditScreenProps, HomeStackParamList } from '../navigation/types';
 
