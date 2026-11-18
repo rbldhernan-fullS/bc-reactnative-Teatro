@@ -1,34 +1,16 @@
 // ===== SEMANA 05 · INICIO =====
 import axios from 'axios';
-import Constants from 'expo-constants';
 // ===== SEMANA 05 · FIN =====
-// ===== SEMANA 01 · INICIO =====
-import { Platform } from 'react-native';
-// ===== SEMANA 01 · FIN =====
+// ===== SEMANA 12 · INICIO =====
+import { env } from '../config/env';
+// ===== SEMANA 12 · FIN =====
 
 // ===== SEMANA 05 · INICIO =====
-const API_PORT = 3001;
-
-function resolveDevHost(): string {
-  const hostUri = Constants.expoConfig?.hostUri;
-  const host = hostUri?.split(':')[0];
-
-  if (host) {
-    return host;
-  }
-
-  return Platform.OS === 'android' ? '10.0.2.2' : 'localhost';
-}
-
-const ENV_BASE_URL = process.env.EXPO_PUBLIC_API_URL?.trim();
-
-const API_BASE_URL =
-  ENV_BASE_URL && ENV_BASE_URL.length > 0
-    ? ENV_BASE_URL.replace(/\/+$/, '')
-    : `http://${resolveDevHost()}:${API_PORT}`;
-
+// La URL base la resuelve y valida `config/env.ts`: aquí solo se consume. Con
+// eso la detección del host de Expo y el `https` obligatorio fuera de
+// desarrollo viven en un único sitio.
 export const apiClient = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: env.apiUrl,
   timeout: 10_000,
   headers: {
     'Content-Type': 'application/json',

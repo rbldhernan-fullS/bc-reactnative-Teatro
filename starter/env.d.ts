@@ -3,5 +3,7 @@
 declare const process: {
   env: {
     EXPO_PUBLIC_API_URL?: string;
+    EXPO_PUBLIC_AUTH_URL?: string;
+    EXPO_PUBLIC_VERBOSE_LOGS?: string;
   };
 };

@@ -5,9 +5,10 @@ import type { InternalAxiosRequestConfig } from 'axios';
 
 // ===== SEMANA 08 · INICIO =====
 import type { AuthTokens } from '../types';
+import { env } from '../config/env';
 import { clearTokens, getAccessToken, getRefreshToken, saveTokens } from './tokenService';
 
-export const AUTH_BASE_URL = 'https://dummyjson.com';
+export const AUTH_BASE_URL = env.authUrl;
 
 const AUTH_TIMEOUT_MS = 15_000;
 
