@@ -6,7 +6,6 @@ import {
   Platform,
   Pressable,
   ScrollView,
-  StyleSheet,
   Text,
   View,
 } from 'react-native';
@@ -30,7 +29,8 @@ import { notify } from '../../../platform/notify';
 import { registerSchema } from '../schemas/authSchema';
 import type { RegisterFormValues } from '../schemas/authSchema';
 import { useAuthStore } from '../../../stores/authStore';
-import { COLORS, RADIUS, SIZES, SPACING, TYPOGRAPHY } from '../../../theme';
+import { COLORS, SIZES } from '../../../theme';
+import { registerStyles } from '../styles';
 import type { RegisterScreenProps } from '../../../navigation/types';
 
 export function RegisterScreen({ navigation }: RegisterScreenProps): React.JSX.Element {
@@ -80,20 +80,20 @@ export function RegisterScreen({ navigation }: RegisterScreenProps): React.JSX.E
   const isBusy = isLoading || isSubmitting;
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
+    <SafeAreaView style={registerStyles.safeArea} edges={['top', 'bottom']}>
       <KeyboardAvoidingView
-        style={styles.keyboardContainer}
+        style={registerStyles.keyboardContainer}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         <ScrollView
-          style={styles.container}
-          contentContainerStyle={styles.content}
+          style={registerStyles.container}
+          contentContainerStyle={registerStyles.content}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          <View style={styles.header}>
+          <View style={registerStyles.header}>
             <Pressable
-              style={styles.backButton}
+              style={registerStyles.backButton}
               onPress={() => navigation.goBack()}
               hitSlop={8}
               accessibilityRole="button"
@@ -102,18 +102,18 @@ export function RegisterScreen({ navigation }: RegisterScreenProps): React.JSX.E
               <Ionicons name="arrow-back" size={SIZES.iconMd} color={COLORS.accent} />
             </Pressable>
 
-            <View style={styles.headerText}>
-              <Text style={styles.clubName}>Club Teatro Colón</Text>
-              <Text style={styles.title}>Crear cuenta</Text>
-              <Text style={styles.subtitle}>
+            <View style={registerStyles.headerText}>
+              <Text style={registerStyles.clubName}>Club Teatro Colón</Text>
+              <Text style={registerStyles.title}>Crear cuenta</Text>
+              <Text style={registerStyles.subtitle}>
                 Regístrate para guardar tus obras favoritas y recibir los beneficios de socio.
               </Text>
             </View>
           </View>
 
-          <View style={styles.formCard}>
-            <View style={styles.rowFields}>
-              <View style={styles.halfField}>
+          <View style={registerStyles.formCard}>
+            <View style={registerStyles.rowFields}>
+              <View style={registerStyles.halfField}>
                 <FormField<RegisterFormValues>
                   control={control}
                   name="firstName"
@@ -124,7 +124,7 @@ export function RegisterScreen({ navigation }: RegisterScreenProps): React.JSX.E
                 />
               </View>
 
-              <View style={styles.halfField}>
+              <View style={registerStyles.halfField}>
                 <FormField<RegisterFormValues>
                   control={control}
                   name="lastName"
@@ -182,17 +182,17 @@ export function RegisterScreen({ navigation }: RegisterScreenProps): React.JSX.E
             />
 
             {error && (
-              <View style={styles.errorBanner}>
+              <View style={registerStyles.errorBanner}>
                 <Ionicons name="alert-circle-outline" size={SIZES.iconSm} color={COLORS.error} />
-                <Text style={styles.errorText}>{error}</Text>
+                <Text style={registerStyles.errorText}>{error}</Text>
               </View>
             )}
 
             <Pressable
               style={({ pressed }) => [
-                styles.submitButton,
-                pressed && !isBusy && styles.submitButtonPressed,
-                isBusy && styles.submitButtonDisabled,
+                registerStyles.submitButton,
+                pressed && !isBusy && registerStyles.submitButtonPressed,
+                isBusy && registerStyles.submitButtonDisabled,
               ]}
               onPress={handleSubmit(onSubmit)}
               disabled={isBusy}
@@ -209,29 +209,29 @@ export function RegisterScreen({ navigation }: RegisterScreenProps): React.JSX.E
                     size={SIZES.iconSm}
                     color={COLORS.background}
                   />
-                  <Text style={styles.submitButtonText}>Crear cuenta</Text>
+                  <Text style={registerStyles.submitButtonText}>Crear cuenta</Text>
                 </>
               )}
             </Pressable>
           </View>
 
-          <View style={styles.infoCard}>
+          <View style={registerStyles.infoCard}>
             <Ionicons name="information-circle-outline" size={SIZES.iconSm} color={COLORS.accent} />
-            <Text style={styles.infoText}>
+            <Text style={registerStyles.infoText}>
               El registro es simulado: dummyjson no persiste cuentas nuevas. Al terminar, inicia
-              sesión con <Text style={styles.infoStrong}>emilys</Text> /{' '}
-              <Text style={styles.infoStrong}>emilyspass</Text>.
+              sesión con <Text style={registerStyles.infoStrong}>emilys</Text> /{' '}
+              <Text style={registerStyles.infoStrong}>emilyspass</Text>.
             </Text>
           </View>
 
           <Pressable
-            style={styles.linkButton}
+            style={registerStyles.linkButton}
             onPress={() => navigation.navigate('Login')}
             accessibilityRole="button"
             accessibilityLabel="Volver al inicio de sesión"
           >
-            <Text style={styles.linkText}>
-              ¿Ya tienes cuenta? <Text style={styles.linkHighlight}>Iniciar sesión</Text>
+            <Text style={registerStyles.linkText}>
+              ¿Ya tienes cuenta? <Text style={registerStyles.linkHighlight}>Iniciar sesión</Text>
             </Text>
           </Pressable>
         </ScrollView>
@@ -239,144 +239,4 @@ export function RegisterScreen({ navigation }: RegisterScreenProps): React.JSX.E
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-  },
-  keyboardContainer: {
-    flex: 1,
-  },
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-  },
-  content: {
-    flexGrow: 1,
-    padding: SPACING.lg,
-    paddingTop: SPACING.md,
-    gap: SPACING.lg,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: SPACING.md,
-  },
-  backButton: {
-    width: 38,
-    height: 38,
-    borderRadius: RADIUS.full,
-    backgroundColor: COLORS.surface,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  headerText: {
-    flex: 1,
-    gap: SPACING.xxs,
-  },
-  clubName: {
-    fontSize: TYPOGRAPHY.size.xs,
-    fontWeight: TYPOGRAPHY.weight.bold,
-    color: COLORS.accent,
-    letterSpacing: 2,
-    textTransform: 'uppercase',
-  },
-  title: {
-    fontSize: TYPOGRAPHY.size.xxl,
-    fontWeight: TYPOGRAPHY.weight.bold,
-    color: COLORS.textPrimary,
-  },
-  subtitle: {
-    fontSize: TYPOGRAPHY.size.sm,
-    color: COLORS.textSecondary,
-    lineHeight: TYPOGRAPHY.lineHeight.base,
-  },
-  formCard: {
-    backgroundColor: COLORS.surface,
-    borderRadius: RADIUS.xl,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    padding: SPACING.base,
-    gap: SPACING.sm,
-  },
-  rowFields: {
-    flexDirection: 'row',
-    gap: SPACING.sm,
-  },
-  halfField: {
-    flex: 1,
-  },
-  errorBanner: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: SPACING.sm,
-    backgroundColor: COLORS.dangerSoft,
-    borderWidth: 1,
-    borderColor: COLORS.error,
-    borderRadius: RADIUS.md,
-    padding: SPACING.sm,
-  },
-  errorText: {
-    flex: 1,
-    fontSize: TYPOGRAPHY.size.xs,
-    color: COLORS.error,
-    lineHeight: TYPOGRAPHY.lineHeight.base,
-  },
-  submitButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: SPACING.xs,
-    backgroundColor: COLORS.accent,
-    borderRadius: RADIUS.full,
-    paddingVertical: SPACING.md,
-    marginTop: SPACING.xs,
-    minHeight: 48,
-  },
-  submitButtonPressed: {
-    backgroundColor: COLORS.accentHover,
-  },
-  submitButtonDisabled: {
-    opacity: 0.7,
-  },
-  submitButtonText: {
-    fontSize: TYPOGRAPHY.size.base,
-    fontWeight: TYPOGRAPHY.weight.bold,
-    color: COLORS.background,
-  },
-  infoCard: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: SPACING.sm,
-    backgroundColor: COLORS.surfaceAlt,
-    borderRadius: RADIUS.lg,
-    borderLeftWidth: 3,
-    borderLeftColor: COLORS.accent,
-    padding: SPACING.md,
-  },
-  infoText: {
-    flex: 1,
-    fontSize: TYPOGRAPHY.size.xs,
-    color: COLORS.textSecondary,
-    lineHeight: TYPOGRAPHY.lineHeight.base,
-  },
-  infoStrong: {
-    color: COLORS.textPrimary,
-    fontWeight: TYPOGRAPHY.weight.bold,
-  },
-  linkButton: {
-    alignItems: 'center',
-  },
-  linkText: {
-    fontSize: TYPOGRAPHY.size.sm,
-    color: COLORS.textSecondary,
-  },
-  linkHighlight: {
-    color: COLORS.accent,
-    fontWeight: TYPOGRAPHY.weight.bold,
-  },
-});
 // ===== SEMANA 08 · FIN =====
