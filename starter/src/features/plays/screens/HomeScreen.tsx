@@ -37,10 +37,10 @@ import type { Item } from '../../../types';
 import { SwipeableCard } from '../components/cards/SwipeableCard';
 // ===== SEMANA 10 · FIN =====
 // ===== SEMANA 09 · INICIO =====
-import { AnimatedButton } from '../../../components/AnimatedButton';
+import { AnimatedButton } from '../../../components/ui/AnimatedButton';
 // ===== SEMANA 09 · FIN =====
 // ===== SEMANA 05 · INICIO =====
-import { ScreenState } from '../../../components/ScreenState';
+import { ScreenState } from '../../../components/ui/ScreenState';
 import { usePlays } from '../hooks/usePlays';
 // ===== SEMANA 05 · FIN =====
 // ===== SEMANA 07 · INICIO =====

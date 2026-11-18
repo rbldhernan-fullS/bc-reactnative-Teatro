@@ -2,16 +2,16 @@
 import { useEffect } from 'react';
 // ===== SEMANA 01 · FIN =====
 // ===== SEMANA 12 · INICIO =====
-import * as Notifications from '../services/notificationScheduler';
+import * as Notifications from '../../services/notificationScheduler';
 
 import {
   configureNotificationChannel,
   getScheduledNotificationIds,
   parseNotificationPayload,
-} from '../services/notifications';
-import { navigateFromNotification } from '../navigation/navigationRef';
-import { useNotificationStore } from '../stores/notificationStore';
-import { useReminderStore } from '../stores/reminderStore';
+} from '../../services/notifications';
+import { navigateFromNotification } from '../../navigation/navigationRef';
+import { useNotificationStore } from '../../stores/notificationStore';
+import { useReminderStore } from '../../stores/reminderStore';
 
 async function reconcileReminders(): Promise<void> {
   const scheduledIds = await getScheduledNotificationIds();

@@ -9,11 +9,11 @@ import { Ionicons } from '@expo/vector-icons';
 // ===== SEMANA 03 · FIN =====
 
 // ===== SEMANA 08 · INICIO =====
-import { selectSavedCount, useSavedStore } from '../stores/savedStore';
-import { useAuthStore } from '../stores/authStore';
-import { confirm } from '../platform/notify';
-import { COLORS, RADIUS, SIZES, SPACING, TYPOGRAPHY } from '../theme';
-import type { ProfileScreenNavigationProp } from '../navigation/types';
+import { selectSavedCount, useSavedStore } from '../../../stores/savedStore';
+import { useAuthStore } from '../../../stores/authStore';
+import { confirm } from '../../../platform/notify';
+import { COLORS, RADIUS, SIZES, SPACING, TYPOGRAPHY } from '../../../theme';
+import type { ProfileScreenNavigationProp } from '../../../navigation/types';
 
 function formatMemberNumber(id: number | undefined): string {
   if (id === undefined) {

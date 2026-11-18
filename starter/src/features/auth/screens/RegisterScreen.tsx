@@ -25,13 +25,13 @@ import { Ionicons } from '@expo/vector-icons';
 // ===== SEMANA 03 · FIN =====
 
 // ===== SEMANA 08 · INICIO =====
-import { FormField } from '../components/FormField';
-import { notify } from '../platform/notify';
+import { FormField } from '../../../components/ui/FormField';
+import { notify } from '../../../platform/notify';
 import { registerSchema } from '../schemas/authSchema';
 import type { RegisterFormValues } from '../schemas/authSchema';
-import { useAuthStore } from '../stores/authStore';
-import { COLORS, RADIUS, SIZES, SPACING, TYPOGRAPHY } from '../theme';
-import type { RegisterScreenProps } from '../navigation/types';
+import { useAuthStore } from '../../../stores/authStore';
+import { COLORS, RADIUS, SIZES, SPACING, TYPOGRAPHY } from '../../../theme';
+import type { RegisterScreenProps } from '../../../navigation/types';
 
 export function RegisterScreen({ navigation }: RegisterScreenProps): React.JSX.Element {
   const register = useAuthStore((state) => state.register);

@@ -6,7 +6,7 @@ import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-nati
 import { Ionicons } from '@expo/vector-icons';
 // ===== SEMANA 03 · FIN =====
 // ===== SEMANA 05 · INICIO =====
-import { COLORS, RADIUS, SIZES, SPACING, TYPOGRAPHY } from '../theme';
+import { COLORS, RADIUS, SIZES, SPACING, TYPOGRAPHY } from '../../theme';
 
 interface ScreenStateProps {
   title: string;

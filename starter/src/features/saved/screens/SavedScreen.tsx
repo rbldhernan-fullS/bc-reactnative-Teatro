@@ -9,17 +9,17 @@ import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 // ===== SEMANA 03 · FIN =====
 // ===== SEMANA 04 · INICIO =====
-import type { Item } from '../types';
+import type { Item } from '../../../types';
 // ===== SEMANA 04 · FIN =====
 // ===== SEMANA 05 · INICIO =====
-import { ScreenState } from '../components/ScreenState';
-import { usePlays } from '../features/plays/hooks/usePlays';
-import { getApiErrorMessage } from '../services/http';
+import { ScreenState } from '../../../components/ui/ScreenState';
+import { usePlays } from '../../plays/hooks/usePlays';
+import { getApiErrorMessage } from '../../../services/http';
 // ===== SEMANA 05 · FIN =====
 // ===== SEMANA 04 · INICIO =====
-import { COLORS, TYPOGRAPHY, SPACING, RADIUS, SIZES } from '../theme';
-import type { SavedScreenNavigationProp } from '../navigation/types';
-import { useSavedStore } from '../stores/savedStore';
+import { COLORS, TYPOGRAPHY, SPACING, RADIUS, SIZES } from '../../../theme';
+import type { SavedScreenNavigationProp } from '../../../navigation/types';
+import { useSavedStore } from '../../../stores/savedStore';
 
 export function SavedScreen(): React.JSX.Element {
   const navigation = useNavigation<SavedScreenNavigationProp>();

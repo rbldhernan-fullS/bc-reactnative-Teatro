@@ -23,19 +23,19 @@ import type { DetailScreenProps } from '../../../navigation/types';
 import type { Item } from '../../../types';
 // ===== SEMANA 12 · FIN =====
 // ===== SEMANA 09 · INICIO =====
-import { AnimatedButton } from '../../../components/AnimatedButton';
+import { AnimatedButton } from '../../../components/ui/AnimatedButton';
 // ===== SEMANA 09 · FIN =====
 // ===== SEMANA 11 · INICIO =====
-import { PhotoPicker } from '../../../components/PhotoPicker';
+import { PhotoPicker } from '../../venue/components/PhotoPicker';
 // ===== SEMANA 11 · FIN =====
 // ===== SEMANA 09 · INICIO =====
-import { ProgressBar } from '../../../components/ProgressBar';
+import { ProgressBar } from '../../../components/ui/ProgressBar';
 // ===== SEMANA 09 · FIN =====
 // ===== SEMANA 05 · INICIO =====
-import { ScreenState } from '../../../components/ScreenState';
+import { ScreenState } from '../../../components/ui/ScreenState';
 // ===== SEMANA 05 · FIN =====
 // ===== SEMANA 11 · INICIO =====
-import { VenueCard } from '../../../components/VenueCard';
+import { VenueCard } from '../../venue/components/VenueCard';
 // ===== SEMANA 11 · FIN =====
 // ===== SEMANA 05 · INICIO =====
 import { usePlayById } from '../hooks/usePlays';

@@ -14,7 +14,7 @@ import Animated, {
 import { Ionicons } from '@expo/vector-icons';
 // ===== SEMANA 03 · FIN =====
 // ===== SEMANA 09 · INICIO =====
-import { COLORS, TYPOGRAPHY, SPACING, RADIUS, SIZES } from '../theme';
+import { COLORS, TYPOGRAPHY, SPACING, RADIUS, SIZES } from '../../theme';
 
 type ButtonVariant = 'primary' | 'outline';
 

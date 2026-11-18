@@ -6,9 +6,9 @@ import { ActivityIndicator, Linking, Pressable, StyleSheet, Text, View } from 'r
 import { Ionicons } from '@expo/vector-icons';
 // ===== SEMANA 03 · FIN =====
 // ===== SEMANA 11 · INICIO =====
-import { COLORS, RADIUS, SIZES, SPACING, TYPOGRAPHY } from '../theme';
+import { COLORS, RADIUS, SIZES, SPACING, TYPOGRAPHY } from '../../theme';
 // ===== SEMANA 12 · INICIO =====
-import { logger } from '../utils/logger';
+import { logger } from '../../utils/logger';
 // ===== SEMANA 12 · FIN =====
 export type PermissionStatus = 'granted' | 'denied' | 'undetermined';
 

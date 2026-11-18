@@ -9,25 +9,12 @@ import './src/platform/devConsole';
 import React, { useEffect } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 // ===== SEMANA 01 · FIN =====
-// ===== SEMANA 05 · INICIO =====
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-// ===== SEMANA 05 · FIN =====
 // ===== SEMANA 03 · INICIO =====
 import { NavigationContainer } from '@react-navigation/native';
 // ===== SEMANA 03 · FIN =====
-// ===== SEMANA 01 · INICIO =====
-import { StatusBar } from 'expo-status-bar';
-// ===== SEMANA 01 · FIN =====
-// ===== SEMANA 03 · INICIO =====
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-// ===== SEMANA 03 · FIN =====
-// ===== SEMANA 10 · INICIO =====
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-// ===== SEMANA 10 · FIN =====
 // ===== SEMANA 12 · INICIO =====
 import * as Notifications from './src/services/notificationScheduler';
 
-import { NotificationCenter } from './src/components/NotificationCenter';
 import { flushPendingNotificationNavigation, navigationRef } from './src/navigation/navigationRef';
 // ===== SEMANA 12 · FIN =====
 // ===== SEMANA 03 · INICIO =====
@@ -37,6 +24,9 @@ import { RootNavigator } from './src/navigation/RootNavigator';
 import { useAuthStore } from './src/stores/authStore';
 import { COLORS, SPACING, TYPOGRAPHY } from './src/theme';
 // ===== SEMANA 08 · FIN =====
+// ===== SEMANA 12 · INICIO =====
+import { AppProviders } from './src/app/providers';
+// ===== SEMANA 12 · FIN =====
 
 // ===== SEMANA 12 · INICIO =====
 Notifications.setNotificationHandler({
@@ -48,18 +38,6 @@ Notifications.setNotificationHandler({
   }),
 });
 // ===== SEMANA 12 · FIN =====
-
-// ===== SEMANA 05 · INICIO =====
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 1000 * 60 * 2,
-      retry: 2,
-      refetchOnWindowFocus: false,
-    },
-  },
-});
-// ===== SEMANA 05 · FIN =====
 
 // ===== SEMANA 08 · INICIO =====
 function BootstrapGate(): React.JSX.Element {
@@ -100,26 +78,15 @@ function BootstrapGate(): React.JSX.Element {
 // ===== SEMANA 01 · INICIO =====
 export default function App(): React.JSX.Element {
   return (
-    <GestureHandlerRootView style={styles.root}>
-      <QueryClientProvider client={queryClient}>
-        <SafeAreaProvider>
-          <BootstrapGate />
-          {/* ===== SEMANA 12 · INICIO ===== */}
-          <NotificationCenter />
-          {/* ===== SEMANA 12 · FIN ===== */}
-          <StatusBar style="light" />
-        </SafeAreaProvider>
-      </QueryClientProvider>
-    </GestureHandlerRootView>
+    <AppProviders>
+      <BootstrapGate />
+    </AppProviders>
   );
 }
 // ===== SEMANA 01 · FIN =====
 
 // ===== SEMANA 08 · INICIO =====
 const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-  },
   splash: {
     flex: 1,
     alignItems: 'center',

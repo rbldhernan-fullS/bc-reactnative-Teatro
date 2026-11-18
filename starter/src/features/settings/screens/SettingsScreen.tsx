@@ -6,28 +6,28 @@ import { Pressable, ScrollView, Share, StyleSheet, Switch, Text, View } from 're
 import { SafeAreaView } from 'react-native-safe-area-context';
 // ===== SEMANA 03 · FIN =====
 // ===== SEMANA 07 · INICIO =====
-import * as SecureStore from '../services/secureStore';
+import * as SecureStore from '../../../services/secureStore';
 // ===== SEMANA 07 · FIN =====
 // ===== SEMANA 03 · INICIO =====
 import { Ionicons } from '@expo/vector-icons';
 // ===== SEMANA 03 · FIN =====
 
 // ===== SEMANA 07 · INICIO =====
-import { ITEMS_PER_PAGE_OPTIONS, usePreferences } from '../hooks/usePreferences';
-import type { ItemsPerPage, SortOrder } from '../hooks/usePreferences';
+import { ITEMS_PER_PAGE_OPTIONS, usePreferences } from '../../../hooks/usePreferences';
+import type { ItemsPerPage, SortOrder } from '../../../hooks/usePreferences';
 // ===== SEMANA 07 · FIN =====
 // ===== SEMANA 12 · INICIO =====
-import { useNotifications } from '../hooks/useNotifications';
-import { notify } from '../platform/notify';
+import { useNotifications } from '../../../hooks/useNotifications';
+import { notify } from '../../../platform/notify';
 import {
   formatScheduleDate,
   scheduleTestNotification,
   scheduleTestReminder,
   type NotificationPermissionState,
-} from '../services/notifications';
+} from '../../../services/notifications';
 // ===== SEMANA 12 · FIN =====
 // ===== SEMANA 07 · INICIO =====
-import { COLORS, RADIUS, SIZES, SPACING, TYPOGRAPHY } from '../theme';
+import { COLORS, RADIUS, SIZES, SPACING, TYPOGRAPHY } from '../../../theme';
 
 const SENSITIVE_KEY = 'teatro_taquilla_access_code';
 

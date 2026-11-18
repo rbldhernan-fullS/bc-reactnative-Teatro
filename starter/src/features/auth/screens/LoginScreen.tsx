@@ -25,14 +25,14 @@ import { Ionicons } from '@expo/vector-icons';
 // ===== SEMANA 03 · FIN =====
 
 // ===== SEMANA 08 · INICIO =====
-import { FormField } from '../components/FormField';
+import { FormField } from '../../../components/ui/FormField';
 import { loginSchema } from '../schemas/authSchema';
 import type { LoginFormValues } from '../schemas/authSchema';
-import { useAuthStore } from '../stores/authStore';
-import { COLORS, RADIUS, SIZES, SPACING, TYPOGRAPHY } from '../theme';
-import type { LoginScreenProps } from '../navigation/types';
+import { useAuthStore } from '../../../stores/authStore';
+import { COLORS, RADIUS, SIZES, SPACING, TYPOGRAPHY } from '../../../theme';
+import type { LoginScreenProps } from '../../../navigation/types';
 // ===== SEMANA 12 · INICIO =====
-import { logger } from '../utils/logger';
+import { logger } from '../../../utils/logger';
 // ===== SEMANA 12 · FIN =====
 
 const DEMO_USERNAME = 'emilys';

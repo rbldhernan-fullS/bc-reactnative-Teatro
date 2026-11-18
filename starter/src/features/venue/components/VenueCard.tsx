@@ -16,17 +16,17 @@ import { Ionicons } from '@expo/vector-icons';
 // ===== SEMANA 03 · FIN =====
 
 // ===== SEMANA 11 · INICIO =====
-import { PermissionGate } from './PermissionGate';
+import { PermissionGate } from '../../../components/ui/PermissionGate';
 import { useLocation } from '../hooks/useLocation';
-import { notify } from '../platform/notify';
-import type { TheatreHall } from '../types';
+import { notify } from '../../../platform/notify';
+import type { TheatreHall } from '../../../types';
 import {
   TEATRO_COLON_VENUE,
   formatDistance,
   getDistanceInMeters,
   getVenueDirectionsUrl,
-} from '../utils/theatre';
-import { COLORS, RADIUS, SIZES, SPACING, TYPOGRAPHY } from '../theme';
+} from '../../../utils/theatre';
+import { COLORS, RADIUS, SIZES, SPACING, TYPOGRAPHY } from '../../../theme';
 
 interface VenueCardProps {
   hall: TheatreHall;

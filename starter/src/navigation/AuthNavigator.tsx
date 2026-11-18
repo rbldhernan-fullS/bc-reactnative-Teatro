@@ -6,8 +6,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 // ===== SEMANA 03 · FIN =====
 
 // ===== SEMANA 08 · INICIO =====
-import { LoginScreen } from '../screens/LoginScreen';
-import { RegisterScreen } from '../screens/RegisterScreen';
+import { LoginScreen } from '../features/auth/screens/LoginScreen';
+import { RegisterScreen } from '../features/auth/screens/RegisterScreen';
 import { COLORS } from '../theme';
 import type { AuthStackParamList } from './types';
 

@@ -10,10 +10,10 @@ import { Ionicons } from '@expo/vector-icons';
 // ===== SEMANA 11 · INICIO =====
 import * as ImagePicker from 'expo-image-picker';
 
-import { usePosterStore } from '../stores/posterStore';
-import { notify } from '../platform/notify';
-import type { HomeStackParamList } from '../navigation/types';
-import { COLORS, RADIUS, SIZES, SPACING, TYPOGRAPHY } from '../theme';
+import { usePosterStore } from '../../../stores/posterStore';
+import { notify } from '../../../platform/notify';
+import type { HomeStackParamList } from '../../../navigation/types';
+import { COLORS, RADIUS, SIZES, SPACING, TYPOGRAPHY } from '../../../theme';
 
 type PhotoPickerNavigationProp = NativeStackNavigationProp<HomeStackParamList>;
 

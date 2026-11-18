@@ -11,7 +11,7 @@ import Animated, {
 } from 'react-native-reanimated';
 // ===== SEMANA 10 · FIN =====
 // ===== SEMANA 09 · INICIO =====
-import { COLORS, TYPOGRAPHY, SPACING, RADIUS } from '../theme';
+import { COLORS, TYPOGRAPHY, SPACING, RADIUS } from '../../theme';
 
 interface ProgressBarProps {
   progress: number;

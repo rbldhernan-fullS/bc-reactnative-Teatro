@@ -9,8 +9,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 // ===== SEMANA 10 · INICIO =====
 import type { Seat } from '../../../types';
 import type { SeatMapScreenProps } from '../../../navigation/types';
-import { AnimatedButton } from '../../../components/AnimatedButton';
-import { ScreenState } from '../../../components/ScreenState';
+import { AnimatedButton } from '../../../components/ui/AnimatedButton';
+import { ScreenState } from '../../../components/ui/ScreenState';
 import { SeatMapViewport } from '../components/seatmap/SeatMapViewport';
 import { notify } from '../../../platform/notify';
 import { usePlayById } from '../hooks/usePlays';

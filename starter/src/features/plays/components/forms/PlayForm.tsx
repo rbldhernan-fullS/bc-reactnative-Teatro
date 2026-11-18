@@ -10,11 +10,11 @@ import { Ionicons } from '@expo/vector-icons';
 // ===== SEMANA 03 · FIN =====
 
 // ===== SEMANA 06 · INICIO =====
-import { FormChips } from '../../../../components/FormChips';
-import { FormField } from '../../../../components/FormField';
+import { FormChips } from '../../../../components/ui/FormChips';
+import { FormField } from '../../../../components/ui/FormField';
 // ===== SEMANA 06 · FIN =====
 // ===== SEMANA 11 · INICIO =====
-import { PhotoPicker } from '../../../../components/PhotoPicker';
+import { PhotoPicker } from '../../../venue/components/PhotoPicker';
 // ===== SEMANA 11 · FIN =====
 // ===== SEMANA 06 · INICIO =====
 import type { PlayFormInput } from '../../schemas/playSchema';

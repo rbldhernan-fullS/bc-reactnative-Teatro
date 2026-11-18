@@ -6,7 +6,7 @@ import type { StyleProp, TextInputProps, TextStyle, ViewStyle } from 'react-nati
 // ===== SEMANA 06 · INICIO =====
 import { Controller, type Control, type FieldPath, type FieldValues } from 'react-hook-form';
 
-import { COLORS, RADIUS, SPACING, TYPOGRAPHY } from '../theme';
+import { COLORS, RADIUS, SPACING, TYPOGRAPHY } from '../../theme';
 
 interface FormFieldProps<T extends FieldValues> extends Omit<
   TextInputProps,

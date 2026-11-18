@@ -10,11 +10,11 @@ import { Ionicons } from '@expo/vector-icons';
 // ===== SEMANA 11 · INICIO =====
 import { CameraView, useCameraPermissions, type CameraType, type FlashMode } from 'expo-camera';
 
-import { PermissionGate } from '../components/PermissionGate';
-import { notify } from '../platform/notify';
-import { usePosterStore } from '../stores/posterStore';
-import type { CameraScreenProps } from '../navigation/types';
-import { COLORS, RADIUS, SIZES, SPACING, TYPOGRAPHY } from '../theme';
+import { PermissionGate } from '../../../components/ui/PermissionGate';
+import { notify } from '../../../platform/notify';
+import { usePosterStore } from '../../../stores/posterStore';
+import type { CameraScreenProps } from '../../../navigation/types';
+import { COLORS, RADIUS, SIZES, SPACING, TYPOGRAPHY } from '../../../theme';
 
 export function CameraScreen(): React.JSX.Element {
   const navigation = useNavigation<CameraScreenProps['navigation']>();

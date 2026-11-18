@@ -11,7 +11,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 // ===== SEMANA 08 · INICIO =====
 import { DetailScreen } from '../features/plays/screens/DetailScreen';
-import { SavedScreen } from '../screens/SavedScreen';
+import { SavedScreen } from '../features/saved/screens/SavedScreen';
 import { HomeScreen } from '../features/plays/screens/HomeScreen';
 import { CreateScreen } from '../features/plays/screens/CreateScreen';
 import { EditScreen } from '../features/plays/screens/EditScreen';
@@ -20,11 +20,11 @@ import { EditScreen } from '../features/plays/screens/EditScreen';
 import { SeatMapScreen } from '../features/plays/screens/SeatMapScreen';
 // ===== SEMANA 10 · FIN =====
 // ===== SEMANA 11 · INICIO =====
-import { CameraScreen } from '../screens/CameraScreen';
+import { CameraScreen } from '../features/venue/screens/CameraScreen';
 // ===== SEMANA 11 · FIN =====
 // ===== SEMANA 08 · INICIO =====
-import { SettingsScreen } from '../screens/SettingsScreen';
-import { ProfileScreen } from '../screens/ProfileScreen';
+import { SettingsScreen } from '../features/settings/screens/SettingsScreen';
+import { ProfileScreen } from '../features/auth/screens/ProfileScreen';
 import { COLORS, TYPOGRAPHY, SIZES } from '../theme';
 import { selectSavedCount, useSavedStore } from '../stores/savedStore';
 import type { HomeStackParamList, RootTabParamList } from './types';

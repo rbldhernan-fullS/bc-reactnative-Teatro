@@ -11,7 +11,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { PlayForm } from '../components/forms/PlayForm';
-import { ScreenState } from '../../../components/ScreenState';
+import { ScreenState } from '../../../components/ui/ScreenState';
 // ===== SEMANA 06 · FIN =====
 // ===== SEMANA 12 · INICIO =====
 import { useNotifications } from '../../../hooks/useNotifications';
