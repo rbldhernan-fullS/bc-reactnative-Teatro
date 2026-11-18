@@ -6,10 +6,9 @@ const prettier = require('eslint-config-prettier');
 /**
  * Configuración plana (flat config) de ESLint.
  *
- * Criterio de la Fase 1: la configuración entra sin cambiar lógica de la app.
- * Por eso las reglas que dependen del código heredado (`any`, `console`, `catch`
- * vacíos, `exhaustive-deps`) quedan en `warn` y se promueven a `error` cuando
- * el código se corrija en la Fase 3.
+ * Desde la Fase 3 todas las reglas de correctitud son `error`: el código ya
+ * está limpio y no quedan avisos. Las excepciones (escritura en consola) están
+ * acotadas al logger y al filtro web de desarrollo.
  */
 module.exports = tseslint.config(
   {
@@ -37,9 +36,9 @@ module.exports = tseslint.config(
       },
     },
     rules: {
-      // React: correctitud obligatoria, deuda pendiente como aviso
+      // React
       'react-hooks/rules-of-hooks': 'error',
-      'react-hooks/exhaustive-deps': 'warn',
+      'react-hooks/exhaustive-deps': 'error',
 
       // TypeScript
       'no-unused-vars': 'off',
@@ -48,19 +47,20 @@ module.exports = tseslint.config(
         'error',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
       ],
-      '@typescript-eslint/no-explicit-any': 'warn',
-      '@typescript-eslint/no-require-imports': 'warn',
-      '@typescript-eslint/no-empty-object-type': 'warn',
+      '@typescript-eslint/no-explicit-any': 'error',
+      '@typescript-eslint/no-require-imports': 'error',
+      '@typescript-eslint/no-empty-object-type': 'error',
 
       // Buenas prácticas
       eqeqeq: ['error', 'smart'],
       'prefer-const': 'error',
       // Los marcadores `// ===== SEMANA NN =====` parten imports del mismo módulo
-      // a propósito (evidencia de rúbrica). Se avisa, no se rompe la progresión.
-      'no-duplicate-imports': 'warn',
-      'no-empty': 'warn',
-      'no-console': 'warn',
-      '@typescript-eslint/ban-ts-comment': 'warn',
+      // a propósito (evidencia de rúbrica), pero solo cuando separan tipos de
+      // valores; dos imports de valor del mismo módulo se unifican.
+      'no-duplicate-imports': ['error', { allowSeparateTypeImports: true }],
+      'no-empty': 'error',
+      'no-console': 'error',
+      '@typescript-eslint/ban-ts-comment': 'error',
     },
   },
   {

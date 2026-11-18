@@ -22,11 +22,12 @@ import type { DetailScreenProps } from '../../../navigation/types';
 import type { Item } from '../../../types';
 // ===== SEMANA 12 · FIN =====
 // ===== SEMANA 05 · INICIO =====
-import { usePlayById } from '../hooks/usePlays';
 import { getApiErrorMessage, isNotFoundError } from '../../../services/http';
 // ===== SEMANA 05 · FIN =====
 // ===== SEMANA 12 · INICIO =====
-import { useDeletePlay } from '../hooks/usePlays';
+// `usePlayById` (Semana 05) y `useDeletePlay` (Semana 12) viven en el mismo
+// módulo: se importan juntos porque el linter no admite declaraciones repetidas.
+import { useDeletePlay, usePlayById } from '../hooks/usePlays';
 import { confirm, notify, notifyError } from '../../../platform/notify';
 // ===== SEMANA 12 · FIN =====
 // ===== SEMANA 04 · INICIO =====

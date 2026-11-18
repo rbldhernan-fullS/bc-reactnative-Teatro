@@ -34,6 +34,7 @@ const PRESS_OUT_SPRING = {
 } as const;
 // ===== SEMANA 09 · FIN =====
 
+// ===== SEMANA 09 · INICIO =====
 export const AnimatedCard = React.memo(function AnimatedCard({
   item,
   onPress,
