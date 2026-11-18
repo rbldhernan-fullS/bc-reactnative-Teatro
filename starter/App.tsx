@@ -20,6 +20,9 @@ import { flushPendingNotificationNavigation, navigationRef } from './src/navigat
 // ===== SEMANA 03 · INICIO =====
 import { RootNavigator } from './src/navigation/RootNavigator';
 // ===== SEMANA 03 · FIN =====
+// ===== SEMANA 12 · INICIO =====
+import { linking } from './src/navigation/linking';
+// ===== SEMANA 12 · FIN =====
 // ===== SEMANA 08 · INICIO =====
 import { useAuthStore } from './src/stores/authStore';
 import { COLORS, SPACING, TYPOGRAPHY } from './src/theme';
@@ -68,7 +71,11 @@ function BootstrapGate(): React.JSX.Element {
   }
 
   return (
-    <NavigationContainer ref={navigationRef} onReady={flushPendingNotificationNavigation}>
+    <NavigationContainer
+      ref={navigationRef}
+      linking={linking}
+      onReady={flushPendingNotificationNavigation}
+    >
       <RootNavigator />
     </NavigationContainer>
   );

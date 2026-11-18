@@ -59,7 +59,7 @@ function HomeStackNavigator(): React.JSX.Element {
         name="HomeDetail"
         component={DetailScreen}
         options={({ route, navigation }) => ({
-          title: route.params.name,
+          title: route.params.name ?? 'Obra',
           headerBackTitle: 'Cartelera',
           headerShown: true,
           headerRight: () => (
@@ -67,7 +67,7 @@ function HomeStackNavigator(): React.JSX.Element {
               onPress={() => navigation.navigate('Edit', { id: route.params.id })}
               hitSlop={8}
               accessibilityRole="button"
-              accessibilityLabel={`Editar ${route.params.name}`}
+              accessibilityLabel={`Editar ${route.params.name ?? 'la obra'}`}
               style={({ pressed }) => (pressed ? { opacity: 0.6 } : undefined)}
             >
               <Ionicons name="create-outline" size={SIZES.iconMd} color={COLORS.accent} />

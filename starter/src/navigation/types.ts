@@ -8,7 +8,8 @@ export type HomeStackParamList = {
 
   HomeDetail: {
     id: string;
-    name: string;
+    /** Opcional: un enlace profundo `/obra/:id` solo conoce el identificador. */
+    name?: string;
   };
 
   Create: undefined;
