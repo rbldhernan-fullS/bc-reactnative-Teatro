@@ -85,11 +85,14 @@ export function useDetailReminder(play: Item | undefined): DetailReminderState {
 
     const cancelled = await cancelReminder(play.id);
 
-    notify(
-      cancelled ? 'Recordatorio cancelado' : 'Recordatorio retirado',
-      cancelled
-        ? `Ya no recibirás el aviso de "${play.name}".`
-        : 'El aviso ya no estaba programado en el sistema; el registro local quedó limpio.',
+    if (cancelled) {
+      notify('Recordatorio cancelado', `Ya no recibirás el aviso de "${play.name}".`);
+      return;
+    }
+
+    notifyError(
+      'No se pudo cancelar el recordatorio',
+      'El aviso sigue programado en el sistema. Inténtalo de nuevo desde el detalle de la obra.',
     );
   }
 

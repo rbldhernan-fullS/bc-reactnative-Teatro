@@ -124,11 +124,14 @@ export function NotificationsSection(): React.JSX.Element {
     async (itemId: string, playName: string): Promise<void> => {
       const cancelled = await cancelReminder(itemId);
 
+      if (cancelled) {
+        notify('Recordatorio cancelado', `Se canceló el aviso de "${playName}".`);
+        return;
+      }
+
       notify(
-        cancelled ? 'Recordatorio cancelado' : 'Recordatorio retirado',
-        cancelled
-          ? `Se canceló el aviso de "${playName}".`
-          : 'El aviso ya no estaba programado en el sistema; el registro local quedó limpio.',
+        'No se pudo cancelar el recordatorio',
+        `El aviso de "${playName}" sigue programado en el sistema. Inténtalo de nuevo.`,
       );
     },
     [cancelReminder],

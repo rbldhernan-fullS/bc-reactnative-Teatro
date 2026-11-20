@@ -97,7 +97,10 @@ export function useNotifications(): UseNotificationsResult {
 
     const cancelled = await cancelScheduledNotification(current.notificationId);
 
-    useReminderStore.getState().removeReminder(itemId);
+    if (cancelled) {
+      useReminderStore.getState().removeReminder(itemId);
+    }
+
     return cancelled;
   }, []);
 
@@ -108,12 +111,23 @@ export function useNotifications(): UseNotificationsResult {
       return 0;
     }
 
-    await Promise.all(
-      active.map((reminder) => cancelScheduledNotification(reminder.notificationId)),
+    const results = await Promise.all(
+      active.map(async (reminder) => ({
+        itemId: reminder.itemId,
+        cancelled: await cancelScheduledNotification(reminder.notificationId),
+      })),
     );
 
-    useReminderStore.getState().clearReminders();
-    return active.length;
+    let removed = 0;
+
+    for (const result of results) {
+      if (result.cancelled) {
+        useReminderStore.getState().removeReminder(result.itemId);
+        removed += 1;
+      }
+    }
+
+    return removed;
   }, []);
 
   return {
