@@ -9,11 +9,32 @@ import { Ionicons } from '@expo/vector-icons';
 // ===== SEMANA 03 · FIN =====
 // ===== SEMANA 11 · INICIO =====
 import * as ImagePicker from 'expo-image-picker';
+import { z } from 'zod';
 
 import { usePosterStore } from '../../../stores/posterStore';
 import { notify } from '../../../platform/notify';
 import type { HomeStackParamList } from '../../../navigation/types';
 import { COLORS, RADIUS, SIZES, SPACING, TYPOGRAPHY } from '../../../theme';
+
+const MAX_POSTER_BYTES = 5 * 1024 * 1024;
+
+/**
+ * El asset de la galería puede no traer `mimeType` ni `fileSize` en web, así
+ * que solo se validan cuando existen. La URI siempre es obligatoria.
+ */
+const posterAssetSchema = z.object({
+  uri: z.string().min(1, 'La imagen no tiene una ruta válida.'),
+  mimeType: z
+    .string()
+    .refine((value) => value.startsWith('image/'), 'El archivo debe ser una imagen.')
+    .nullish(),
+  fileSize: z
+    .number()
+    .int()
+    .positive()
+    .max(MAX_POSTER_BYTES, 'La imagen no puede superar 5 MB.')
+    .nullish(),
+});
 
 type PhotoPickerNavigationProp = NativeStackNavigationProp<HomeStackParamList>;
 
@@ -49,6 +70,7 @@ export function PhotoPicker({
         allowsEditing: true,
         aspect: [3, 4],
         quality: 0.8,
+        exif: false,
       });
 
       if (result.canceled) {
@@ -57,9 +79,26 @@ export function PhotoPicker({
 
       const asset = result.assets[0];
 
-      if (asset) {
-        setPoster(targetId, asset.uri);
+      if (!asset) {
+        return;
       }
+
+      const parsedAsset = posterAssetSchema.safeParse({
+        uri: asset.uri,
+        mimeType: asset.mimeType,
+        fileSize: asset.fileSize,
+      });
+
+      if (!parsedAsset.success) {
+        notify(
+          'Afiche no válido',
+          parsedAsset.error.issues[0]?.message ??
+            'Elige una imagen de hasta 5 MB en formato JPG, PNG o WebP.',
+        );
+        return;
+      }
+
+      setPoster(targetId, parsedAsset.data.uri);
     } catch {
       notify(
         'Galería no disponible',
@@ -130,7 +169,7 @@ export function PhotoPicker({
       </View>
 
       <Text style={styles.hint}>
-        La foto se guarda en este dispositivo y se muestra en el detalle de la obra.
+        La foto vive en memoria y se pierde al recargar la página. No se envían metadatos EXIF.
       </Text>
     </View>
   );
