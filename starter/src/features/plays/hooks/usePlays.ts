@@ -73,6 +73,9 @@ export function usePlayById(id: string) {
       }
     },
     enabled: id.length > 0,
+    // React Query pausa las consultas cuando el navegador está sin red; sin esto
+    // el `queryFn` no llega a ejecutarse y el fallback a la caché nunca ocurre.
+    networkMode: 'always',
     // Un 404 no se reintenta: la obra no existe y reintentar solo llena la consola (E‑07).
     retry: (failureCount, error) => !isNotFoundError(error) && failureCount < 2,
   });
