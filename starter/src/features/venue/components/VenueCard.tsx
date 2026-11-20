@@ -114,6 +114,7 @@ export function VenueCard({ hall }: VenueCardProps): React.JSX.Element {
                 value={address ?? ''}
                 onChangeText={(text) => setAddress(text.length > 0 ? text : null)}
                 style={styles.addressInput}
+                maxLength={120}
                 placeholder="Escribe una referencia (barrio, calle…)"
                 placeholderTextColor={COLORS.textMuted}
                 accessibilityLabel="Dirección o referencia de tu ubicación"

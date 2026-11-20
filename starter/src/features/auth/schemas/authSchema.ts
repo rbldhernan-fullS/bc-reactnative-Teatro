@@ -13,7 +13,7 @@ const usernameField = z
 const passwordField = z
   .string()
   .min(6, 'La contraseña debe tener al menos 6 caracteres.')
-  .max(100, 'La contraseña no puede superar 100 caracteres.');
+  .max(128, 'La contraseña no puede superar 128 caracteres.');
 
 export const loginSchema = z.object({
   username: usernameField,
@@ -33,7 +33,12 @@ export const registerSchema = z
       .min(2, 'El apellido debe tener al menos 2 caracteres.')
       .max(50, 'El apellido no puede superar 50 caracteres.'),
     username: usernameField,
-    email: z.string().trim().email('Ingresa un correo electrónico válido.').toLowerCase(),
+    email: z
+      .string()
+      .trim()
+      .email('Ingresa un correo electrónico válido.')
+      .max(254, 'El correo no puede superar 254 caracteres.')
+      .toLowerCase(),
     password: passwordField,
     confirmPassword: z.string(),
   })

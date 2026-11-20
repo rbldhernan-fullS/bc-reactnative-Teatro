@@ -117,6 +117,7 @@ export function RegisterScreen({ navigation }: RegisterScreenProps): React.JSX.E
                 <FormField<RegisterFormValues>
                   control={control}
                   name="firstName"
+                  maxLength={50}
                   label="Nombre"
                   required
                   placeholder="Emily"
@@ -128,6 +129,7 @@ export function RegisterScreen({ navigation }: RegisterScreenProps): React.JSX.E
                 <FormField<RegisterFormValues>
                   control={control}
                   name="lastName"
+                  maxLength={50}
                   label="Apellido"
                   required
                   placeholder="Johnson"
@@ -139,6 +141,7 @@ export function RegisterScreen({ navigation }: RegisterScreenProps): React.JSX.E
             <FormField<RegisterFormValues>
               control={control}
               name="username"
+              maxLength={50}
               label="Usuario"
               required
               placeholder="mi_usuario"
@@ -149,6 +152,7 @@ export function RegisterScreen({ navigation }: RegisterScreenProps): React.JSX.E
             <FormField<RegisterFormValues>
               control={control}
               name="email"
+              maxLength={254}
               label="Correo electrónico"
               required
               placeholder="correo@ejemplo.com"
@@ -160,6 +164,7 @@ export function RegisterScreen({ navigation }: RegisterScreenProps): React.JSX.E
             <FormField<RegisterFormValues>
               control={control}
               name="password"
+              maxLength={128}
               label="Contraseña"
               required
               placeholder="Mínimo 6 caracteres"
@@ -171,6 +176,7 @@ export function RegisterScreen({ navigation }: RegisterScreenProps): React.JSX.E
             <FormField<RegisterFormValues>
               control={control}
               name="confirmPassword"
+              maxLength={128}
               label="Confirmar contraseña"
               required
               placeholder="Repite tu contraseña"

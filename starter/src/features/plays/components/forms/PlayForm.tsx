@@ -56,6 +56,7 @@ export function PlayForm({
       <FormField
         control={control}
         name="name"
+        maxLength={80}
         label="Título de la obra"
         required
         placeholder="Ej. Sueño de una noche de verano"
@@ -66,6 +67,7 @@ export function PlayForm({
       <FormField
         control={control}
         name="subtitle"
+        maxLength={120}
         label="Director o compañía"
         required
         placeholder="Ej. Dir. Ana Torres · Compañía del Alba"
@@ -94,6 +96,7 @@ export function PlayForm({
       <FormField
         control={control}
         name="date"
+        maxLength={10}
         label="Fecha de la función"
         required
         placeholder="AAAA-MM-DD"
@@ -106,6 +109,7 @@ export function PlayForm({
       <FormField
         control={control}
         name="time"
+        maxLength={5}
         label="Hora de inicio"
         required
         placeholder="HH:MM"
@@ -118,6 +122,7 @@ export function PlayForm({
       <FormField
         control={control}
         name="price"
+        maxLength={12}
         label="Precio de la entrada (COP)"
         required
         placeholder="Ej. 45000"
@@ -128,6 +133,7 @@ export function PlayForm({
       <FormField
         control={control}
         name="duration"
+        maxLength={8}
         label="Duración"
         required
         placeholder="Ej. 120 min"
@@ -137,6 +143,7 @@ export function PlayForm({
       <FormField
         control={control}
         name="availableSeats"
+        maxLength={3}
         label="Butacas disponibles"
         required
         placeholder="Ej. 40"
@@ -147,6 +154,7 @@ export function PlayForm({
       <FormField
         control={control}
         name="rating"
+        maxLength={4}
         label="Calificación (0 a 5)"
         required
         placeholder="Ej. 4.5"
@@ -157,6 +165,7 @@ export function PlayForm({
       <FormField
         control={control}
         name="imageUri"
+        maxLength={2048}
         label="URL del afiche"
         required
         placeholder="https://..."
@@ -180,6 +189,7 @@ export function PlayForm({
       <FormField
         control={control}
         name="synopsis"
+        maxLength={600}
         label="Sinopsis"
         required
         placeholder="Resumen del argumento de la obra..."
