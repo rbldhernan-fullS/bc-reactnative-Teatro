@@ -33,6 +33,7 @@ export function HomeSearchBar({
         style={styles.searchInput}
         placeholder="Buscar por obra, director o género..."
         placeholderTextColor={COLORS.textMuted}
+        maxLength={80}
         value={query}
         onChangeText={onChangeQuery}
         autoCorrect={false}

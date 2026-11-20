@@ -101,6 +101,7 @@ export function LoginScreen({ navigation }: LoginScreenProps): React.JSX.Element
             <FormField<LoginFormValues>
               control={control}
               name="username"
+              maxLength={50}
               label="Usuario"
               required
               placeholder="tu_usuario"
@@ -112,6 +113,7 @@ export function LoginScreen({ navigation }: LoginScreenProps): React.JSX.Element
             <FormField<LoginFormValues>
               control={control}
               name="password"
+              maxLength={128}
               label="Contraseña"
               required
               placeholder="••••••••"
