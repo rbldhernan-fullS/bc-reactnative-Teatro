@@ -48,7 +48,30 @@ export function usePlays() {
 export function usePlayById(id: string) {
   return useQuery<Item>({
     queryKey: [...PLAYS_QUERY_KEY, id],
-    queryFn: () => fetchPlayById(id),
+    queryFn: async (): Promise<Item> => {
+      try {
+        return await fetchPlayById(id);
+      } catch (error) {
+        // Un 404 significa que la obra no existe: la caché no debe resucitarla (E‑07).
+        if (isNotFoundError(error)) {
+          throw error;
+        }
+
+        try {
+          const cachedPlays = await readPlaysCache();
+          const cachedPlay = cachedPlays?.find((play) => play.id === id);
+
+          if (cachedPlay) {
+            logger.debug('Detalle servido desde la caché tras fallar la red', { id });
+            return cachedPlay;
+          }
+        } catch (cacheError) {
+          logger.debug('No se pudo leer la caché para el detalle', cacheError);
+        }
+
+        throw error;
+      }
+    },
     enabled: id.length > 0,
     // Un 404 no se reintenta: la obra no existe y reintentar solo llena la consola (E‑07).
     retry: (failureCount, error) => !isNotFoundError(error) && failureCount < 2,
