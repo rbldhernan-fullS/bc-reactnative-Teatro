@@ -33,6 +33,7 @@
     },
     "plugins": [
       "expo-status-bar",
+      "expo-system-ui",
       "expo-secure-store",
       [
         "expo-camera",
