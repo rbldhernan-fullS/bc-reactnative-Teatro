@@ -15,6 +15,8 @@ import { ScreenState } from '../../../components/ui/ScreenState';
 // ===== SEMANA 06 · FIN =====
 // ===== SEMANA 12 · INICIO =====
 import { useNotifications } from '../../../hooks/useNotifications';
+import { notify, notifyError } from '../../../platform/notify';
+import { formatScheduleDate } from '../../../services/notifications';
 import { logger } from '../../../utils/logger';
 // ===== SEMANA 12 · FIN =====
 // ===== SEMANA 06 · INICIO =====
@@ -41,7 +43,7 @@ export function EditScreen(): React.JSX.Element {
   const { data: play, isLoading, isError, error, refetch } = usePlayById(id);
   const { mutateAsync: updatePlay, isPending, error: mutationError } = useUpdatePlay();
   // ===== SEMANA 12 · INICIO =====
-  const { scheduleCartelera } = useNotifications();
+  const { reminders, scheduleCartelera, scheduleReminder, cancelReminder } = useNotifications();
   // ===== SEMANA 12 · FIN =====
 
   const {
@@ -62,11 +64,40 @@ export function EditScreen(): React.JSX.Element {
   }, [play, reset]);
 
   async function onSubmit(values: PlayFormValues): Promise<void> {
+    if (!play) {
+      return;
+    }
+
     try {
       // ===== SEMANA 12 · INICIO =====
+      const scheduleChanged = play.date !== values.date || play.time !== values.time;
+      const shouldReschedule = scheduleChanged && reminders[id]?.kind === 'show';
+
       const updated = await updatePlay(toUpdatePlayPayload(id, values));
 
       await scheduleCartelera(updated, 'updated');
+
+      if (shouldReschedule) {
+        const cancelled = await cancelReminder(id);
+
+        if (!cancelled) {
+          notifyError(
+            'No se pudo reprogramar el recordatorio',
+            'El aviso anterior sigue activo en el sistema. Inténtalo de nuevo desde el detalle de la obra.',
+          );
+        } else {
+          const outcome = await scheduleReminder(updated, 'show');
+
+          if (outcome.ok) {
+            notify(
+              'Recordatorio reprogramado',
+              `Te avisaremos el ${formatScheduleDate(outcome.scheduledAt)}, 2 horas antes de "${updated.name}".`,
+            );
+          } else {
+            notifyError('No se pudo reprogramar el recordatorio', outcome.reason);
+          }
+        }
+      }
       // ===== SEMANA 12 · FIN =====
 
       navigation.goBack();
