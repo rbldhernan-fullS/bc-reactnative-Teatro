@@ -237,10 +237,31 @@ async function scheduleLocal(
   }
 }
 
+/**
+ * En web el scheduler está stubbeado (no hay permisos reales), así que se
+ * devuelve un motivo honesto en vez de pedir permisos que no existen.
+ */
+function getWebUnsupportedOutcome(): ScheduleOutcome | null {
+  if (Platform.OS !== 'web') {
+    return null;
+  }
+
+  return {
+    ok: false,
+    reason: 'Las notificaciones no están disponibles en la versión web.',
+  };
+}
+
 export async function scheduleCarteleraNotification(
   play: Item,
   change: 'created' | 'updated',
 ): Promise<ScheduleOutcome> {
+  const unavailable = getWebUnsupportedOutcome();
+
+  if (unavailable) {
+    return unavailable;
+  }
+
   const permission = await ensureNotificationPermission(false);
 
   if (!permission.granted) {
@@ -264,6 +285,12 @@ export async function scheduleShowReminder(
   play: Item,
   kind: ReminderKind,
 ): Promise<ScheduleOutcome> {
+  const unavailable = getWebUnsupportedOutcome();
+
+  if (unavailable) {
+    return unavailable;
+  }
+
   const permission = await ensureNotificationPermission(true);
 
   if (!permission.granted) {
@@ -313,6 +340,12 @@ export async function scheduleShowReminder(
 }
 
 export async function scheduleTestNotification(): Promise<ScheduleOutcome> {
+  const unavailable = getWebUnsupportedOutcome();
+
+  if (unavailable) {
+    return unavailable;
+  }
+
   const permission = await ensureNotificationPermission(true);
 
   if (!permission.granted) {
@@ -332,6 +365,12 @@ export async function scheduleTestNotification(): Promise<ScheduleOutcome> {
 }
 
 export async function scheduleTestReminder(): Promise<ScheduleOutcome> {
+  const unavailable = getWebUnsupportedOutcome();
+
+  if (unavailable) {
+    return unavailable;
+  }
+
   const permission = await ensureNotificationPermission(true);
 
   if (!permission.granted) {
