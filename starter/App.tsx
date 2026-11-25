@@ -12,6 +12,7 @@ import { StatusBar } from 'expo-status-bar';
 // ===== SEMANA 01 · FIN =====
 // ===== SEMANA 03 · INICIO =====
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { blurOnWebNavigation } from './src/navigation/useWebFocusFix';
 import { RootNavigator } from './src/navigation/RootNavigator';
 // ===== SEMANA 03 · FIN =====
 
@@ -32,7 +33,7 @@ export default function App(): React.JSX.Element {
   return (
     <QueryClientProvider client={queryClient}>
       <SafeAreaProvider>
-        <NavigationContainer>
+        <NavigationContainer onStateChange={blurOnWebNavigation}>
           <RootNavigator />
         </NavigationContainer>
         <StatusBar style="light" />

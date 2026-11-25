@@ -71,11 +71,7 @@ function HomeStackNavigator(): React.JSX.Element {
               accessibilityLabel={`Editar ${route.params.name}`}
               style={({ pressed }) => (pressed ? { opacity: 0.6 } : undefined)}
             >
-              <Ionicons
-                name="create-outline"
-                size={SIZES.iconMd}
-                color={COLORS.accent}
-              />
+              <Ionicons name="create-outline" size={SIZES.iconMd} color={COLORS.accent} />
             </Pressable>
           ),
         })}

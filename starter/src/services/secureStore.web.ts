@@ -22,14 +22,12 @@ export async function getItemAsync(key: string): Promise<string | null> {
 }
 
 export async function setItemAsync(key: string, value: string): Promise<void> {
-  try {
-    getLocalStorage()?.setItem(PREFIX + key, value);
-  } catch {}
+  const storage = getLocalStorage();
+  if (!storage) throw new Error('El almacenamiento web no está disponible.');
+  storage.setItem(PREFIX + key, value);
 }
 
 export async function deleteItemAsync(key: string): Promise<void> {
-  try {
-    getLocalStorage()?.removeItem(PREFIX + key);
-  } catch {}
+  getLocalStorage()?.removeItem(PREFIX + key);
 }
 // ===== SEMANA 07 · FIN =====
