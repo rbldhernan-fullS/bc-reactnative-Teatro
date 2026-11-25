@@ -6,8 +6,7 @@
 
 App móvil desarrollada con **React Native** y **Expo** que implementa una lista virtualizada con `FlatList`, filtrado y búsqueda en tiempo real mediante `TextInput`, optimización de renderizado con `useMemo` y `useCallback`, manejo responsivo del teclado con `KeyboardAvoidingView` y arquitectura de diseño visual centralizada (Theming).
 
-<video src="docs/Week-02/video_week_02.mp4" controls="controls" width="100%">
-</video>
+[Ver el video de Semana 02](https://github.com/rbldhernan-fullS/bc-reactnative-Teatro/blob/main/docs/Week-02/video_week_02.mp4)
 
 ---
 
