@@ -1,13 +1,6 @@
 // ===== SEMANA 01 · INICIO =====
 import React from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  StyleSheet,
-  SafeAreaView,
-  StatusBar,
-} from 'react-native';
+import { View, Text, ScrollView, StyleSheet, SafeAreaView, StatusBar } from 'react-native';
 import { Item } from '../types';
 import { ItemCard } from '../components/ItemCard';
 import { MOCK_ITEMS } from '../data/mockData';

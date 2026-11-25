@@ -14,16 +14,14 @@ export function ItemCard({ item, onPress }: ItemCardProps): React.JSX.Element {
       style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
       onPress={() => onPress(item)}
     >
-      <Image
-        source={{ uri: item.imageUri }}
-        style={styles.cardImage}
-        resizeMode="cover"
-      />
+      <Image source={{ uri: item.imageUri }} style={styles.cardImage} resizeMode="cover" />
       <View style={styles.cardBody}>
         <Text style={styles.cardName}>{item.name}</Text>
         <Text style={styles.cardSubtitle}>{item.subtitle}</Text>
         <View style={styles.cardFooter}>
-          <Text style={styles.cardGenre}>{item.genre} · {item.date}</Text>
+          <Text style={styles.cardGenre}>
+            {item.genre} · {item.date}
+          </Text>
           <Text style={styles.cardPrice}>${item.price.toLocaleString('es-CO')}</Text>
         </View>
       </View>
