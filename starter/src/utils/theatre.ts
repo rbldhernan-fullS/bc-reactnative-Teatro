@@ -25,10 +25,7 @@ export function getHallCapacity(hall: TheatreHall): number {
   return layout.rows * layout.seatsPerRow;
 }
 
-export function getHallOccupancy(
-  hall: TheatreHall,
-  availableSeats: number
-): number {
+export function getHallOccupancy(hall: TheatreHall, availableSeats: number): number {
   const capacity = getHallCapacity(hall);
   const occupiedSeats = capacity - availableSeats;
   return Math.min(1, Math.max(0, occupiedSeats / capacity));
@@ -47,15 +44,10 @@ function hashString(value: string): number {
   return hash >>> 0;
 }
 
-export function buildSeatMap(
-  item: Pick<Item, 'id' | 'hall' | 'availableSeats'>
-): Seat[] {
+export function buildSeatMap(item: Pick<Item, 'id' | 'hall' | 'availableSeats'>): Seat[] {
   const layout = HALL_LAYOUT[item.hall];
   const totalSeats = layout.rows * layout.seatsPerRow;
-  const availableSeats = Math.min(
-    totalSeats,
-    Math.max(0, item.availableSeats)
-  );
+  const availableSeats = Math.min(totalSeats, Math.max(0, item.availableSeats));
   const occupiedCount = totalSeats - availableSeats;
   const occupiedIndices = new Set<number>();
 

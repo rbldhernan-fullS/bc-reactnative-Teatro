@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger';
 // ===== SEMANA 07 · INICIO =====
 import AsyncStorage from '@react-native-async-storage/async-storage';
 // ===== SEMANA 07 · FIN =====
@@ -35,6 +36,7 @@ export async function readPlaysCache(): Promise<Item[] | null> {
 
     return result.data;
   } catch {
+    logger.warn('No se pudo leer la caché de cartelera.');
     return null;
   }
 }

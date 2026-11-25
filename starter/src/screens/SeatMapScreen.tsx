@@ -1,12 +1,8 @@
+import { SeatMapSurface } from '../components/SeatMapSurface';
+import { notify } from '../platform/notify';
 // ===== SEMANA 01 · INICIO =====
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import {
-  Alert,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import type { LayoutChangeEvent } from 'react-native';
 // ===== SEMANA 01 · FIN =====
 // ===== SEMANA 03 · INICIO =====
@@ -15,12 +11,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 // ===== SEMANA 03 · FIN =====
 // ===== SEMANA 10 · INICIO =====
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-} from 'react-native-reanimated';
+import { Gesture } from 'react-native-gesture-handler';
+import { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import type { Seat, TheatreHall } from '../types';
 import type { SeatMapScreenProps } from '../navigation/types';
 import { AnimatedButton } from '../components/AnimatedButton';
@@ -43,10 +35,7 @@ const MAX_SEATS_PER_BOOKING = 8;
 
 function getFitScale(hall: TheatreHall, viewportWidth: number): number {
   const layout = HALL_LAYOUT[hall];
-  const contentWidth =
-    ROW_LABEL_WIDTH +
-    layout.seatsPerRow * (SEAT_SIZE + SEAT_GAP) +
-    AISLE_EXTRA;
+  const contentWidth = ROW_LABEL_WIDTH + layout.seatsPerRow * (SEAT_SIZE + SEAT_GAP) + AISLE_EXTRA;
 
   if (viewportWidth <= 0) {
     return 1;
@@ -59,7 +48,7 @@ function clampTranslation(
   value: number,
   contentSize: number,
   viewportSize: number,
-  scale: number
+  scale: number,
 ): number {
   'worklet';
   const limit = Math.max(0, (contentSize * scale - viewportSize) / 2);
@@ -73,6 +62,8 @@ export function SeatMapScreen(): React.JSX.Element {
   const { id } = route.params;
   const { data: item, isLoading, isError, error, refetch } = usePlayById(id);
 
+  const [webZoom, setWebZoom] = useState(1);
+  const [webResetKey, setWebResetKey] = useState(0);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [viewport, setViewport] = useState({ width: 0, height: 0 });
 
@@ -96,15 +87,9 @@ export function SeatMapScreen(): React.JSX.Element {
     return Array.from(grouped.entries());
   }, [seats]);
 
-  const contentWidth =
-    ROW_LABEL_WIDTH +
-    layout.seatsPerRow * (SEAT_SIZE + SEAT_GAP) +
-    AISLE_EXTRA;
+  const contentWidth = ROW_LABEL_WIDTH + layout.seatsPerRow * (SEAT_SIZE + SEAT_GAP) + AISLE_EXTRA;
   const contentHeight = STAGE_HEIGHT + layout.rows * ROW_HEIGHT + SPACING.sm;
-  const initialScale = Math.max(
-    MIN_INITIAL_SCALE,
-    getFitScale(hall, viewport.width)
-  );
+  const initialScale = Math.max(MIN_INITIAL_SCALE, getFitScale(hall, viewport.width));
   const minScale = 0.5;
 
   const scale = useSharedValue(1);
@@ -127,27 +112,14 @@ export function SeatMapScreen(): React.JSX.Element {
           savedScale.value = scale.value;
         })
         .onUpdate((event) => {
-          scale.value = Math.min(
-            MAX_SCALE,
-            Math.max(minScale, savedScale.value * event.scale)
-          );
+          scale.value = Math.min(MAX_SCALE, Math.max(minScale, savedScale.value * event.scale));
         })
         .onEnd(() => {
           translateX.value = withSpring(
-            clampTranslation(
-              translateX.value,
-              contentWidth,
-              viewport.width,
-              scale.value
-            )
+            clampTranslation(translateX.value, contentWidth, viewport.width, scale.value),
           );
           translateY.value = withSpring(
-            clampTranslation(
-              translateY.value,
-              contentHeight,
-              viewport.height,
-              scale.value
-            )
+            clampTranslation(translateY.value, contentHeight, viewport.height, scale.value),
           );
         }),
     [
@@ -160,7 +132,7 @@ export function SeatMapScreen(): React.JSX.Element {
       translateY,
       viewport.height,
       viewport.width,
-    ]
+    ],
   );
 
   const panGesture = useMemo(
@@ -177,20 +149,10 @@ export function SeatMapScreen(): React.JSX.Element {
         })
         .onEnd(() => {
           translateX.value = withSpring(
-            clampTranslation(
-              translateX.value,
-              contentWidth,
-              viewport.width,
-              scale.value
-            )
+            clampTranslation(translateX.value, contentWidth, viewport.width, scale.value),
           );
           translateY.value = withSpring(
-            clampTranslation(
-              translateY.value,
-              contentHeight,
-              viewport.height,
-              scale.value
-            )
+            clampTranslation(translateY.value, contentHeight, viewport.height, scale.value),
           );
         }),
     [
@@ -203,12 +165,12 @@ export function SeatMapScreen(): React.JSX.Element {
       translateY,
       viewport.height,
       viewport.width,
-    ]
+    ],
   );
 
   const mapGesture = useMemo(
     () => Gesture.Simultaneous(pinchGesture, panGesture),
-    [panGesture, pinchGesture]
+    [panGesture, pinchGesture],
   );
 
   const mapStyle = useAnimatedStyle(() => ({
@@ -222,13 +184,15 @@ export function SeatMapScreen(): React.JSX.Element {
   const handleViewportLayout = useCallback((event: LayoutChangeEvent): void => {
     const { width, height } = event.nativeEvent.layout;
     setViewport((current) =>
-      current.width === width && current.height === height
-        ? current
-        : { width, height }
+      current.width === width && current.height === height ? current : { width, height },
     );
   }, []);
 
   const handleResetView = useCallback((): void => {
+    if (Platform.OS === 'web') {
+      setWebZoom(1);
+      setWebResetKey((key) => key + 1);
+    }
     scale.value = withSpring(initialScale, { damping: 16, stiffness: 180 });
     translateX.value = withSpring(0);
     translateY.value = withSpring(0);
@@ -243,9 +207,9 @@ export function SeatMapScreen(): React.JSX.Element {
       const alreadySelected = selectedIdSet.has(seat.id);
 
       if (!alreadySelected && selectedIds.length >= MAX_SEATS_PER_BOOKING) {
-        Alert.alert(
+        notify(
           'Límite de butacas',
-          `Puedes seleccionar hasta ${MAX_SEATS_PER_BOOKING} butacas por reserva.`
+          `Puedes seleccionar hasta ${MAX_SEATS_PER_BOOKING} butacas por reserva.`,
         );
         return;
       }
@@ -253,10 +217,10 @@ export function SeatMapScreen(): React.JSX.Element {
       setSelectedIds((current) =>
         current.includes(seat.id)
           ? current.filter((selectedId) => selectedId !== seat.id)
-          : [...current, seat.id]
+          : [...current, seat.id],
       );
     },
-    [selectedIdSet, selectedIds.length]
+    [selectedIdSet, selectedIds.length],
   );
 
   const handleConfirm = useCallback((): void => {
@@ -266,15 +230,15 @@ export function SeatMapScreen(): React.JSX.Element {
 
     const total = selectedIds.length * item.price;
 
-    Alert.alert(
+    notify(
       'Reserva confirmada',
       `${selectedIds.length} ${
         selectedIds.length === 1 ? 'butaca' : 'butacas'
       } para "${item.name}"\n${item.hall} · ${item.date} · ${item.time}\nTotal: $${total.toLocaleString(
-        'es-CO'
+        'es-CO',
       )} COP`,
-      [{ text: 'Cerrar', onPress: () => setSelectedIds([]) }]
     );
+    setSelectedIds([]);
   }, [item, selectedIds]);
 
   if (isLoading) {
@@ -348,74 +312,81 @@ export function SeatMapScreen(): React.JSX.Element {
       </View>
 
       <View style={styles.viewport} onLayout={handleViewportLayout}>
-        <GestureDetector gesture={mapGesture}>
-          <Animated.View
-            style={[
-              styles.mapContent,
-              { width: contentWidth, height: contentHeight },
-              mapStyle,
-            ]}
-          >
-            <Text style={styles.stageLabel}>ESCENARIO</Text>
+        <SeatMapSurface
+          key={webResetKey}
+          gesture={mapGesture}
+          width={contentWidth}
+          height={contentHeight}
+          zoom={webZoom}
+          mapStyle={[styles.mapContent, mapStyle]}
+        >
+          <Text style={styles.stageLabel}>ESCENARIO</Text>
 
-            {rows.map(([row, rowSeats]) => (
-              <View key={row} style={styles.seatRow}>
-                <Text style={styles.rowLabel}>{row}</Text>
+          {rows.map(([row, rowSeats]) => (
+            <View key={row} style={styles.seatRow}>
+              <Text style={styles.rowLabel}>{row}</Text>
 
-                {rowSeats.map((seat) => {
-                  const isSelected = selectedIdSet.has(seat.id);
-                  const isOccupied = seat.status === 'occupied';
-                  const isAisleSeat =
-                    seat.number === Math.ceil(layout.seatsPerRow / 2) + 1;
+              {rowSeats.map((seat) => {
+                const isSelected = selectedIdSet.has(seat.id);
+                const isOccupied = seat.status === 'occupied';
+                const isAisleSeat = seat.number === Math.ceil(layout.seatsPerRow / 2) + 1;
 
-                  return (
-                    <Pressable
-                      key={seat.id}
-                      onPress={() => handleSeatPress(seat)}
-                      disabled={isOccupied}
+                return (
+                  <Pressable
+                    key={seat.id}
+                    onPress={() => handleSeatPress(seat)}
+                    disabled={isOccupied}
+                    style={[
+                      styles.seat,
+                      isAisleSeat && styles.aisleSeat,
+                      isOccupied && styles.seatOccupied,
+                      isSelected && styles.seatSelected,
+                    ]}
+                    accessibilityRole="button"
+                    accessibilityState={{
+                      disabled: isOccupied,
+                      selected: isSelected,
+                    }}
+                    accessibilityLabel={`Fila ${seat.row}, butaca ${seat.number}${
+                      isOccupied ? ', ocupada' : isSelected ? ', seleccionada' : ', disponible'
+                    }`}
+                  >
+                    <Text
                       style={[
-                        styles.seat,
-                        isAisleSeat && styles.aisleSeat,
-                        isOccupied && styles.seatOccupied,
-                        isSelected && styles.seatSelected,
+                        styles.seatNumber,
+                        isOccupied && styles.seatNumberOccupied,
+                        isSelected && styles.seatNumberSelected,
                       ]}
-                      accessibilityRole="button"
-                      accessibilityState={{
-                        disabled: isOccupied,
-                        selected: isSelected,
-                      }}
-                      accessibilityLabel={`Fila ${seat.row}, butaca ${
-                        seat.number
-                      }${
-                        isOccupied
-                          ? ', ocupada'
-                          : isSelected
-                            ? ', seleccionada'
-                            : ', disponible'
-                      }`}
                     >
-                      <Text
-                        style={[
-                          styles.seatNumber,
-                          isOccupied && styles.seatNumberOccupied,
-                          isSelected && styles.seatNumberSelected,
-                        ]}
-                      >
-                        {seat.number}
-                      </Text>
-                    </Pressable>
-                  );
-                })}
-              </View>
-            ))}
-          </Animated.View>
-        </GestureDetector>
+                      {seat.number}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+          ))}
+        </SeatMapSurface>
 
+        {Platform.OS === 'web' ? (
+          <View style={styles.webZoomControls}>
+            <Pressable
+              onPress={() => setWebZoom((value) => Math.max(0.5, value - 0.25))}
+              accessibilityRole="button"
+              accessibilityLabel="Alejar mapa"
+            >
+              <Text style={styles.resetText}>−</Text>
+            </Pressable>
+            <Pressable
+              onPress={() => setWebZoom((value) => Math.min(2, value + 0.25))}
+              accessibilityRole="button"
+              accessibilityLabel="Acercar mapa"
+            >
+              <Text style={styles.resetText}>+</Text>
+            </Pressable>
+          </View>
+        ) : null}
         <Pressable
-          style={({ pressed }) => [
-            styles.resetButton,
-            pressed && styles.resetButtonPressed,
-          ]}
+          style={({ pressed }) => [styles.resetButton, pressed && styles.resetButtonPressed]}
           onPress={handleResetView}
           accessibilityRole="button"
           accessibilityLabel="Centrar y restablecer el zoom"
@@ -426,23 +397,18 @@ export function SeatMapScreen(): React.JSX.Element {
       </View>
 
       <Text style={styles.hint}>
-        Pellizca para zoom · arrastra con dos dedos · toca una butaca
+        {Platform.OS === 'web'
+          ? 'Desplaza el mapa, usa +/− y elige una butaca'
+          : 'Pellizca para zoom · arrastra con dos dedos · toca una butaca'}
       </Text>
 
-      <View
-        style={[
-          styles.bottomBar,
-          { paddingBottom: SPACING.md + insets.bottom },
-        ]}
-      >
+      <View style={[styles.bottomBar, { paddingBottom: SPACING.md + insets.bottom }]}>
         <View style={styles.summary}>
           <Text style={styles.summaryLabel}>
-            {selectedIds.length}{' '}
-            {selectedIds.length === 1 ? 'butaca' : 'butacas'}
+            {selectedIds.length} {selectedIds.length === 1 ? 'butaca' : 'butacas'}
           </Text>
           <Text style={styles.summaryTotal}>
-            ${total.toLocaleString('es-CO')}{' '}
-            <Text style={styles.summaryCurrency}>COP</Text>
+            ${total.toLocaleString('es-CO')} <Text style={styles.summaryCurrency}>COP</Text>
           </Text>
         </View>
 
@@ -515,6 +481,16 @@ const styles = StyleSheet.create({
   legendText: {
     fontSize: TYPOGRAPHY.size.xs,
     color: COLORS.textMuted,
+  },
+  webZoomControls: {
+    position: 'absolute',
+    bottom: SPACING.sm,
+    left: SPACING.sm,
+    flexDirection: 'row',
+    gap: SPACING.md,
+    backgroundColor: COLORS.surface,
+    padding: SPACING.sm,
+    borderRadius: RADIUS.md,
   },
   viewport: {
     flex: 1,
