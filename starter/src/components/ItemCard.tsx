@@ -13,6 +13,8 @@ export function ItemCard({ item, onPress }: ItemCardProps): React.JSX.Element {
     <Pressable
       style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
       onPress={() => onPress(item)}
+      accessibilityRole="button"
+      accessibilityLabel={`Ver detalles de ${item.name}`}
     >
       <Image source={{ uri: item.imageUri }} style={styles.cardImage} resizeMode="cover" />
       <View style={styles.cardBody}>

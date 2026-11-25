@@ -9,8 +9,9 @@ export function HomeScreen(): React.JSX.Element {
   const DOMAIN_TITLE = 'Teatro';
   const DOMAIN_SUBTITLE = 'Cartelera de la temporada';
 
-  function handleItemPress(item: Item): void {
-    console.log('Item seleccionado:', item.name);
+  function handleItemPress(_item: Item): void {
+    // En la Semana 01 no hay navegación ni detalle aún (llega en Semana 03).
+    // El feedback visual inmediato es el estado `pressed` de la tarjeta (E‑28).
   }
 
   return (
