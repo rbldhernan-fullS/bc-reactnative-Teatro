@@ -1,0 +1,22 @@
+# Normaliza finales de línea a LF en todo el repositorio y evita
+# que Git trate los binarios como texto (diffs corruptos, CRLF).
+* text=auto eol=lf
+
+# Binarios: nunca normalizar
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.mp4 binary
+*.mov binary
+*.mp3 binary
+*.ttf binary
+*.otf binary
+*.woff binary
+*.woff2 binary
+
+# Lockfiles y minificados: sin diff en revisiones
+pnpm-lock.yaml linguist-generated=true
+*.min.js linguist-generated=true
