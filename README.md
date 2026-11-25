@@ -34,7 +34,7 @@ La app administra la cartelera y la cuenta de los socios del **Club Teatro Coló
 | 3 | Selección de galería | `PhotoPicker` | `launchImageLibraryAsync` con `mediaTypes: ['images']`, recorte `3:4` y manejo de `result.canceled`. |
 | 4 | Afiche local | `posterStore` | URI por obra; prioridad sobre `imageUri` de la API y badge **Afiche local**. |
 | 5 | Ubicación puntual | `useLocation` | `requestForegroundPermissionsAsync` + `getCurrentPositionAsync` con `Location.Accuracy.Balanced`. |
-| 6 | Dirección textual | `useLocation` | `reverseGeocodeAsync` con `formattedAddress` y composición de respaldo. |
+| 6 | Dirección textual | `useLocation` | Dirección o referencia escrita por el usuario. |
 | 7 | Seguimiento en vivo | `useLocation` | `watchPositionAsync` cada 5 s / 10 m con `subscription.remove()` en cleanup. |
 | 8 | Distancia a la sede | `VenueCard` | Haversine contra las coordenadas del Teatro Colón y `formatDistance`. |
 | 9 | Abrir mapas | `VenueCard` | `Linking.openURL` con la ruta caminando a la sede. |
@@ -85,7 +85,7 @@ Los permisos se declaran con los plugins de `expo-camera`, `expo-image-picker` y
 - `CameraView` montado a pantalla completa y `takePictureAsync()`.
 - `launchImageLibraryAsync()` con `result.canceled` controlado.
 - `requestForegroundPermissionsAsync()` y `Location.Accuracy` importado del paquete.
-- `getCurrentPositionAsync()`, `watchPositionAsync()` y `reverseGeocodeAsync()`.
+- `getCurrentPositionAsync()` y `watchPositionAsync()`.
 - `subscription.remove()` en el cleanup del `useEffect`.
 - Sin `TODO`, placeholders ni `as any`.
 
@@ -143,7 +143,7 @@ Flujo manual sugerido:
 3. Confirmar que el banner del detalle cambia y muestra el badge **Afiche local**.
 4. Tocar **Galería**, elegir una imagen y verificar que reemplaza el afiche.
 5. Tocar **Quitar** y confirmar que vuelve el afiche de la API.
-6. En **Sede del teatro**, tocar **Permitir acceso**, revisar coordenadas, dirección y distancia.
+6. En **Sede del teatro**, tocar **Permitir acceso**, revisar coordenadas y distancia, y escribir una dirección de referencia.
 7. Activar **Seguir mi recorrido**, mover la ubicación simulada y ver la distancia actualizada.
 8. Tocar **Cómo llegar**: se abre la app de mapas con la ruta a la sede.
 9. Crear una obra con afiche local y confirmar que se conserva al abrir su detalle.
@@ -167,10 +167,10 @@ Flujo manual sugerido:
 | React Native Gesture Handler | 2.32.0 | Pan, pinch y tap |
 | TanStack Query | 5.105 | Estado del servidor |
 | Zustand | 5.0 | Sesión, guardados y afiche local |
-| React Hook Form + Zod | 7.81 / 4.4.3 | Formularios y validación |
+| React Hook Form + Zod | 7.81 / 4.6.6 | Formularios y validación |
 | Expo SecureStore | 57.0.4 | Tokens cifrados |
 | React Native MMKV | 4.3.2 | Preferencias locales |
-| AsyncStorage | 2.2.0 | Perfil persistido y caché offline |
+| AsyncStorage | 2.2.0 | Guardados y caché offline |
 | Axios | 1.21 | Cliente HTTP e interceptor 401 |
 
 ---
@@ -219,7 +219,7 @@ starter/
     │   ├── AppNavigator.tsx        # Stack con SeatMap y Camera
     │   └── types.ts                # Parámetros tipados de navegación
     ├── stores/
-    │   ├── authStore.ts            # Zustand + persist + bootstrap
+    │   ├── authStore.ts            # Zustand y restauración de sesión
     │   ├── savedStore.ts           # Ids de obras guardadas
     │   └── posterStore.ts          # Afiche local por obra
     ├── services/                   # Axios, auth y adaptador de dominio
@@ -245,3 +245,13 @@ pnpm web
 La app también corre en el navegador con `react-native-web` y Metro. Los módulos exclusivos de nativo
 se sustituyen por implementaciones web mediante archivos `.web.ts`: **MMKV** y **SecureStore** usan
 `localStorage`, y las notificaciones quedan deshabilitadas en web sin romper el arranque.
+
+## Verificación web y mapa de archivos
+
+Desde `starter` ejecuta `pnpm install --frozen-lockfile`, `pnpm verify` y `pnpm export:web`. Inicia `pnpm api` y `pnpm web` en terminales separadas. La exportación para producción requiere `EXPO_PUBLIC_API_URL` con la URL HTTPS antes de compilar.
+
+- Semana 09: animaciones en `src/components/AnimatedCard.tsx`, `AnimatedButton.tsx` y pantallas de cartelera y detalle.
+- Semana 10: gestos en `src/components/SwipeableCard.tsx` y su variante web, mapa en `src/screens/SeatMapScreen.tsx`. Desliza a la izquierda para guardar y a la derecha para descartar.
+- Semana 11: `src/hooks/useLocation.ts`, `src/components/VenueCard.tsx` y `PhotoPicker.tsx`, `src/screens/CameraScreen.tsx`. El afiche personalizado vive en memoria y se pierde al recargar o cerrar la app.
+
+[Video de la semana](https://github.com/rbldhernan-fullS/bc-reactnative-Teatro/blob/main/docs/Week-11/video_week_11.mp4)
