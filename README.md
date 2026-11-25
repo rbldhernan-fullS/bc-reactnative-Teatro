@@ -115,7 +115,7 @@ useForm<PlayFormInput, unknown, PlayFormValues>({
 
 ```bash
 cd starter
-pnpm install
+pnpm install --frozen-lockfile
 
 # API + Metro en un solo comando
 pnpm dev
@@ -241,7 +241,7 @@ Flujo manual sugerido:
 
 ```bash
 cd starter
-pnpm install
+pnpm install --frozen-lockfile
 pnpm web
 ```
 
@@ -253,7 +253,9 @@ Desde `starter`, ejecuta `pnpm install --frozen-lockfile`, `pnpm verify` y `pnpm
 
 [Video de la semana](https://github.com/rbldhernan-fullS/bc-reactnative-Teatro/blob/main/docs/Week-06/video_week_06.mp4)
 
-## Mapa por semana
+## Mapa de archivos por semana
+
+Rutas desde `starter/`.
 
 | Semana | Archivos principales |
 | --- | --- |
