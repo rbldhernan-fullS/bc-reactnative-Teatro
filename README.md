@@ -18,6 +18,10 @@ pnpm export:web
 
 Rutas web: `/` (cartelera), `/obra/:id` (detalle) y `/guardados` (Favoritos). La reserva confirmada muestra un aviso. El perfil se incorpora cuando exista la pantalla.
 
+## Mapa de archivos por semana
+
+Rutas desde `starter/`.
+
 | Semana | Archivos |
 | --- | --- |
 | 01 | `App.tsx`, `src/components/ItemCard.tsx`, `src/data/mockData.ts`, `src/types/index.ts` |
