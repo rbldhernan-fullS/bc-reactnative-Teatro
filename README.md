@@ -95,7 +95,7 @@ Los permisos se declaran con los plugins de `expo-camera`, `expo-image-picker` y
 
 ```bash
 cd starter
-pnpm install
+pnpm install --frozen-lockfile
 
 # 1. API local de la cartelera (terminal 1)
 pnpm api
@@ -238,7 +238,7 @@ starter/
 
 ```bash
 cd starter
-pnpm install
+pnpm install --frozen-lockfile
 pnpm web
 ```
 
@@ -246,12 +246,29 @@ La app también corre en el navegador con `react-native-web` y Metro. Los módul
 se sustituyen por implementaciones web mediante archivos `.web.ts`: **MMKV** y **SecureStore** usan
 `localStorage`, y las notificaciones quedan deshabilitadas en web sin romper el arranque.
 
-## Verificación web y mapa de archivos
+## Verificación web
 
 Desde `starter` ejecuta `pnpm install --frozen-lockfile`, `pnpm verify` y `pnpm export:web`. Inicia `pnpm api` y `pnpm web` en terminales separadas. La exportación para producción requiere `EXPO_PUBLIC_API_URL` con la URL HTTPS antes de compilar.
 
-- Semana 09: animaciones en `src/components/AnimatedCard.tsx`, `AnimatedButton.tsx` y pantallas de cartelera y detalle.
-- Semana 10: gestos en `src/components/SwipeableCard.tsx` y su variante web, mapa en `src/screens/SeatMapScreen.tsx`. Desliza a la izquierda para guardar y a la derecha para descartar.
-- Semana 11: `src/hooks/useLocation.ts`, `src/components/VenueCard.tsx` y `PhotoPicker.tsx`, `src/screens/CameraScreen.tsx`. El afiche personalizado vive en memoria y se pierde al recargar o cerrar la app.
+Desliza a la izquierda para guardar y a la derecha para descartar.
+El afiche personalizado vive en memoria y se pierde al recargar o cerrar la app.
 
 [Video de la semana](https://github.com/rbldhernan-fullS/bc-reactnative-Teatro/blob/main/docs/Week-11/video_week_11.mp4)
+
+## Mapa de archivos por semana
+
+Rutas desde `starter/`. Un archivo puede reunir cambios de varias semanas.
+
+| Semana | Archivos principales |
+| --- | --- |
+| 01 | `App.tsx`, `src/components/ItemCard.tsx`, `src/types/index.ts` |
+| 02 | `src/screens/HomeScreen.tsx`, `src/theme/index.ts` |
+| 03 | `src/navigation/`, `src/screens/DetailScreen.tsx`, `src/platform/notify.ts` |
+| 04 | `src/stores/savedStore.ts`, `src/screens/SavedScreen.tsx`, `src/components/SaveButton.tsx` |
+| 05 | `src/config/env.ts`, `src/services/http.ts`, `src/hooks/usePlays.ts`, `src/components/ScreenState.tsx` |
+| 06 | `src/schemas/playSchema.ts`, `src/components/PlayForm.tsx`, `src/screens/EditScreen.tsx` |
+| 07 | `src/storage/`, `src/hooks/usePreferences.ts`, `src/screens/SettingsScreen.tsx` |
+| 08 | `src/stores/authStore.ts`, `src/services/authClient.ts`, `src/schemas/authSchema.ts` |
+| 09 | `src/components/AnimatedCard.tsx`, `src/components/AnimatedButton.tsx`, `src/components/ProgressBar.tsx` |
+| 10 | `src/components/SwipeableCard.tsx`, `src/components/SwipeableCard.web.tsx`, `src/screens/SeatMapScreen.tsx`, `src/components/SeatMapSurface.web.tsx` |
+| 11 | `src/hooks/useLocation.ts`, `src/components/VenueCard.tsx`, `src/components/PhotoPicker.tsx`, `src/screens/CameraScreen.tsx` |
