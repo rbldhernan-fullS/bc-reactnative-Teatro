@@ -1,16 +1,7 @@
 // ===== SEMANA 05 · INICIO =====
-import {
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import {
-  createPlay,
-  fetchPlayById,
-  fetchPlays,
-  updatePlay,
-} from '../services/theatreApi';
+import { createPlay, fetchPlayById, fetchPlays, updatePlay } from '../services/theatreApi';
 import type { CreatePlayPayload, Item, UpdatePlayPayload } from '../types';
 
 export const PLAYS_QUERY_KEY = ['plays'] as const;
