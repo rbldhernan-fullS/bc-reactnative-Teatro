@@ -1,12 +1,6 @@
 // ===== SEMANA 01 · INICIO =====
 import React, { useEffect } from 'react';
-import {
-  View,
-  Text,
-  Image,
-  StyleSheet,
-  Pressable,
-} from 'react-native';
+import { View, Text, Image, StyleSheet, Pressable } from 'react-native';
 // ===== SEMANA 01 · FIN =====
 // ===== SEMANA 03 · INICIO =====
 import { useRoute, useNavigation } from '@react-navigation/native';
@@ -153,9 +147,7 @@ export function DetailScreen(): React.JSX.Element {
     return (
       <View style={[styles.screenWrapper, styles.notFoundContainer]}>
         <Text style={styles.notFoundTitle}>Obra no encontrada</Text>
-        <Text style={styles.notFoundSubtitle}>
-          La obra que buscas ya no está en cartelera.
-        </Text>
+        <Text style={styles.notFoundSubtitle}>La obra que buscas ya no está en cartelera.</Text>
         <Pressable
           style={styles.bookButton}
           onPress={() => navigation.goBack()}
@@ -208,11 +200,7 @@ export function DetailScreen(): React.JSX.Element {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.imageContainer}>
-          <Image
-            source={{ uri: posterUri }}
-            style={styles.image}
-            resizeMode="cover"
-          />
+          <Image source={{ uri: posterUri }} style={styles.image} resizeMode="cover" />
           <View style={styles.imageOverlay} />
 
           <View style={styles.badgesRow}>
@@ -244,9 +232,7 @@ export function DetailScreen(): React.JSX.Element {
             accessibilityRole="button"
             accessibilityState={{ selected: isSaved }}
             accessibilityLabel={
-              isSaved
-                ? `Quitar ${name} de guardados`
-                : `Guardar ${name} en guardados`
+              isSaved ? `Quitar ${name} de guardados` : `Guardar ${name} en guardados`
             }
           >
             <Ionicons
@@ -254,12 +240,7 @@ export function DetailScreen(): React.JSX.Element {
               size={SIZES.iconSm}
               color={isSaved ? COLORS.accent : COLORS.textPrimary}
             />
-            <Text
-              style={[
-                styles.savePillText,
-                isSaved && styles.savePillTextActive,
-              ]}
-            >
+            <Text style={[styles.savePillText, isSaved && styles.savePillTextActive]}>
               {isSaved ? 'Guardada' : 'Guardar'}
             </Text>
           </Pressable>
@@ -301,9 +282,7 @@ export function DetailScreen(): React.JSX.Element {
           <View style={styles.availabilityBanner}>
             <Text style={styles.availabilityIcon}>🎭</Text>
             <View style={styles.availabilityTextWrapper}>
-              <Text style={styles.availabilityTitle}>
-                Aforo y Disponibilidad
-              </Text>
+              <Text style={styles.availabilityTitle}>Aforo y Disponibilidad</Text>
               <Text style={styles.availabilitySubtitle}>
                 {availableSeats > 10
                   ? `${availableSeats} butacas disponibles en esta función`
@@ -326,11 +305,7 @@ export function DetailScreen(): React.JSX.Element {
           {/* ===== SEMANA 11 · INICIO ===== */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Afiche de la obra</Text>
-            <PhotoPicker
-              targetId={id}
-              fallbackUri={imageUri}
-              showPreview={false}
-            />
+            <PhotoPicker targetId={id} fallbackUri={imageUri} showPreview={false} />
           </View>
 
           <VenueCard hall={hall} />
@@ -365,17 +340,11 @@ export function DetailScreen(): React.JSX.Element {
         </View>
       </Animated.ScrollView>
 
-      <View
-        style={[
-          styles.bottomBar,
-          { paddingBottom: SPACING.md + insets.bottom },
-        ]}
-      >
+      <View style={[styles.bottomBar, { paddingBottom: SPACING.md + insets.bottom }]}>
         <View style={styles.priceColumn}>
           <Text style={styles.priceCaption}>Entrada General</Text>
           <Text style={styles.priceNumber}>
-            ${price.toLocaleString('es-CO')}{' '}
-            <Text style={styles.priceCurrency}>COP</Text>
+            ${price.toLocaleString('es-CO')} <Text style={styles.priceCurrency}>COP</Text>
           </Text>
         </View>
 

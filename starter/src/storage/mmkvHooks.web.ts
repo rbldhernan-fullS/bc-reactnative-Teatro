@@ -63,7 +63,7 @@ function writeNumber(key: string, value: number | undefined): void {
 function useStoredValue<T>(
   key: string,
   read: (name: string) => T | undefined,
-  write: (name: string, value: T | undefined) => void
+  write: (name: string, value: T | undefined) => void,
 ): [T | undefined, (value: T | undefined) => void] {
   const [value, setValue] = useState<T | undefined>(() => read(key));
 
@@ -80,26 +80,26 @@ function useStoredValue<T>(
       setValue(next);
       notify(key);
     },
-    [key, write]
+    [key, write],
   );
 
   return [value, update];
 }
 
 export function useMMKVString(
-  key: string
+  key: string,
 ): [string | undefined, (value: string | undefined) => void] {
   return useStoredValue(key, readString, writeString);
 }
 
 export function useMMKVBoolean(
-  key: string
+  key: string,
 ): [boolean | undefined, (value: boolean | undefined) => void] {
   return useStoredValue(key, readBoolean, writeBoolean);
 }
 
 export function useMMKVNumber(
-  key: string
+  key: string,
 ): [number | undefined, (value: number | undefined) => void] {
   return useStoredValue(key, readNumber, writeNumber);
 }

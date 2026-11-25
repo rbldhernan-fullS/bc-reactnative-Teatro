@@ -1,12 +1,6 @@
 // ===== SEMANA 01 · INICIO =====
 import React, { useEffect } from 'react';
-import {
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  View,
-} from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
 // ===== SEMANA 01 · FIN =====
 // ===== SEMANA 03 · INICIO =====
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -62,7 +56,9 @@ export function EditScreen(): React.JSX.Element {
     try {
       await updatePlay(toUpdatePlayPayload(id, values));
       navigation.goBack();
-    } catch {}
+    } catch {
+      // El formulario muestra el error de la mutación.
+    }
   }
 
   if (isLoading) {
@@ -130,9 +126,7 @@ export function EditScreen(): React.JSX.Element {
           intro={`Actualiza la ficha de "${play.name}". Los cambios se validan con Zod y se guardan en la API.`}
           posterTargetId={id}
           posterFallbackUri={play.imageUri}
-          serverError={
-            mutationError ? getApiErrorMessage(mutationError) : undefined
-          }
+          serverError={mutationError ? getApiErrorMessage(mutationError) : undefined}
         />
       </ScrollView>
     </KeyboardAvoidingView>

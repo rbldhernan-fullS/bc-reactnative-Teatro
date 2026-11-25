@@ -16,36 +16,12 @@ export interface UseLocationResult {
   requestAccess: () => Promise<void>;
   refresh: () => Promise<void>;
   toggleWatching: () => void;
-}
-
-function formatGeocodedAddress(
-  entry: Location.LocationGeocodedAddress | undefined
-): string | null {
-  if (!entry) {
-    return null;
-  }
-
-  if (entry.formattedAddress) {
-    return entry.formattedAddress;
-  }
-
-  const street = [entry.street, entry.streetNumber]
-    .filter((part): part is string => Boolean(part))
-    .join(' ');
-
-  const parts = [street, entry.district, entry.city, entry.region].filter(
-    (part): part is string => Boolean(part)
-  );
-
-  return parts.length > 0 ? parts.join(', ') : null;
+  setAddress: (address: string | null) => void;
 }
 
 export function useLocation(): UseLocationResult {
-  const [permission, setPermission] =
-    useState<Location.LocationPermissionResponse | null>(null);
-  const [coords, setCoords] = useState<Location.LocationObjectCoords | null>(
-    null
-  );
+  const [permission, setPermission] = useState<Location.LocationPermissionResponse | null>(null);
+  const [coords, setCoords] = useState<Location.LocationObjectCoords | null>(null);
   const [address, setAddress] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [requesting, setRequesting] = useState(false);
@@ -57,22 +33,6 @@ export function useLocation(): UseLocationResult {
     permissionRef.current = permission;
   }, [permission]);
 
-  const resolveAddress = useCallback(
-    async (position: Location.LocationObjectCoords): Promise<void> => {
-      try {
-        const results = await Location.reverseGeocodeAsync({
-          latitude: position.latitude,
-          longitude: position.longitude,
-        });
-
-        setAddress(formatGeocodedAddress(results[0]));
-      } catch {
-        setAddress(null);
-      }
-    },
-    []
-  );
-
   const loadPosition = useCallback(async (): Promise<void> => {
     setLoading(true);
     setError(null);
@@ -82,16 +42,17 @@ export function useLocation(): UseLocationResult {
         accuracy: Location.Accuracy.Balanced,
       });
 
+      // `reverseGeocodeAsync` fue eliminado del SDK 49 (E‑05): la dirección se
+      // escribe a mano en la tarjeta de sede y solo se guardan las coordenadas.
       setCoords(position.coords);
-      await resolveAddress(position.coords);
     } catch {
       setError(
-        'No pudimos obtener tu ubicación. Revisa que el GPS esté activo e inténtalo de nuevo.'
+        'No pudimos obtener tu ubicación. Revisa que el GPS esté activo e inténtalo de nuevo.',
       );
     } finally {
       setLoading(false);
     }
-  }, [resolveAddress]);
+  }, []);
 
   const requestAccess = useCallback(async (): Promise<void> => {
     setRequesting(true);
@@ -168,7 +129,9 @@ export function useLocation(): UseLocationResult {
             void loadPosition();
           }
         })
-        .catch(() => {});
+        .catch(() => {
+          setError('No se pudo consultar de nuevo el permiso de ubicación.');
+        });
     });
 
     return () => subscription.remove();
@@ -192,7 +155,7 @@ export function useLocation(): UseLocationResult {
         if (active) {
           setCoords(position.coords);
         }
-      }
+      },
     )
       .then((created) => {
         if (active) {
@@ -225,6 +188,7 @@ export function useLocation(): UseLocationResult {
     requestAccess,
     refresh,
     toggleWatching,
+    setAddress,
   };
 }
 // ===== SEMANA 11 · FIN =====

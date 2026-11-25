@@ -1,15 +1,8 @@
-// ===== SEMANA 10 · INICIO =====
-import 'react-native-gesture-handler';
-// ===== SEMANA 10 · FIN =====
+import { blurOnWebNavigation } from './src/navigation/useWebFocusFix';
 
 // ===== SEMANA 01 · INICIO =====
 import React, { useEffect } from 'react';
-import {
-  ActivityIndicator,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 // ===== SEMANA 01 · FIN =====
 // ===== SEMANA 05 · INICIO =====
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -51,15 +44,7 @@ function BootstrapGate(): React.JSX.Element {
   const bootstrap = useAuthStore((state) => state.bootstrap);
 
   useEffect(() => {
-    const unsubscribe = useAuthStore.persist.onFinishHydration(() => {
-      void bootstrap();
-    });
-
-    if (useAuthStore.persist.hasHydrated()) {
-      void bootstrap();
-    }
-
-    return unsubscribe;
+    void bootstrap();
   }, [bootstrap]);
 
   if (isBootstrapping) {
@@ -74,7 +59,7 @@ function BootstrapGate(): React.JSX.Element {
   }
 
   return (
-    <NavigationContainer>
+    <NavigationContainer onStateChange={blurOnWebNavigation}>
       <RootNavigator />
     </NavigationContainer>
   );

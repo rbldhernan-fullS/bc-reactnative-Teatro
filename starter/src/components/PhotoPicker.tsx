@@ -2,8 +2,8 @@
 import React, { useCallback, useState } from 'react';
 import {
   ActivityIndicator,
-  Alert,
   Image,
+  Platform,
   Pressable,
   StyleSheet,
   Text,
@@ -17,14 +17,35 @@ import { Ionicons } from '@expo/vector-icons';
 // ===== SEMANA 03 · FIN =====
 // ===== SEMANA 11 · INICIO =====
 import * as ImagePicker from 'expo-image-picker';
+import { z } from 'zod';
 
 import { usePosterStore } from '../stores/posterStore';
+import { notify } from '../platform/notify';
+import { pickPosterFile } from '../platform/pickPosterFile';
 import type { HomeStackParamList } from '../navigation/types';
 import { COLORS, RADIUS, SIZES, SPACING, TYPOGRAPHY } from '../theme';
 
-type PhotoPickerNavigationProp = NativeStackNavigationProp<
-  HomeStackParamList
->;
+const MAX_POSTER_BYTES = 5 * 1024 * 1024;
+
+/**
+ * El asset de la galería puede no traer `mimeType` ni `fileSize` en web, así
+ * que solo se validan cuando existen. La URI siempre es obligatoria.
+ */
+const posterAssetSchema = z.object({
+  uri: z.string().min(1, 'La imagen no tiene una ruta válida.'),
+  mimeType: z
+    .string()
+    .refine((value) => value.startsWith('image/'), 'El archivo debe ser una imagen.')
+    .nullish(),
+  fileSize: z
+    .number()
+    .int()
+    .positive()
+    .max(MAX_POSTER_BYTES, 'La imagen no puede superar 5 MB.')
+    .nullish(),
+});
+
+type PhotoPickerNavigationProp = NativeStackNavigationProp<HomeStackParamList>;
 
 interface PhotoPickerProps {
   targetId: string;
@@ -53,11 +74,17 @@ export function PhotoPicker({
     setPicking(true);
 
     try {
+      if (Platform.OS === 'web') {
+        const uri = await pickPosterFile();
+        if (uri) setPoster(targetId, uri);
+        return;
+      }
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ['images'],
         allowsEditing: true,
         aspect: [3, 4],
         quality: 0.8,
+        exif: false,
       });
 
       if (result.canceled) {
@@ -66,13 +93,32 @@ export function PhotoPicker({
 
       const asset = result.assets[0];
 
-      if (asset) {
-        setPoster(targetId, asset.uri);
+      if (!asset) {
+        return;
       }
-    } catch {
-      Alert.alert(
+
+      const parsedAsset = posterAssetSchema.safeParse({
+        uri: asset.uri,
+        mimeType: asset.mimeType,
+        fileSize: asset.fileSize,
+      });
+
+      if (!parsedAsset.success) {
+        notify(
+          'Afiche no válido',
+          parsedAsset.error.issues[0]?.message ??
+            'Elige una imagen de hasta 5 MB en formato JPG, PNG o WebP.',
+        );
+        return;
+      }
+
+      setPoster(targetId, parsedAsset.data.uri);
+    } catch (error) {
+      notify(
         'Galería no disponible',
-        'No pudimos abrir tus fotos. Revisa los permisos de la galería e inténtalo de nuevo.'
+        error instanceof Error && Platform.OS === 'web'
+          ? error.message
+          : 'No pudimos abrir tus fotos. Revisa los permisos de la galería e inténtalo de nuevo.',
       );
     } finally {
       setPicking(false);
@@ -83,11 +129,7 @@ export function PhotoPicker({
     <View style={styles.container}>
       {showPreview ? (
         <View style={styles.previewWrapper}>
-          <Image
-            source={{ uri: previewUri }}
-            style={styles.preview}
-            resizeMode="cover"
-          />
+          <Image source={{ uri: previewUri }} style={styles.preview} resizeMode="cover" />
           <View style={styles.previewBadge}>
             <Text style={styles.previewBadgeText}>
               {poster ? 'Afiche local' : 'Afiche de la API'}
@@ -98,10 +140,7 @@ export function PhotoPicker({
 
       <View style={styles.actions}>
         <Pressable
-          style={({ pressed }) => [
-            styles.action,
-            pressed && styles.actionPressed,
-          ]}
+          style={({ pressed }) => [styles.action, pressed && styles.actionPressed]}
           onPress={() => navigation.navigate('Camera', { targetId })}
           accessibilityRole="button"
           accessibilityLabel="Capturar el afiche con la cámara"
@@ -111,10 +150,7 @@ export function PhotoPicker({
         </Pressable>
 
         <Pressable
-          style={({ pressed }) => [
-            styles.action,
-            pressed && styles.actionPressed,
-          ]}
+          style={({ pressed }) => [styles.action, pressed && styles.actionPressed]}
           onPress={() => {
             void pickFromLibrary();
           }}
@@ -143,16 +179,13 @@ export function PhotoPicker({
             accessibilityLabel="Quitar el afiche local"
           >
             <Ionicons name="trash-outline" size={SIZES.iconSm} color={COLORS.error} />
-            <Text style={[styles.actionText, styles.actionTextDanger]}>
-              Quitar
-            </Text>
+            <Text style={[styles.actionText, styles.actionTextDanger]}>Quitar</Text>
           </Pressable>
         ) : null}
       </View>
 
       <Text style={styles.hint}>
-        La foto se guarda en este dispositivo y se muestra en el detalle de la
-        obra.
+        La foto vive en memoria y se pierde al recargar la página. No se envían metadatos EXIF.
       </Text>
     </View>
   );

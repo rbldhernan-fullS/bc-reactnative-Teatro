@@ -1,6 +1,8 @@
 // ===== SEMANA 01 · INICIO =====
 import React, { useCallback, useMemo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+
+import type { Item } from '../types';
 // ===== SEMANA 01 · FIN =====
 // ===== SEMANA 10 · INICIO =====
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -12,14 +14,10 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
-// ===== SEMANA 10 · FIN =====
-// ===== SEMANA 03 · INICIO =====
-import { Ionicons } from '@expo/vector-icons';
-// ===== SEMANA 03 · FIN =====
-// ===== SEMANA 10 · INICIO =====
-import type { Item } from '../types';
-import { COLORS, TYPOGRAPHY, SPACING, RADIUS, SIZES } from '../theme';
+
+import { SWIPE_MAX_ROTATION, SWIPE_SNAP_SPRING, SWIPE_THRESHOLD } from '../utils/swipe';
 import { AnimatedCard } from './AnimatedCard';
+import { SwipeActionPanels } from './SwipeActionPanels';
 
 interface SwipeableCardProps {
   item: Item;
@@ -30,14 +28,16 @@ interface SwipeableCardProps {
   compact?: boolean;
 }
 
-const SWIPE_THRESHOLD = 120;
+const ACTIVATION_X = 12;
+const FAIL_OFFSET_Y = 18;
 
-const SNAP_SPRING = {
-  damping: 18,
-  stiffness: 190,
-  mass: 0.8,
-} as const;
-
+/**
+ * Variante nativa de `SwipeableCard`.
+ *
+ * El gesto es el mismo que en web: **derecha descarta** e **izquierda guarda**.
+ * Los paneles y el umbral viven en `SwipeActionPanels` y `utils/swipe` para que
+ * las dos plataformas no se separen.
+ */
 export const SwipeableCard = React.memo(function SwipeableCard({
   item,
   onPress,
@@ -51,19 +51,19 @@ export const SwipeableCard = React.memo(function SwipeableCard({
   const startX = useSharedValue(0);
   const startY = useSharedValue(0);
 
-  const handleSwipeRight = useCallback((): void => {
-    onToggleSave(item);
-  }, [item, onToggleSave]);
-
-  const handleSwipeLeft = useCallback((): void => {
+  const handleDismiss = useCallback((): void => {
     onDismiss(item);
   }, [item, onDismiss]);
+
+  const handleToggleSave = useCallback((): void => {
+    onToggleSave(item);
+  }, [item, onToggleSave]);
 
   const panGesture = useMemo(
     () =>
       Gesture.Pan()
-        .activeOffsetX([-12, 12])
-        .failOffsetY([-18, 18])
+        .activeOffsetX([-ACTIVATION_X, ACTIVATION_X])
+        .failOffsetY([-FAIL_OFFSET_Y, FAIL_OFFSET_Y])
         .onStart(() => {
           startX.value = translateX.value;
           startY.value = translateY.value;
@@ -74,34 +74,24 @@ export const SwipeableCard = React.memo(function SwipeableCard({
         })
         .onEnd(() => {
           if (translateX.value >= SWIPE_THRESHOLD) {
-            runOnJS(handleSwipeRight)();
+            runOnJS(handleDismiss)();
           } else if (translateX.value <= -SWIPE_THRESHOLD) {
-            runOnJS(handleSwipeLeft)();
+            runOnJS(handleToggleSave)();
           }
-
-          translateX.value = withSpring(0, SNAP_SPRING);
-          translateY.value = withSpring(0, SNAP_SPRING);
         })
         .onFinalize(() => {
-          translateX.value = withSpring(0, SNAP_SPRING);
-          translateY.value = withSpring(0, SNAP_SPRING);
+          translateX.value = withSpring(0, SWIPE_SNAP_SPRING);
+          translateY.value = withSpring(0, SWIPE_SNAP_SPRING);
         }),
-    [
-      handleSwipeLeft,
-      handleSwipeRight,
-      startX,
-      startY,
-      translateX,
-      translateY,
-    ]
+    [handleDismiss, handleToggleSave, startX, startY, translateX, translateY],
   );
 
   const cardStyle = useAnimatedStyle(() => {
     const rotation = interpolate(
       translateX.value,
       [-SWIPE_THRESHOLD, 0, SWIPE_THRESHOLD],
-      [-6, 0, 6],
-      Extrapolate.CLAMP
+      [-SWIPE_MAX_ROTATION, 0, SWIPE_MAX_ROTATION],
+      Extrapolate.CLAMP,
     );
 
     return {
@@ -113,61 +103,9 @@ export const SwipeableCard = React.memo(function SwipeableCard({
     };
   });
 
-  const saveHintStyle = useAnimatedStyle(() => {
-    const reveal = interpolate(
-      translateX.value,
-      [0, SWIPE_THRESHOLD],
-      [0, 1],
-      Extrapolate.CLAMP
-    );
-
-    return {
-      opacity: reveal,
-      transform: [{ scale: 0.8 + reveal * 0.2 }],
-    };
-  });
-
-  const dismissHintStyle = useAnimatedStyle(() => {
-    const reveal = interpolate(
-      translateX.value,
-      [-SWIPE_THRESHOLD, 0],
-      [1, 0],
-      Extrapolate.CLAMP
-    );
-
-    return {
-      opacity: reveal,
-      transform: [{ scale: 0.8 + reveal * 0.2 }],
-    };
-  });
-
   return (
     <View style={styles.container}>
-      <Animated.View
-        style={[styles.actionLayer, styles.actionLeft, saveHintStyle]}
-        pointerEvents="none"
-      >
-        <Ionicons
-          name={saved ? 'bookmark-outline' : 'bookmark'}
-          size={SIZES.iconMd}
-          color={COLORS.accent}
-        />
-        <Text style={styles.saveActionText}>
-          {saved ? 'Quitar' : 'Guardar'}
-        </Text>
-      </Animated.View>
-
-      <Animated.View
-        style={[styles.actionLayer, styles.actionRight, dismissHintStyle]}
-        pointerEvents="none"
-      >
-        <Text style={styles.dismissActionText}>Descartar</Text>
-        <Ionicons
-          name="eye-off-outline"
-          size={SIZES.iconMd}
-          color={COLORS.error}
-        />
-      </Animated.View>
+      <SwipeActionPanels translateX={translateX} saved={saved} />
 
       <GestureDetector gesture={panGesture}>
         <Animated.View style={cardStyle}>
@@ -183,40 +121,10 @@ export const SwipeableCard = React.memo(function SwipeableCard({
     </View>
   );
 });
+// ===== SEMANA 10 · FIN =====
 
 const styles = StyleSheet.create({
   container: {
     position: 'relative',
   },
-  actionLayer: {
-    position: 'absolute',
-    top: SPACING.xs,
-    bottom: SPACING.xs,
-    left: SPACING.base,
-    right: SPACING.base,
-    borderRadius: RADIUS.lg,
-    paddingHorizontal: SPACING.lg,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: SPACING.sm,
-  },
-  actionLeft: {
-    justifyContent: 'flex-start',
-    backgroundColor: COLORS.accentDim,
-  },
-  actionRight: {
-    justifyContent: 'flex-end',
-    backgroundColor: '#3a1418',
-  },
-  saveActionText: {
-    fontSize: TYPOGRAPHY.size.sm,
-    fontWeight: TYPOGRAPHY.weight.bold,
-    color: COLORS.accent,
-  },
-  dismissActionText: {
-    fontSize: TYPOGRAPHY.size.sm,
-    fontWeight: TYPOGRAPHY.weight.bold,
-    color: COLORS.error,
-  },
 });
-// ===== SEMANA 10 · FIN =====

@@ -1,14 +1,7 @@
+import { notify } from '../platform/notify';
 // ===== SEMANA 01 · INICIO =====
 import React, { useCallback, useEffect, useState } from 'react';
-import {
-  Alert,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Switch,
-  Text,
-  View,
-} from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 // ===== SEMANA 01 · FIN =====
 // ===== SEMANA 03 · INICIO =====
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -21,10 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 // ===== SEMANA 03 · FIN =====
 
 // ===== SEMANA 07 · INICIO =====
-import {
-  ITEMS_PER_PAGE_OPTIONS,
-  usePreferences,
-} from '../hooks/usePreferences';
+import { ITEMS_PER_PAGE_OPTIONS, usePreferences } from '../hooks/usePreferences';
 import type { ItemsPerPage, SortOrder } from '../hooks/usePreferences';
 import { COLORS, RADIUS, SIZES, SPACING, TYPOGRAPHY } from '../theme';
 
@@ -129,12 +119,7 @@ function SegmentedControl<T extends string | number>({
               accessibilityState={{ selected: isActive }}
               accessibilityLabel={`${label}: ${option.label}`}
             >
-              <Text
-                style={[
-                  styles.segmentText,
-                  isActive && styles.segmentTextActive,
-                ]}
-              >
+              <Text style={[styles.segmentText, isActive && styles.segmentTextActive]}>
                 {option.label}
               </Text>
             </Pressable>
@@ -161,11 +146,7 @@ function SecureAction({
   disabled = false,
 }: SecureActionProps): React.JSX.Element {
   const iconColor =
-    variant === 'primary'
-      ? COLORS.background
-      : variant === 'danger'
-        ? COLORS.error
-        : COLORS.accent;
+    variant === 'primary' ? COLORS.background : variant === 'danger' ? COLORS.error : COLORS.accent;
 
   return (
     <Pressable
@@ -201,11 +182,10 @@ const SORT_OPTIONS: readonly SegmentOption<SortOrder>[] = [
   { label: 'Z → A', value: 'desc' },
 ];
 
-const PAGE_OPTIONS: readonly SegmentOption<ItemsPerPage>[] =
-  ITEMS_PER_PAGE_OPTIONS.map((size) => ({
-    label: `${size} por página`,
-    value: size,
-  }));
+const PAGE_OPTIONS: readonly SegmentOption<ItemsPerPage>[] = ITEMS_PER_PAGE_OPTIONS.map((size) => ({
+  label: `${size} por página`,
+  value: size,
+}));
 
 export function SettingsScreen(): React.JSX.Element {
   const {
@@ -255,15 +235,9 @@ export function SettingsScreen(): React.JSX.Element {
       setIsSaved(storedCode !== null);
       setMaskedValue(storedCode ? maskSecret(storedCode) : null);
 
-      Alert.alert(
-        'Código guardado',
-        'El código de taquilla quedó cifrado en SecureStore.'
-      );
+      notify('Código guardado', 'El código de taquilla quedó guardado en este dispositivo.');
     } catch {
-      Alert.alert(
-        'No se pudo guardar',
-        'SecureStore no está disponible en este dispositivo.'
-      );
+      notify('No se pudo guardar', 'SecureStore no está disponible en este dispositivo.');
     } finally {
       setIsBusy(false);
     }
@@ -283,15 +257,12 @@ export function SettingsScreen(): React.JSX.Element {
 
       setIsSaved(false);
       setMaskedValue(null);
-      Alert.alert(
+      notify(
         'Sin código guardado',
-        'Genera y guarda un código de taquilla para verlo enmascarado.'
+        'Genera y guarda un código de taquilla para verlo enmascarado.',
       );
     } catch {
-      Alert.alert(
-        'No se pudo leer',
-        'SecureStore no está disponible en este dispositivo.'
-      );
+      notify('No se pudo leer', 'SecureStore no está disponible en este dispositivo.');
     } finally {
       setIsBusy(false);
     }
@@ -304,12 +275,9 @@ export function SettingsScreen(): React.JSX.Element {
       await SecureStore.deleteItemAsync(SENSITIVE_KEY);
       setIsSaved(false);
       setMaskedValue(null);
-      Alert.alert('Código eliminado', 'El código fue borrado de SecureStore.');
+      notify('Código eliminado', 'El código fue borrado de SecureStore.');
     } catch {
-      Alert.alert(
-        'No se pudo eliminar',
-        'SecureStore no está disponible en este dispositivo.'
-      );
+      notify('No se pudo eliminar', 'SecureStore no está disponible en este dispositivo.');
     } finally {
       setIsBusy(false);
     }
@@ -317,9 +285,9 @@ export function SettingsScreen(): React.JSX.Element {
 
   const handleResetPreferences = useCallback((): void => {
     resetPreferences();
-    Alert.alert(
+    notify(
       'Preferencias restablecidas',
-      'La cartelera vuelve al orden A → Z, sin modo compacto y con todas las funciones.'
+      'La cartelera vuelve al orden A → Z, sin modo compacto y con todas las funciones.',
     );
   }, [resetPreferences]);
 
@@ -327,11 +295,7 @@ export function SettingsScreen(): React.JSX.Element {
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <View style={styles.header}>
         <View style={styles.headerTitleRow}>
-          <Ionicons
-            name="options-outline"
-            size={SIZES.iconLg}
-            color={COLORS.accent}
-          />
+          <Ionicons name="options-outline" size={SIZES.iconLg} color={COLORS.accent} />
           <Text style={styles.headerTitle}>Ajustes</Text>
         </View>
         <Text style={styles.headerSubtitle}>
@@ -346,8 +310,7 @@ export function SettingsScreen(): React.JSX.Element {
       >
         <Text style={styles.sectionTitle}>Preferencias de la cartelera</Text>
         <Text style={styles.sectionHint}>
-          Se guardan con MMKV y se aplican al instante, sin botón de guardar ni
-          reiniciar la app.
+          Se guardan con MMKV y se aplican al instante, sin botón de guardar ni reiniciar la app.
         </Text>
 
         <SwitchRow
@@ -381,51 +344,33 @@ export function SettingsScreen(): React.JSX.Element {
         />
 
         <Pressable
-          style={({ pressed }) => [
-            styles.resetButton,
-            pressed && styles.resetButtonPressed,
-          ]}
+          style={({ pressed }) => [styles.resetButton, pressed && styles.resetButtonPressed]}
           onPress={handleResetPreferences}
           accessibilityRole="button"
           accessibilityLabel="Restablecer preferencias"
         >
-          <Ionicons
-            name="refresh-outline"
-            size={SIZES.iconSm}
-            color={COLORS.textSecondary}
-          />
+          <Ionicons name="refresh-outline" size={SIZES.iconSm} color={COLORS.textSecondary} />
           <Text style={styles.resetButtonText}>Restablecer preferencias</Text>
         </Pressable>
 
         <Text style={styles.sectionTitle}>Seguridad (SecureStore)</Text>
         <Text style={styles.sectionHint}>
-          El código de acceso de taquilla se cifra en Keychain (iOS) o Keystore
-          (Android). Nunca se guarda en MMKV ni en AsyncStorage.
+          El código de acceso de taquilla se cifra en Keychain (iOS) o Keystore (Android). Nunca se
+          guarda en MMKV ni en AsyncStorage.
         </Text>
 
         <View style={styles.secureCard}>
           <View style={styles.secureHeader}>
             <View style={styles.secureIcon}>
-              <Ionicons
-                name="lock-closed"
-                size={SIZES.iconMd}
-                color={COLORS.accent}
-              />
+              <Ionicons name="lock-closed" size={SIZES.iconMd} color={COLORS.accent} />
             </View>
 
             <View style={styles.secureHeaderText}>
               <Text style={styles.rowLabel}>Código de acceso de taquilla</Text>
-              <Text style={styles.rowDesc}>
-                Se genera un código nuevo cada vez que guardas.
-              </Text>
+              <Text style={styles.rowDesc}>Se genera un código nuevo cada vez que guardas.</Text>
             </View>
 
-            <Text
-              style={[
-                styles.statusBadge,
-                isSaved ? styles.statusSaved : styles.statusEmpty,
-              ]}
-            >
+            <Text style={[styles.statusBadge, isSaved ? styles.statusSaved : styles.statusEmpty]}>
               {isSaved ? 'Guardado' : 'Sin guardar'}
             </Text>
           </View>
@@ -467,8 +412,7 @@ export function SettingsScreen(): React.JSX.Element {
           </View>
 
           <Text style={styles.secureNote}>
-            El código completo nunca se muestra en pantalla: solo una versión
-            enmascarada.
+            El código completo nunca se muestra en pantalla: solo una versión enmascarada.
           </Text>
         </View>
 
@@ -476,28 +420,23 @@ export function SettingsScreen(): React.JSX.Element {
 
         <View style={styles.infoBox}>
           <Text style={styles.infoLine}>
-            <Text style={styles.infoStrong}>MMKV</Text> · preferencias
-            sincrónicas de la cartelera.
+            <Text style={styles.infoStrong}>MMKV</Text> · preferencias sincrónicas de la cartelera.
           </Text>
           <Text style={styles.infoLine}>
-            <Text style={styles.infoStrong}>AsyncStorage</Text> · copia de la
-            cartelera para mostrarla sin red.
+            <Text style={styles.infoStrong}>AsyncStorage</Text> · copia de la cartelera para
+            mostrarla sin red.
           </Text>
           <Text style={styles.infoLine}>
-            <Text style={styles.infoStrong}>SecureStore</Text> · código
-            sensible de taquilla cifrado por el sistema.
+            <Text style={styles.infoStrong}>SecureStore</Text> · código sensible de taquilla cifrado
+            por el sistema.
           </Text>
         </View>
 
         <View style={styles.nativeNotice}>
-          <Ionicons
-            name="phone-portrait-outline"
-            size={SIZES.iconSm}
-            color={COLORS.textMuted}
-          />
+          <Ionicons name="phone-portrait-outline" size={SIZES.iconSm} color={COLORS.textMuted} />
           <Text style={styles.nativeNoticeText}>
-            MMKV requiere un build nativo: ejecuta `pnpm prebuild` y luego
-            `pnpm android` o `pnpm ios`.
+            MMKV requiere un build nativo: ejecuta `pnpm prebuild` y luego `pnpm android` o `pnpm
+            ios`.
           </Text>
         </View>
       </ScrollView>

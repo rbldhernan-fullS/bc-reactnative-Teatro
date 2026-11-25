@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger';
 // ===== SEMANA 07 · INICIO =====
 interface WebMMKV {
   getString: (key: string) => string | undefined;
@@ -33,7 +34,9 @@ function createWebMMKV(id: string): WebMMKV {
   const write = (key: string, value: string): void => {
     try {
       store?.setItem(prefix + key, value);
-    } catch {}
+    } catch {
+      logger.warn('No se pudieron actualizar las preferencias web.');
+    }
   };
 
   return {
@@ -55,7 +58,9 @@ function createWebMMKV(id: string): WebMMKV {
     remove: (key) => {
       try {
         store?.removeItem(prefix + key);
-      } catch {}
+      } catch {
+        logger.warn('No se pudieron actualizar las preferencias web.');
+      }
     },
     clearAll: () => {
       try {
@@ -63,12 +68,14 @@ function createWebMMKV(id: string): WebMMKV {
           return;
         }
 
-        const keys = Array.from({ length: store.length }, (_, index) =>
-          store.key(index)
-        ).filter((key): key is string => key !== null && key.startsWith(prefix));
+        const keys = Array.from({ length: store.length }, (_, index) => store.key(index)).filter(
+          (key): key is string => key !== null && key.startsWith(prefix),
+        );
 
         keys.forEach((key) => store.removeItem(key));
-      } catch {}
+      } catch {
+        logger.warn('No se pudieron actualizar las preferencias web.');
+      }
     },
   };
 }

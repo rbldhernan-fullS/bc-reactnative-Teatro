@@ -1,11 +1,6 @@
 // ===== SEMANA 01 · INICIO =====
 import React, { useEffect } from 'react';
-import {
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StyleSheet,
-} from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet } from 'react-native';
 // ===== SEMANA 01 · FIN =====
 // ===== SEMANA 03 · INICIO =====
 import { useNavigation } from '@react-navigation/native';
@@ -78,7 +73,9 @@ export function CreateScreen(): React.JSX.Element {
       movePoster(POSTER_DRAFT_ID, created.id);
       // ===== SEMANA 11 · FIN =====
       navigation.goBack();
-    } catch {}
+    } catch {
+      // El formulario muestra el error de la mutación.
+    }
   }
 
   // ===== SEMANA 06 · INICIO =====
@@ -106,9 +103,7 @@ export function CreateScreen(): React.JSX.Element {
           intro="Publica una nueva obra en la cartelera. Todos los campos se validan con Zod antes de enviarse a la API."
           posterTargetId={POSTER_DRAFT_ID}
           posterFallbackUri={DEFAULT_PLAY_IMAGE}
-          serverError={
-            mutationError ? getApiErrorMessage(mutationError) : undefined
-          }
+          serverError={mutationError ? getApiErrorMessage(mutationError) : undefined}
         />
       </ScrollView>
     </KeyboardAvoidingView>

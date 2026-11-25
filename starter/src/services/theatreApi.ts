@@ -31,10 +31,7 @@ export async function createPlay(payload: CreatePlayPayload): Promise<Item> {
   return normalizePlay(data);
 }
 
-export async function updatePlay({
-  id,
-  ...payload
-}: UpdatePlayPayload): Promise<Item> {
+export async function updatePlay({ id, ...payload }: UpdatePlayPayload): Promise<Item> {
   const { data } = await apiClient.put<PlayDto>(`/plays/${id}`, payload);
   return normalizePlay(data);
 }

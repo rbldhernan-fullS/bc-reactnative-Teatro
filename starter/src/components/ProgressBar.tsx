@@ -22,11 +22,7 @@ interface ProgressBarProps {
 const TRACK_HEIGHT = 10;
 const ANIMATION_DURATION = 900;
 
-export function ProgressBar({
-  progress,
-  label,
-  caption,
-}: ProgressBarProps): React.JSX.Element {
+export function ProgressBar({ progress, label, caption }: ProgressBarProps): React.JSX.Element {
   // ===== SEMANA 10 · INICIO =====
   const clampedProgress = Math.min(1, Math.max(0, progress));
   const progressValue = useSharedValue(0);
@@ -45,7 +41,7 @@ export function ProgressBar({
     backgroundColor: interpolateColor(
       progressValue.value,
       [0, 0.6, 1],
-      [COLORS.success, '#facc15', COLORS.error]
+      [COLORS.success, '#facc15', COLORS.error],
     ),
   }));
   // ===== SEMANA 10 · FIN =====
