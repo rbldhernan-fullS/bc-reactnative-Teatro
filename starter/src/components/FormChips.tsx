@@ -4,12 +4,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import type { StyleProp, ViewStyle } from 'react-native';
 // ===== SEMANA 01 · FIN =====
 // ===== SEMANA 06 · INICIO =====
-import {
-  Controller,
-  type Control,
-  type FieldPath,
-  type FieldValues,
-} from 'react-hook-form';
+import { Controller, type Control, type FieldPath, type FieldValues } from 'react-hook-form';
 
 import { COLORS, RADIUS, SPACING, TYPOGRAPHY } from '../theme';
 
@@ -63,12 +58,7 @@ export function FormChips<T extends FieldValues>({
                     accessibilityState={{ selected }}
                     accessibilityLabel={option}
                   >
-                    <Text
-                      style={[
-                        styles.chipText,
-                        selected && styles.chipTextSelected,
-                      ]}
-                    >
+                    <Text style={[styles.chipText, selected && styles.chipTextSelected]}>
                       {option}
                     </Text>
                   </Pressable>

@@ -1,11 +1,5 @@
 // ===== SEMANA 01 · INICIO =====
-import React, {
-  useState,
-  useMemo,
-  useCallback,
-  useEffect,
-  useRef,
-} from 'react';
+import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -73,13 +67,8 @@ export function HomeScreen(): React.JSX.Element {
   // ===== SEMANA 07 · INICIO =====
   const { data, isLoading, isError, error, refetch, isFetching } = usePlays();
 
-  const {
-    sortOrder,
-    compactMode,
-    itemsPerPage,
-    onlyAvailable,
-    setOnlyAvailable,
-  } = usePreferences();
+  const { sortOrder, compactMode, itemsPerPage, onlyAvailable, setOnlyAvailable } =
+    usePreferences();
   // ===== SEMANA 07 · FIN =====
 
   // ===== SEMANA 05 · INICIO =====
@@ -103,7 +92,7 @@ export function HomeScreen(): React.JSX.Element {
 
   useEffect(() => {
     setVisibleCount(itemsPerPage);
-  }, [itemsPerPage, query, onlyAvailable, sortOrder]);
+  }, [itemsPerPage, query, sortOrder]);
   // ===== SEMANA 07 · FIN =====
 
   // ===== SEMANA 03 · INICIO =====
@@ -114,7 +103,7 @@ export function HomeScreen(): React.JSX.Element {
         name: item.name,
       });
     },
-    [navigation]
+    [navigation],
   );
   // ===== SEMANA 03 · FIN =====
 
@@ -123,7 +112,7 @@ export function HomeScreen(): React.JSX.Element {
     (item: Item): void => {
       toggleSaved(item.id);
     },
-    [toggleSaved]
+    [toggleSaved],
   );
   // ===== SEMANA 05 · FIN =====
 
@@ -144,23 +133,23 @@ export function HomeScreen(): React.JSX.Element {
       // ===== SEMANA 07 · FIN =====
 
       return [item.name, item.subtitle, item.genre, item.hall].some((field) =>
-        normalizeText(field).includes(cleanQuery)
+        normalizeText(field).includes(cleanQuery),
       );
     });
 
     return result.sort((first, second) =>
       sortOrder === 'asc'
         ? first.name.localeCompare(second.name, 'es')
-        : second.name.localeCompare(first.name, 'es')
+        : second.name.localeCompare(first.name, 'es'),
     );
     // ===== SEMANA 04 · FIN =====
-  }, [plays, query, onlyAvailable, sortOrder]);
+  }, [plays, query, sortOrder, onlyAvailable]);
   // ===== SEMANA 02 · FIN =====
 
   // ===== SEMANA 07 · INICIO =====
   const visibleItems = useMemo(
     () => filteredItems.slice(0, visibleCount),
-    [filteredItems, visibleCount]
+    [filteredItems, visibleCount],
   );
   // ===== SEMANA 07 · FIN =====
 
@@ -187,13 +176,10 @@ export function HomeScreen(): React.JSX.Element {
         compact={compactMode}
       />
     ),
-    [compactMode, handleItemPress, savedIdSet, handleToggleSave]
+    [compactMode, handleItemPress, savedIdSet, handleToggleSave],
   );
 
-  const renderSeparator = useCallback(
-    () => <View style={styles.separator} />,
-    []
-  );
+  const renderSeparator = useCallback(() => <View style={styles.separator} />, []);
 
   const renderEmpty = useCallback(() => {
     // ===== SEMANA 05 · INICIO =====
@@ -217,8 +203,8 @@ export function HomeScreen(): React.JSX.Element {
           <Text style={styles.emptyIcon}>🎭</Text>
           <Text style={styles.emptyTitle}>Sin obras encontradas</Text>
           <Text style={styles.emptySubtitle}>
-            No hay funciones que coincidan con "{query}". Prueba buscando por
-            otro título, director o género teatral.
+            No hay funciones que coincidan con "{query}". Prueba buscando por otro título, director
+            o género teatral.
           </Text>
           <Pressable
             style={({ pressed }) => [
@@ -244,8 +230,8 @@ export function HomeScreen(): React.JSX.Element {
         <Text style={styles.emptyTitle}>Sin funciones disponibles</Text>
         {/* ===== SEMANA 07 · FIN ===== */}
         <Text style={styles.emptySubtitle}>
-          Todas las obras de la cartelera están agotadas. Desactiva el filtro
-          para volver a ver la temporada completa.
+          Todas las obras de la cartelera están agotadas. Desactiva el filtro para volver a ver la
+          temporada completa.
         </Text>
         {/* ===== SEMANA 05 · INICIO ===== */}
         <Pressable
@@ -260,7 +246,7 @@ export function HomeScreen(): React.JSX.Element {
         {/* ===== SEMANA 05 · FIN ===== */}
       </View>
     );
-  }, [navigation, onlyAvailable, plays.length, query, setOnlyAvailable]);
+  }, [navigation, plays.length, query, setOnlyAvailable]);
   // ===== SEMANA 02 · FIN =====
 
   const renderFooter = useCallback(() => {
@@ -276,17 +262,12 @@ export function HomeScreen(): React.JSX.Element {
       <View style={styles.footer}>
         {/* ===== SEMANA 05 · INICIO ===== */}
         <Pressable
-          style={({ pressed }) => [
-            styles.loadMoreButton,
-            pressed && styles.loadMoreButtonPressed,
-          ]}
+          style={({ pressed }) => [styles.loadMoreButton, pressed && styles.loadMoreButtonPressed]}
           onPress={handleLoadMore}
           accessibilityRole="button"
           accessibilityLabel={`Mostrar ${Math.min(remaining, itemsPerPage)} obras más`}
         >
-          <Text style={styles.loadMoreText}>
-            Mostrar {Math.min(remaining, itemsPerPage)} más
-          </Text>
+          <Text style={styles.loadMoreText}>Mostrar {Math.min(remaining, itemsPerPage)} más</Text>
         </Pressable>
         {/* ===== SEMANA 05 · FIN ===== */}
         {/* ===== SEMANA 07 · INICIO ===== */}
@@ -352,11 +333,7 @@ export function HomeScreen(): React.JSX.Element {
                 accessibilityRole="button"
                 accessibilityLabel="Crear una obra nueva"
               >
-                <Ionicons
-                  name="add"
-                  size={SIZES.iconSm}
-                  color={COLORS.background}
-                />
+                <Ionicons name="add" size={SIZES.iconSm} color={COLORS.background} />
                 <Text style={styles.createButtonText}>Nueva</Text>
               </Pressable>
             </View>
@@ -399,9 +376,7 @@ export function HomeScreen(): React.JSX.Element {
             <View style={styles.resultsBar}>
               <Text style={styles.resultsCount}>
                 {filteredItems.length}{' '}
-                {filteredItems.length === 1
-                  ? 'obra disponible'
-                  : 'obras disponibles'}
+                {filteredItems.length === 1 ? 'obra disponible' : 'obras disponibles'}
               </Text>
 
               {/* ===== SEMANA 07 · INICIO ===== */}
@@ -409,12 +384,8 @@ export function HomeScreen(): React.JSX.Element {
                 <Text style={styles.activeFilterBadge}>
                   {sortOrder === 'asc' ? 'A → Z' : 'Z → A'}
                 </Text>
-                {compactMode && (
-                  <Text style={styles.activeFilterBadge}>Compacto</Text>
-                )}
-                {onlyAvailable && (
-                  <Text style={styles.activeFilterBadge}>Con butacas</Text>
-                )}
+                {compactMode && <Text style={styles.activeFilterBadge}>Compacto</Text>}
+                {onlyAvailable && <Text style={styles.activeFilterBadge}>Con butacas</Text>}
               </View>
               {/* ===== SEMANA 07 · FIN ===== */}
             </View>
@@ -445,10 +416,7 @@ export function HomeScreen(): React.JSX.Element {
           )}
           {/* ===== SEMANA 07 · FIN ===== */}
 
-          <TouchableWithoutFeedback
-            onPress={Keyboard.dismiss}
-            accessible={false}
-          >
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
             <View style={styles.listWrapper}>
               <FlatList
                 data={visibleItems}

@@ -8,23 +8,24 @@ const usernameField = z
   .trim()
   .min(2, 'El usuario debe tener al menos 2 caracteres.')
   .max(50, 'El usuario no puede superar 50 caracteres.')
-  .regex(
-    /^[a-zA-Z0-9._-]+$/,
-    'Usa solo letras, números, punto, guion o guion bajo.'
-  );
+  .regex(/^[a-zA-Z0-9._-]+$/, 'Usa solo letras, números, punto, guion o guion bajo.');
 
 const passwordField = z
   .string()
   .min(6, 'La contraseña debe tener al menos 6 caracteres.')
   .max(100, 'La contraseña no puede superar 100 caracteres.');
 
-export const loginSchema = z.object({
-  username: usernameField,
-  password: passwordField,
+export const loginSchema = z.strictObject({
+  username: z
+    .string()
+    .trim()
+    .min(1, 'Ingresa tus credenciales.')
+    .max(50, 'Revisa tus credenciales.'),
+  password: z.string().min(1, 'Ingresa tus credenciales.').max(100, 'Revisa tus credenciales.'),
 });
 
 export const registerSchema = z
-  .object({
+  .strictObject({
     firstName: z
       .string()
       .trim()
@@ -39,8 +40,9 @@ export const registerSchema = z
     email: z
       .string()
       .trim()
-      .email('Ingresa un correo electrónico válido.')
-      .toLowerCase(),
+      .max(254)
+      .toLowerCase()
+      .pipe(z.email('Ingresa un correo electrónico válido.')),
     password: passwordField,
     confirmPassword: z.string(),
   })

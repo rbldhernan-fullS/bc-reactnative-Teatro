@@ -1,12 +1,6 @@
 // ===== SEMANA 01 · INICIO =====
 import React from 'react';
-import {
-  ActivityIndicator,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 // ===== SEMANA 01 · FIN =====
 // ===== SEMANA 03 · INICIO =====
 import { Ionicons } from '@expo/vector-icons';
@@ -44,10 +38,7 @@ export function ScreenState({
 
       {actionLabel && onAction ? (
         <Pressable
-          style={({ pressed }) => [
-            styles.actionButton,
-            pressed && styles.actionButtonPressed,
-          ]}
+          style={({ pressed }) => [styles.actionButton, pressed && styles.actionButtonPressed]}
           onPress={onAction}
           accessibilityRole="button"
           accessibilityLabel={actionLabel}

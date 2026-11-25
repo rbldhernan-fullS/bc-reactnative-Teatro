@@ -35,9 +35,7 @@ import type { LoginScreenProps } from '../navigation/types';
 const DEMO_USERNAME = 'emilys';
 const DEMO_PASSWORD = 'emilyspass';
 
-export function LoginScreen({
-  navigation,
-}: LoginScreenProps): React.JSX.Element {
+export function LoginScreen({ navigation }: LoginScreenProps): React.JSX.Element {
   const login = useAuthStore((state) => state.login);
   const isLoading = useAuthStore((state) => state.isLoading);
   const error = useAuthStore((state) => state.error);
@@ -61,7 +59,9 @@ export function LoginScreen({
   const onSubmit = async (values: LoginFormValues): Promise<void> => {
     try {
       await login(values);
-    } catch {}
+    } catch {
+      // El store ya publica el mensaje que muestra el formulario.
+    }
   };
 
   const handleFillDemo = useCallback((): void => {
@@ -89,8 +89,7 @@ export function LoginScreen({
             <Text style={styles.clubName}>Club Teatro Colón</Text>
             <Text style={styles.title}>Iniciar sesión</Text>
             <Text style={styles.subtitle}>
-              Accede a tu cartelera, tus obras guardadas y los beneficios de
-              socio.
+              Accede a tu cartelera, tus obras guardadas y los beneficios de socio.
             </Text>
           </View>
 
@@ -98,6 +97,7 @@ export function LoginScreen({
             <FormField<LoginFormValues>
               control={control}
               name="username"
+              maxLength={50}
               label="Usuario"
               required
               placeholder="tu_usuario"
@@ -109,6 +109,7 @@ export function LoginScreen({
             <FormField<LoginFormValues>
               control={control}
               name="password"
+              maxLength={100}
               label="Contraseña"
               required
               placeholder="••••••••"
@@ -121,11 +122,7 @@ export function LoginScreen({
 
             {error && (
               <View style={styles.errorBanner}>
-                <Ionicons
-                  name="alert-circle-outline"
-                  size={SIZES.iconSm}
-                  color={COLORS.error}
-                />
+                <Ionicons name="alert-circle-outline" size={SIZES.iconSm} color={COLORS.error} />
                 <Text style={styles.errorText}>{error}</Text>
               </View>
             )}
@@ -146,11 +143,7 @@ export function LoginScreen({
                 <ActivityIndicator color={COLORS.background} size="small" />
               ) : (
                 <>
-                  <Ionicons
-                    name="log-in-outline"
-                    size={SIZES.iconSm}
-                    color={COLORS.background}
-                  />
+                  <Ionicons name="log-in-outline" size={SIZES.iconSm} color={COLORS.background} />
                   <Text style={styles.submitButtonText}>Entrar al Club</Text>
                 </>
               )}
@@ -159,11 +152,7 @@ export function LoginScreen({
 
           <View style={styles.demoCard}>
             <View style={styles.demoHeader}>
-              <Ionicons
-                name="key-outline"
-                size={SIZES.iconSm}
-                color={COLORS.accent}
-              />
+              <Ionicons name="key-outline" size={SIZES.iconSm} color={COLORS.accent} />
               <Text style={styles.demoTitle}>Credenciales de prueba</Text>
             </View>
             <Text style={styles.demoText}>
@@ -172,10 +161,7 @@ export function LoginScreen({
               Contraseña: <Text style={styles.demoStrong}>{DEMO_PASSWORD}</Text>
             </Text>
             <Pressable
-              style={({ pressed }) => [
-                styles.demoButton,
-                pressed && styles.demoButtonPressed,
-              ]}
+              style={({ pressed }) => [styles.demoButton, pressed && styles.demoButtonPressed]}
               onPress={handleFillDemo}
               accessibilityRole="button"
               accessibilityLabel="Rellenar credenciales de prueba"
@@ -191,20 +177,14 @@ export function LoginScreen({
             accessibilityLabel="Crear una cuenta nueva"
           >
             <Text style={styles.linkText}>
-              ¿Aún no eres socio?{' '}
-              <Text style={styles.linkHighlight}>Crear cuenta</Text>
+              ¿Aún no eres socio? <Text style={styles.linkHighlight}>Crear cuenta</Text>
             </Text>
           </Pressable>
 
           <View style={styles.securityNote}>
-            <Ionicons
-              name="lock-closed-outline"
-              size={SIZES.iconSm}
-              color={COLORS.textMuted}
-            />
+            <Ionicons name="lock-closed-outline" size={SIZES.iconSm} color={COLORS.textMuted} />
             <Text style={styles.securityText}>
-              Tus tokens se guardan cifrados en SecureStore y nunca se muestran
-              en pantalla.
+              Tus tokens se guardan cifrados en SecureStore y nunca se muestran en pantalla.
             </Text>
           </View>
         </ScrollView>

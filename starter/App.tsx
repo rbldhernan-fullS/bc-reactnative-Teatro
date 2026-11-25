@@ -1,11 +1,6 @@
 // ===== SEMANA 01 · INICIO =====
 import React, { useEffect } from 'react';
-import {
-  ActivityIndicator,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 // ===== SEMANA 01 · FIN =====
 // ===== SEMANA 05 · INICIO =====
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -19,6 +14,7 @@ import { StatusBar } from 'expo-status-bar';
 // ===== SEMANA 03 · INICIO =====
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import { blurOnWebNavigation } from './src/navigation/useWebFocusFix';
 import { RootNavigator } from './src/navigation/RootNavigator';
 // ===== SEMANA 03 · FIN =====
 // ===== SEMANA 08 · INICIO =====
@@ -44,15 +40,7 @@ function BootstrapGate(): React.JSX.Element {
   const bootstrap = useAuthStore((state) => state.bootstrap);
 
   useEffect(() => {
-    const unsubscribe = useAuthStore.persist.onFinishHydration(() => {
-      void bootstrap();
-    });
-
-    if (useAuthStore.persist.hasHydrated()) {
-      void bootstrap();
-    }
-
-    return unsubscribe;
+    void bootstrap();
   }, [bootstrap]);
 
   if (isBootstrapping) {
@@ -67,7 +55,7 @@ function BootstrapGate(): React.JSX.Element {
   }
 
   return (
-    <NavigationContainer>
+    <NavigationContainer onStateChange={blurOnWebNavigation}>
       <RootNavigator />
     </NavigationContainer>
   );

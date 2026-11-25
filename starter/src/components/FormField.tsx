@@ -1,25 +1,17 @@
 // ===== SEMANA 01 · INICIO =====
 import React from 'react';
-import {
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import { StyleSheet, Text, TextInput, View } from 'react-native';
 import type { StyleProp, TextInputProps, TextStyle, ViewStyle } from 'react-native';
 // ===== SEMANA 01 · FIN =====
 // ===== SEMANA 06 · INICIO =====
-import {
-  Controller,
-  type Control,
-  type FieldPath,
-  type FieldValues,
-} from 'react-hook-form';
+import { Controller, type Control, type FieldPath, type FieldValues } from 'react-hook-form';
 
 import { COLORS, RADIUS, SPACING, TYPOGRAPHY } from '../theme';
 
-interface FormFieldProps<T extends FieldValues>
-  extends Omit<TextInputProps, 'value' | 'onChangeText'> {
+interface FormFieldProps<T extends FieldValues> extends Omit<
+  TextInputProps,
+  'value' | 'onChangeText'
+> {
   control: Control<T>;
   name: FieldPath<T>;
   label: string;
@@ -51,10 +43,7 @@ export function FormField<T extends FieldValues>({
       <Controller
         control={control}
         name={name}
-        render={({
-          field: { onChange, onBlur, value },
-          fieldState: { error },
-        }) => {
+        render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => {
           const message = errorMessage ?? error?.message;
 
           const stringValue =

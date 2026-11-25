@@ -1,14 +1,7 @@
+import { confirm } from '../platform/notify';
 // ===== SEMANA 01 · INICIO =====
 import React, { useCallback } from 'react';
-import {
-  Alert,
-  Image,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 // ===== SEMANA 01 · FIN =====
 // ===== SEMANA 03 · INICIO =====
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -42,42 +35,28 @@ export function ProfileScreen(): React.JSX.Element {
     user?.username ||
     'Socio del Club';
 
-  const initial =
-    user?.firstName?.[0]?.toUpperCase() ??
-    user?.username?.[0]?.toUpperCase() ??
-    '?';
+  const initial = user?.firstName?.[0]?.toUpperCase() ?? user?.username?.[0]?.toUpperCase() ?? '?';
 
-  const handleLogoutPress = useCallback((): void => {
-    Alert.alert(
-      'Cerrar sesión',
-      '¿Seguro que quieres salir del Club Teatro Colón?',
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        {
-          text: 'Salir',
-          style: 'destructive',
-          onPress: () => {
-            void logout();
-          },
-        },
-      ]
-    );
+  const handleLogoutPress = useCallback(async (): Promise<void> => {
+    if (
+      await confirm({
+        title: 'Cerrar sesión',
+        message: '¿Seguro que quieres salir del Club Teatro Colón?',
+        confirmText: 'Salir',
+        destructive: true,
+      })
+    )
+      await logout();
   }, [logout]);
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <View style={styles.header}>
         <View style={styles.headerTitleRow}>
-          <Ionicons
-            name="person-circle-outline"
-            size={SIZES.iconLg}
-            color={COLORS.accent}
-          />
+          <Ionicons name="person-circle-outline" size={SIZES.iconLg} color={COLORS.accent} />
           <Text style={styles.headerTitle}>Mi cuenta</Text>
         </View>
-        <Text style={styles.headerSubtitle}>
-          Perfil del socio y seguridad de la sesión
-        </Text>
+        <Text style={styles.headerSubtitle}>Perfil del socio y seguridad de la sesión</Text>
       </View>
 
       <ScrollView
@@ -88,22 +67,14 @@ export function ProfileScreen(): React.JSX.Element {
         <View style={styles.identityCard}>
           <View style={styles.avatarWrapper}>
             {user?.image ? (
-              <Image
-                source={{ uri: user.image }}
-                style={styles.avatarImage}
-                resizeMode="cover"
-              />
+              <Image source={{ uri: user.image }} style={styles.avatarImage} resizeMode="cover" />
             ) : (
               <View style={styles.avatarFallback}>
                 <Text style={styles.avatarInitial}>{initial}</Text>
               </View>
             )}
             <View style={styles.clubBadge}>
-              <Ionicons
-                name="star"
-                size={SIZES.iconSm - 6}
-                color={COLORS.background}
-              />
+              <Ionicons name="star" size={SIZES.iconSm - 6} color={COLORS.background} />
             </View>
           </View>
 
@@ -125,9 +96,7 @@ export function ProfileScreen(): React.JSX.Element {
 
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>N° de socio</Text>
-            <Text style={styles.infoValue}>
-              {formatMemberNumber(user?.id)}
-            </Text>
+            <Text style={styles.infoValue}>{formatMemberNumber(user?.id)}</Text>
           </View>
 
           <View style={styles.infoRow}>
@@ -144,43 +113,29 @@ export function ProfileScreen(): React.JSX.Element {
         </View>
 
         <Pressable
-          style={({ pressed }) => [
-            styles.savedButton,
-            pressed && styles.savedButtonPressed,
-          ]}
+          style={({ pressed }) => [styles.savedButton, pressed && styles.savedButtonPressed]}
           onPress={() => navigation.navigate('Saved')}
           accessibilityRole="button"
           accessibilityLabel="Ver mis obras guardadas"
         >
           <Ionicons name="bookmark-outline" size={SIZES.iconMd} color={COLORS.accent} />
           <Text style={styles.savedButtonText}>Ver mis obras guardadas</Text>
-          <Ionicons
-            name="chevron-forward"
-            size={SIZES.iconSm}
-            color={COLORS.textMuted}
-          />
+          <Ionicons name="chevron-forward" size={SIZES.iconSm} color={COLORS.textMuted} />
         </Pressable>
 
         <View style={styles.securityCard}>
           <View style={styles.securityHeader}>
-            <Ionicons
-              name="shield-checkmark-outline"
-              size={SIZES.iconMd}
-              color={COLORS.success}
-            />
+            <Ionicons name="shield-checkmark-outline" size={SIZES.iconMd} color={COLORS.success} />
             <Text style={styles.securityTitle}>Sesión protegida</Text>
           </View>
           <Text style={styles.securityText}>
-            El access y el refresh token viven cifrados en SecureStore. Esta
-            pantalla nunca muestra los tokens en texto plano.
+            El access y el refresh token viven cifrados en SecureStore. Esta pantalla nunca muestra
+            los tokens en texto plano.
           </Text>
         </View>
 
         <Pressable
-          style={({ pressed }) => [
-            styles.logoutButton,
-            pressed && styles.logoutButtonPressed,
-          ]}
+          style={({ pressed }) => [styles.logoutButton, pressed && styles.logoutButtonPressed]}
           onPress={handleLogoutPress}
           accessibilityRole="button"
           accessibilityLabel="Cerrar sesión"

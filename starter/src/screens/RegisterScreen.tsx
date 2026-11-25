@@ -1,8 +1,8 @@
+import { notify } from '../platform/notify';
 // ===== SEMANA 01 · INICIO =====
 import React, { useEffect } from 'react';
 import {
   ActivityIndicator,
-  Alert,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -33,9 +33,7 @@ import { useAuthStore } from '../stores/authStore';
 import { COLORS, RADIUS, SIZES, SPACING, TYPOGRAPHY } from '../theme';
 import type { RegisterScreenProps } from '../navigation/types';
 
-export function RegisterScreen({
-  navigation,
-}: RegisterScreenProps): React.JSX.Element {
+export function RegisterScreen({ navigation }: RegisterScreenProps): React.JSX.Element {
   const register = useAuthStore((state) => state.register);
   const isLoading = useAuthStore((state) => state.isLoading);
   const error = useAuthStore((state) => state.error);
@@ -69,18 +67,14 @@ export function RegisterScreen({
         password: values.password,
       });
 
-      Alert.alert(
+      notify(
         'Cuenta creada',
-        'El registro es simulado en esta demo. Inicia sesión con las credenciales de prueba para entrar al Club.',
-        [
-          {
-            text: 'Iniciar sesión',
-            onPress: () => navigation.navigate('Login'),
-          },
-        ],
-        { cancelable: false }
+        'El registro es simulado. Inicia sesión con las credenciales de prueba.',
       );
-    } catch {}
+      navigation.navigate('Login');
+    } catch {
+      // El store ya publica el mensaje que muestra el formulario.
+    }
   };
 
   const isBusy = isLoading || isSubmitting;
@@ -105,19 +99,14 @@ export function RegisterScreen({
               accessibilityRole="button"
               accessibilityLabel="Volver al inicio de sesión"
             >
-              <Ionicons
-                name="arrow-back"
-                size={SIZES.iconMd}
-                color={COLORS.accent}
-              />
+              <Ionicons name="arrow-back" size={SIZES.iconMd} color={COLORS.accent} />
             </Pressable>
 
             <View style={styles.headerText}>
               <Text style={styles.clubName}>Club Teatro Colón</Text>
               <Text style={styles.title}>Crear cuenta</Text>
               <Text style={styles.subtitle}>
-                Regístrate para guardar tus obras favoritas y recibir los
-                beneficios de socio.
+                Regístrate para guardar tus obras favoritas y recibir los beneficios de socio.
               </Text>
             </View>
           </View>
@@ -128,6 +117,7 @@ export function RegisterScreen({
                 <FormField<RegisterFormValues>
                   control={control}
                   name="firstName"
+                  maxLength={50}
                   label="Nombre"
                   required
                   placeholder="Emily"
@@ -139,6 +129,7 @@ export function RegisterScreen({
                 <FormField<RegisterFormValues>
                   control={control}
                   name="lastName"
+                  maxLength={50}
                   label="Apellido"
                   required
                   placeholder="Johnson"
@@ -150,6 +141,7 @@ export function RegisterScreen({
             <FormField<RegisterFormValues>
               control={control}
               name="username"
+              maxLength={50}
               label="Usuario"
               required
               placeholder="mi_usuario"
@@ -160,6 +152,7 @@ export function RegisterScreen({
             <FormField<RegisterFormValues>
               control={control}
               name="email"
+              maxLength={254}
               label="Correo electrónico"
               required
               placeholder="correo@ejemplo.com"
@@ -171,6 +164,7 @@ export function RegisterScreen({
             <FormField<RegisterFormValues>
               control={control}
               name="password"
+              maxLength={100}
               label="Contraseña"
               required
               placeholder="Mínimo 6 caracteres"
@@ -182,6 +176,7 @@ export function RegisterScreen({
             <FormField<RegisterFormValues>
               control={control}
               name="confirmPassword"
+              maxLength={100}
               label="Confirmar contraseña"
               required
               placeholder="Repite tu contraseña"
@@ -194,11 +189,7 @@ export function RegisterScreen({
 
             {error && (
               <View style={styles.errorBanner}>
-                <Ionicons
-                  name="alert-circle-outline"
-                  size={SIZES.iconSm}
-                  color={COLORS.error}
-                />
+                <Ionicons name="alert-circle-outline" size={SIZES.iconSm} color={COLORS.error} />
                 <Text style={styles.errorText}>{error}</Text>
               </View>
             )}
@@ -231,14 +222,10 @@ export function RegisterScreen({
           </View>
 
           <View style={styles.infoCard}>
-            <Ionicons
-              name="information-circle-outline"
-              size={SIZES.iconSm}
-              color={COLORS.accent}
-            />
+            <Ionicons name="information-circle-outline" size={SIZES.iconSm} color={COLORS.accent} />
             <Text style={styles.infoText}>
-              El registro es simulado: dummyjson no persiste cuentas nuevas. Al
-              terminar, inicia sesión con <Text style={styles.infoStrong}>emilys</Text> /{' '}
+              El registro es simulado: dummyjson no persiste cuentas nuevas. Al terminar, inicia
+              sesión con <Text style={styles.infoStrong}>emilys</Text> /{' '}
               <Text style={styles.infoStrong}>emilyspass</Text>.
             </Text>
           </View>
@@ -250,8 +237,7 @@ export function RegisterScreen({
             accessibilityLabel="Volver al inicio de sesión"
           >
             <Text style={styles.linkText}>
-              ¿Ya tienes cuenta?{' '}
-              <Text style={styles.linkHighlight}>Iniciar sesión</Text>
+              ¿Ya tienes cuenta? <Text style={styles.linkHighlight}>Iniciar sesión</Text>
             </Text>
           </Pressable>
         </ScrollView>

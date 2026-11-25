@@ -1,7 +1,6 @@
 // ===== SEMANA 01 · INICIO =====
 import React from 'react';
 import { View, Text, Image, Pressable, StyleSheet } from 'react-native';
-import type { GestureResponderEvent } from 'react-native';
 // ===== SEMANA 01 · FIN =====
 // ===== SEMANA 03 · INICIO =====
 import { Ionicons } from '@expo/vector-icons';
@@ -28,131 +27,108 @@ export const ItemCard = React.memo(function ItemCard({
   compact = false,
 }: ItemCardProps): React.JSX.Element {
   // ===== SEMANA 04 · INICIO =====
-  function handleSavePress(event: GestureResponderEvent): void {
-    event.stopPropagation();
+  function handleSavePress(): void {
     onToggleSave(item);
   }
   // ===== SEMANA 04 · FIN =====
 
   return (
-    <Pressable
-      style={({ pressed }) => [
-        styles.card,
-        pressed && styles.cardPressed,
-      ]}
-      onPress={() => onPress(item)}
-      accessibilityRole="button"
-      accessibilityLabel={`Obra ${item.name}, género ${item.genre}, precio ${item.price} pesos`}
-    >
-      {/* ===== SEMANA 02 · INICIO ===== */}
-      <View
-        style={[styles.imageWrapper, compact && styles.imageWrapperCompact]}
+    <View>
+      <Pressable
+        style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
+        onPress={() => onPress(item)}
+        accessibilityRole="button"
+        accessibilityLabel={`Obra ${item.name}, género ${item.genre}, precio ${item.price} pesos`}
       >
-        <Image
-          source={{ uri: item.imageUri }}
-          style={styles.cardImage}
-          resizeMode="cover"
-        />
-        <View style={styles.genreBadge}>
-          <Text style={styles.genreBadgeText}>{item.genre}</Text>
-        </View>
-
-        <View style={styles.ratingBadge}>
-          <Text style={styles.ratingBadgeText}>★ {item.rating.toFixed(1)}</Text>
-        </View>
-
-        {/* ===== SEMANA 04 · INICIO ===== */}
-        <Pressable
-          onPress={handleSavePress}
-          style={({ pressed }) => [
-            styles.saveButton,
-            saved && styles.saveButtonActive,
-            pressed && styles.saveButtonPressed,
-          ]}
-          hitSlop={8}
-          accessibilityRole="button"
-          accessibilityLabel={
-            saved
-              ? `Quitar ${item.name} de guardados`
-              : `Guardar ${item.name} en guardados`
-          }
-        >
-          <Ionicons
-            name={saved ? 'bookmark' : 'bookmark-outline'}
-            size={SIZES.iconMd}
-            color={saved ? COLORS.accent : COLORS.textPrimary}
-          />
-        </Pressable>
-        {/* ===== SEMANA 04 · FIN ===== */}
-      </View>
-      {/* ===== SEMANA 02 · FIN ===== */}
-
-      <View style={[styles.cardBody, compact && styles.cardBodyCompact]}>
         {/* ===== SEMANA 02 · INICIO ===== */}
-        <Text
-          style={[styles.cardTitle, compact && styles.cardTitleCompact]}
-          numberOfLines={1}
-        >
-          {item.name}
-        </Text>
-        {/* ===== SEMANA 02 · FIN ===== */}
-
-        {/* ===== SEMANA 07 · INICIO ===== */}
-        {!compact && (
-          <Text style={styles.cardSubtitle} numberOfLines={1}>
-            {item.subtitle}
-          </Text>
-        )}
-        {/* ===== SEMANA 07 · FIN ===== */}
-
-        {/* ===== SEMANA 02 · INICIO ===== */}
-        <View style={styles.metaRow}>
-          <Text style={styles.metaText}>🏛 {item.hall}</Text>
-          <Text style={styles.metaDot}>•</Text>
-          <Text style={styles.metaText}>📅 {item.date}</Text>
-        </View>
-
-        {compact ? (
-          <View style={styles.compactFooter}>
-            {/* ===== SEMANA 07 · INICIO ===== */}
-            <Text style={styles.compactSeats}>
-              {item.availableSeats} butacas
-            </Text>
-            {/* ===== SEMANA 07 · FIN ===== */}
-            <Text style={styles.priceValue}>
-              ${item.price.toLocaleString('es-CO')} COP
-            </Text>
+        <View style={[styles.imageWrapper, compact && styles.imageWrapperCompact]}>
+          <Image source={{ uri: item.imageUri }} style={styles.cardImage} resizeMode="cover" />
+          <View style={styles.genreBadge}>
+            <Text style={styles.genreBadgeText}>{item.genre}</Text>
           </View>
-        ) : (
-          <>
-            <View style={styles.metaRow}>
-              <Text style={styles.metaText}>🕒 {item.time}</Text>
-              <Text style={styles.metaDot}>•</Text>
-              <Text style={styles.metaText}>⏳ {item.duration}</Text>
-            </View>
 
-            <View style={styles.divider} />
-
-            <View style={styles.cardFooter}>
-              <View style={styles.seatsContainer}>
-                <Text style={styles.seatsLabel}>Disponibles</Text>
-                <Text style={styles.seatsValue}>
-                  {item.availableSeats} butacas
-                </Text>
-              </View>
-
-              <View style={styles.priceContainer}>
-                <Text style={styles.priceLabel}>Entrada general</Text>
-                <Text style={styles.priceValue}>
-                  ${item.price.toLocaleString('es-CO')} COP
-                </Text>
-              </View>
-            </View>
-          </>
-        )}
+          <View style={styles.ratingBadge}>
+            <Text style={styles.ratingBadgeText}>★ {item.rating.toFixed(1)}</Text>
+          </View>
+        </View>
         {/* ===== SEMANA 02 · FIN ===== */}
-      </View>
-    </Pressable>
+
+        <View style={[styles.cardBody, compact && styles.cardBodyCompact]}>
+          {/* ===== SEMANA 02 · INICIO ===== */}
+          <Text style={[styles.cardTitle, compact && styles.cardTitleCompact]} numberOfLines={1}>
+            {item.name}
+          </Text>
+          {/* ===== SEMANA 02 · FIN ===== */}
+
+          {/* ===== SEMANA 07 · INICIO ===== */}
+          {!compact && (
+            <Text style={styles.cardSubtitle} numberOfLines={1}>
+              {item.subtitle}
+            </Text>
+          )}
+          {/* ===== SEMANA 07 · FIN ===== */}
+
+          {/* ===== SEMANA 02 · INICIO ===== */}
+          <View style={styles.metaRow}>
+            <Text style={styles.metaText}>🏛 {item.hall}</Text>
+            <Text style={styles.metaDot}>•</Text>
+            <Text style={styles.metaText}>📅 {item.date}</Text>
+          </View>
+
+          {compact ? (
+            <View style={styles.compactFooter}>
+              {/* ===== SEMANA 07 · INICIO ===== */}
+              <Text style={styles.compactSeats}>{item.availableSeats} butacas</Text>
+              {/* ===== SEMANA 07 · FIN ===== */}
+              <Text style={styles.priceValue}>${item.price.toLocaleString('es-CO')} COP</Text>
+            </View>
+          ) : (
+            <>
+              <View style={styles.metaRow}>
+                <Text style={styles.metaText}>🕒 {item.time}</Text>
+                <Text style={styles.metaDot}>•</Text>
+                <Text style={styles.metaText}>⏳ {item.duration}</Text>
+              </View>
+
+              <View style={styles.divider} />
+
+              <View style={styles.cardFooter}>
+                <View style={styles.seatsContainer}>
+                  <Text style={styles.seatsLabel}>Disponibles</Text>
+                  <Text style={styles.seatsValue}>{item.availableSeats} butacas</Text>
+                </View>
+
+                <View style={styles.priceContainer}>
+                  <Text style={styles.priceLabel}>Entrada general</Text>
+                  <Text style={styles.priceValue}>${item.price.toLocaleString('es-CO')} COP</Text>
+                </View>
+              </View>
+            </>
+          )}
+          {/* ===== SEMANA 02 · FIN ===== */}
+        </View>
+      </Pressable>
+      <Pressable
+        onPress={handleSavePress}
+        style={({ pressed }) => [
+          { position: 'absolute', top: SIZES.cardImageHeight - 48, right: SPACING.base },
+          styles.saveButton,
+          saved && styles.saveButtonActive,
+          pressed && styles.saveButtonPressed,
+        ]}
+        hitSlop={8}
+        accessibilityRole="button"
+        accessibilityLabel={
+          saved ? `Quitar ${item.name} de guardados` : `Guardar ${item.name} en guardados`
+        }
+      >
+        <Ionicons
+          name={saved ? 'bookmark' : 'bookmark-outline'}
+          size={SIZES.iconMd}
+          color={saved ? COLORS.accent : COLORS.textPrimary}
+        />
+      </Pressable>
+    </View>
   );
 });
 
@@ -219,7 +195,6 @@ const styles = StyleSheet.create({
   saveButton: {
     position: 'absolute',
     right: SPACING.sm,
-    bottom: SPACING.sm,
     padding: SPACING.sm,
     borderRadius: RADIUS.full,
     backgroundColor: COLORS.overlay,
