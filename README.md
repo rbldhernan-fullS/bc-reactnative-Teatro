@@ -20,6 +20,10 @@ pnpm export:web
 
 Rutas web: `/` (cartelera), `/obra/:id` (detalle) y `/guardados`.
 
+## Mapa de archivos por semana
+
+Rutas desde `starter/`.
+
 | Semana | Archivos |
 | --- | --- |
 | 01 | `App.tsx`, catálogo `src/data/mockData.ts` y modelos `src/types/` |
@@ -27,4 +31,4 @@ Rutas web: `/` (cartelera), `/obra/:id` (detalle) y `/guardados`.
 | 03 | `src/navigation/`, `src/platform/` y detalle en `src/screens/DetailScreen.tsx` |
 | 04 | `src/stores/savedStore.ts`, `src/screens/SavedScreen.tsx`, `src/components/SaveButton.tsx` e integración de guardados en cartelera y detalle |
 
-[Ver el video de Semana 04](https://github.com/rbldhernan-fullS/bc-reactnative-Teatro/blob/main/docs/Week-04/video_semana_04.mp4)
+[Ver el video de Semana 04](https://github.com/rbldhernan-fullS/bc-reactnative-Teatro/blob/main/docs/Week-04/video_week_04.mp4)
