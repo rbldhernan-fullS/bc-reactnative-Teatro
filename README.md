@@ -157,7 +157,7 @@ El Login incluye un botón **Rellenar demo** para cargar estas credenciales. El 
 
 ```bash
 cd starter
-pnpm install
+pnpm install --frozen-lockfile
 
 # 1. API local de la cartelera (terminal 1)
 pnpm api
@@ -276,7 +276,7 @@ starter/
 
 ```bash
 cd starter
-pnpm install
+pnpm install --frozen-lockfile
 pnpm web
 ```
 
@@ -294,7 +294,9 @@ En web el sustituto de SecureStore usa localStorage en claro. Usa solo datos de 
 
 La sesión se valida en DummyJSON y la app exige iniciar sesión para enviar escrituras. El json-server local es una API de demostración sin autorización en el servidor.
 
-## Mapa por semana
+## Mapa de archivos por semana
+
+Rutas desde `starter/`.
 
 | Semana | Archivos principales |
 | --- | --- |
