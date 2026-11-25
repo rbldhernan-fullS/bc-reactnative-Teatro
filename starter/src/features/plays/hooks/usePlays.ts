@@ -1,5 +1,5 @@
 // ===== SEMANA 05 · INICIO =====
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { onlineManager, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { createPlay, deletePlay, fetchPlayById, fetchPlays, updatePlay } from '../api/playsApi';
 // ===== SEMANA 05 · FIN =====
@@ -20,6 +20,10 @@ export const PLAYS_QUERY_KEY = ['plays'] as const;
 export function usePlays() {
   return useQuery<PlaysWithSource>({
     queryKey: PLAYS_QUERY_KEY,
+    // La lectura local debe ejecutarse incluso si el navegador ya está sin red.
+    networkMode: 'always',
+    refetchOnReconnect: 'always',
+    retry: (failureCount) => onlineManager.isOnline() && failureCount < 2,
     queryFn: async (): Promise<PlaysWithSource> => {
       try {
         const plays = await fetchPlays();
@@ -76,8 +80,10 @@ export function usePlayById(id: string) {
     // React Query pausa las consultas cuando el navegador está sin red; sin esto
     // el `queryFn` no llega a ejecutarse y el fallback a la caché nunca ocurre.
     networkMode: 'always',
+    refetchOnReconnect: 'always',
     // Un 404 no se reintenta: la obra no existe y reintentar solo llena la consola (E‑07).
-    retry: (failureCount, error) => !isNotFoundError(error) && failureCount < 2,
+    retry: (failureCount, error) =>
+      onlineManager.isOnline() && !isNotFoundError(error) && failureCount < 2,
   });
 }
 
