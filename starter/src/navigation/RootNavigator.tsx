@@ -7,6 +7,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 
+import { ITEMS } from '../data/mockData';
 import { DetailScreen } from '../screens/DetailScreen';
 import { FavoritesScreen } from '../screens/FavoritesScreen';
 import { HomeScreen } from '../screens/HomeScreen';
@@ -43,7 +44,10 @@ function HomeStackNavigator(): React.JSX.Element {
         name="HomeDetail"
         component={DetailScreen}
         options={({ route }) => ({
-          title: route.params.name,
+          title:
+            route.params.name ??
+            ITEMS.find((item) => item.id === route.params.id)?.name ??
+            'Detalle',
           headerBackTitle: 'Cartelera',
           headerShown: true,
         })}

@@ -1,20 +1,12 @@
 // ===== SEMANA 01 · INICIO =====
 import React from 'react';
-import {
-  View,
-  Text,
-  Image,
-  ScrollView,
-  StyleSheet,
-  Pressable,
-  Alert,
-  Platform,
-} from 'react-native';
+import { View, Text, Image, ScrollView, StyleSheet, Pressable } from 'react-native';
 // ===== SEMANA 01 · FIN =====
 // ===== SEMANA 03 · INICIO =====
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { DetailScreenProps } from '../navigation/types';
+import { confirm, notify } from '../platform/notify';
 import { ITEMS } from '../data/mockData';
 import { COLORS, TYPOGRAPHY, SPACING, RADIUS, SIZES } from '../theme';
 
@@ -58,19 +50,12 @@ export function DetailScreen(): React.JSX.Element {
     synopsis,
   } = item;
 
-  function handleBookingPress(): void {
-    const message = `¿Deseas iniciar la selección de butacas para "${name}" en la ${hall} (${date} · ${time})?`;
-    if (Platform.OS === 'web') {
-      window.alert(`Reserva iniciada:\n${message}\nValor: $${price.toLocaleString('es-CO')} COP`);
-    } else {
-      Alert.alert('Reservar Butacas', message, [
-        { text: 'Cancelar', style: 'cancel' },
-        {
-          text: 'Continuar',
-          onPress: () => Alert.alert('Reserva iniciada', `Obra: ${name}\nID: ${id}`),
-        },
-      ]);
-    }
+  async function handleBookingPress(): Promise<void> {
+    const accepted = await confirm({
+      title: 'Reservar butacas',
+      message: `¿Deseas iniciar la selección de butacas para ${name} en ${hall} (${date} · ${time})?`,
+    });
+    if (accepted) notify('Reserva iniciada', `Obra: ${name}\nID: ${id}`);
   }
 
   return (

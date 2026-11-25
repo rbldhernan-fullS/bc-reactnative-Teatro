@@ -9,6 +9,8 @@ import { StatusBar } from 'expo-status-bar';
 // ===== SEMANA 01 · FIN =====
 // ===== SEMANA 03 · INICIO =====
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { linking } from './src/navigation/linking';
+import { blurOnWebNavigation } from './src/navigation/useWebFocusFix';
 import { RootNavigator } from './src/navigation/RootNavigator';
 // ===== SEMANA 03 · FIN =====
 
@@ -17,7 +19,7 @@ export default function App(): React.JSX.Element {
   return (
     <SafeAreaProvider>
       {/* ===== SEMANA 03 · INICIO ===== */}
-      <NavigationContainer>
+      <NavigationContainer linking={linking} onStateChange={blurOnWebNavigation}>
         <RootNavigator />
       </NavigationContainer>
       {/* ===== SEMANA 03 · FIN ===== */}

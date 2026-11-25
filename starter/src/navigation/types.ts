@@ -8,7 +8,7 @@ export type HomeStackParamList = {
 
   HomeDetail: {
     id: string;
-    name: string;
+    name?: string;
   };
 };
 

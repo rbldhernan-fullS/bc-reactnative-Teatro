@@ -1,13 +1,6 @@
 // ===== SEMANA 02 · INICIO =====
 export type TheatreGenre =
-  | 'Drama'
-  | 'Tragedia'
-  | 'Musical'
-  | 'Comedia'
-  | 'Ópera'
-  | 'Monólogo'
-  | 'Clásico'
-  | 'Infantil';
+  'Drama' | 'Tragedia' | 'Musical' | 'Comedia' | 'Ópera' | 'Monólogo' | 'Clásico' | 'Infantil';
 // ===== SEMANA 02 · FIN =====
 
 // ===== SEMANA 01 · INICIO =====
