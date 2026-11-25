@@ -186,3 +186,17 @@ pnpm web
 ```
 
 La app también corre en el navegador con `react-native-web` y Metro.
+
+---
+
+## 🗺️ Mapa de archivos por semana
+
+| Archivo | Semana de autoría | Propósito |
+|---|---|---|
+| `starter/src/types/index.ts` | Semana 01–02 | Interfaz `Item` extendida y tipo `TheatreGenre` |
+| `starter/src/theme/index.ts` | Semana 02 | Tokens centralizados del tema (colores, tipografía, espaciado) |
+| `starter/src/data/mockData.ts` | Semana 01–02 | Cartelera de 12 obras con datos teatrales detallados |
+| `starter/src/components/ItemCard.tsx` | Semana 01–02 | Tarjeta optimizada con `React.memo` y badges de género/calificación |
+| `starter/src/screens/HomeScreen.tsx` | Semana 01–02 | `FlatList` virtualizada con buscador en tiempo real y estado vacío |
+| `starter/App.tsx` | Semana 01–02 | Componente raíz envuelto en `SafeAreaView` |
+| `starter/index.js` | Semana 01 (transversal) | Entrypoint web y móvil con `registerRootComponent` |
