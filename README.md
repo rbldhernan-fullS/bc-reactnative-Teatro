@@ -11,9 +11,9 @@ Cada tarjeta representa una obra con su título, director o compañía, género,
 
 ## Pantalla
 
-![Pantalla principal](./docs/semana-01.png)
+![Pantalla principal](https://raw.githubusercontent.com/rbldhernan-fullS/bc-reactnative-Teatro/main/docs/Week-01/Captura_Week_01.png)
 
-> Captura de la app en ejecución. Coloca la imagen en `docs/semana-01.png`.
+> Captura de la app en ejecución en web.
 
 ## Stack
 
@@ -93,4 +93,15 @@ export interface Item {
 
 ## Pendientes
 
-- Imágenes locales en `assets/images/` (hoy se cargan desde `picsum.photos`).
+- Las imágenes se cargan desde URLs temáticas estables de Unsplash curadas para el dominio teatral.
+
+## Mapa de archivos por semana
+
+| Archivo | Semana de autoría | Propósito |
+|---|---|---|
+| `starter/src/types/index.ts` | Semana 01 | Interfaz `Item` (modelo de datos de la obra) |
+| `starter/src/data/mockData.ts` | Semana 01 | Cartelera inicial con 4 obras teatrales |
+| `starter/src/components/ItemCard.tsx` | Semana 01 | Tarjeta de obra con `Pressable` accesible y feedback `pressed` |
+| `starter/src/screens/HomeScreen.tsx` | Semana 01 | Pantalla principal con header y `ScrollView` |
+| `starter/App.tsx` | Semana 01 | Componente raíz |
+| `starter/index.js` | Semana 01 (transversal) | Entrypoint web y móvil con `registerRootComponent` |
