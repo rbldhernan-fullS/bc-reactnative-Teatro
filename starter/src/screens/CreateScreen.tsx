@@ -38,11 +38,7 @@ const GENRES: readonly TheatreGenre[] = [
   'Infantil',
 ];
 
-const HALLS: readonly TheatreHall[] = [
-  'Sala Principal',
-  'Sala de Cámara',
-  'Teatro Experimental',
-];
+const HALLS: readonly TheatreHall[] = ['Sala Principal', 'Sala de Cámara', 'Teatro Experimental'];
 
 const DEFAULT_IMAGE =
   'https://images.unsplash.com/photo-1503095396549-807759245b35?w=800&auto=format&fit=crop&q=80';
@@ -75,10 +71,7 @@ export function CreateScreen(): React.JSX.Element {
   const [form, setForm] = useState<FormState>(INITIAL_FORM);
   const [errors, setErrors] = useState<FormErrors>({});
 
-  function updateField<K extends keyof FormState>(
-    field: K,
-    value: FormState[K]
-  ): void {
+  function updateField<K extends keyof FormState>(field: K, value: FormState[K]): void {
     setForm((current) => ({ ...current, [field]: value }));
     setErrors((current) => ({ ...current, [field]: undefined }));
   }
@@ -146,9 +139,8 @@ export function CreateScreen(): React.JSX.Element {
         <View style={styles.introCard}>
           <Ionicons name="sparkles-outline" size={SIZES.iconMd} color={COLORS.accent} />
           <Text style={styles.introText}>
-            Publica una nueva obra en la cartelera. Los campos marcados con * son
-            obligatorios; la fecha, la duración y el aforo se asignan con los
-            valores de la temporada actual.
+            Publica una nueva obra en la cartelera. Los campos marcados con * son obligatorios; la
+            fecha, la duración y el aforo se asignan con los valores de la temporada actual.
           </Text>
         </View>
 
@@ -177,19 +169,11 @@ export function CreateScreen(): React.JSX.Element {
                 <Pressable
                   key={genre}
                   onPress={() => updateField('genre', genre)}
-                  style={[
-                    styles.chip,
-                    selected && styles.chipSelected,
-                  ]}
+                  style={[styles.chip, selected && styles.chipSelected]}
                   accessibilityRole="button"
                   accessibilityState={{ selected }}
                 >
-                  <Text
-                    style={[
-                      styles.chipText,
-                      selected && styles.chipTextSelected,
-                    ]}
-                  >
+                  <Text style={[styles.chipText, selected && styles.chipTextSelected]}>
                     {genre}
                   </Text>
                 </Pressable>
@@ -207,21 +191,11 @@ export function CreateScreen(): React.JSX.Element {
                 <Pressable
                   key={hall}
                   onPress={() => updateField('hall', hall)}
-                  style={[
-                    styles.chip,
-                    selected && styles.chipSelected,
-                  ]}
+                  style={[styles.chip, selected && styles.chipSelected]}
                   accessibilityRole="button"
                   accessibilityState={{ selected }}
                 >
-                  <Text
-                    style={[
-                      styles.chipText,
-                      selected && styles.chipTextSelected,
-                    ]}
-                  >
-                    {hall}
-                  </Text>
+                  <Text style={[styles.chipText, selected && styles.chipTextSelected]}>{hall}</Text>
                 </Pressable>
               );
             })}
@@ -249,9 +223,7 @@ export function CreateScreen(): React.JSX.Element {
         />
 
         {mutationError ? (
-          <Text style={styles.serverError}>
-            {getApiErrorMessage(mutationError)}
-          </Text>
+          <Text style={styles.serverError}>{getApiErrorMessage(mutationError)}</Text>
         ) : null}
 
         <Pressable
@@ -310,11 +282,7 @@ function Field({
     <View style={styles.fieldGroup}>
       <Text style={styles.label}>{label}</Text>
       <TextInput
-        style={[
-          styles.input,
-          multiline && styles.inputMultiline,
-          !!error && styles.inputError,
-        ]}
+        style={[styles.input, multiline && styles.inputMultiline, !!error && styles.inputError]}
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}

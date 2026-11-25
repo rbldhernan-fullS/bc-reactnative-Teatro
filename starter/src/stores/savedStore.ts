@@ -13,10 +13,8 @@ export interface SavedStore {
   clearSaved: () => void;
 }
 
-const INITIAL_SAVED_IDS = ['3', '1', '6', '8'];
-
 export const useSavedStore = create<SavedStore>()((set, get) => ({
-  savedIds: INITIAL_SAVED_IDS,
+  savedIds: [],
 
   saveId: (id) => {
     // ===== SEMANA 05 · INICIO =====
@@ -56,11 +54,10 @@ export const useSavedStore = create<SavedStore>()((set, get) => ({
   clearSaved: () => set({ savedIds: [] }),
 }));
 
-export const selectSavedCount = (state: SavedStore): number =>
-  state.savedIds.length;
+export const selectSavedCount = (state: SavedStore): number => state.savedIds.length;
 
 export const selectIsSaved =
   (id: string) =>
   (state: SavedStore): boolean =>
     state.savedIds.includes(id);
-    // ===== SEMANA 04 · FIN =====
+// ===== SEMANA 04 · FIN =====

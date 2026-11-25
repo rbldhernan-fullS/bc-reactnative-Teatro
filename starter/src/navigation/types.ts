@@ -21,15 +21,9 @@ export type RootTabParamList = {
 // ===== SEMANA 03 · FIN =====
 
 // ===== SEMANA 04 · INICIO =====
-export type DetailScreenProps = NativeStackScreenProps<
-  HomeStackParamList,
-  'HomeDetail'
->;
+export type DetailScreenProps = NativeStackScreenProps<HomeStackParamList, 'HomeDetail'>;
 // ===== SEMANA 04 · FIN =====
 
 // ===== SEMANA 03 · INICIO =====
-export type SavedScreenNavigationProp = BottomTabNavigationProp<
-  RootTabParamList,
-  'Saved'
->;
+export type SavedScreenNavigationProp = BottomTabNavigationProp<RootTabParamList, 'Saved'>;
 // ===== SEMANA 03 · FIN =====

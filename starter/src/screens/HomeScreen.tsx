@@ -88,7 +88,7 @@ export function HomeScreen(): React.JSX.Element {
         name: item.name,
       });
     },
-    [navigation]
+    [navigation],
   );
   // ===== SEMANA 03 · FIN =====
 
@@ -97,7 +97,7 @@ export function HomeScreen(): React.JSX.Element {
     (item: Item): void => {
       toggleSaved(item.id);
     },
-    [toggleSaved]
+    [toggleSaved],
   );
   // ===== SEMANA 05 · FIN =====
 
@@ -113,8 +113,8 @@ export function HomeScreen(): React.JSX.Element {
     // ===== SEMANA 04 · INICIO =====
     return plays.filter((item) =>
       [item.name, item.subtitle, item.genre, item.hall].some((field) =>
-        normalizeText(field).includes(cleanQuery)
-      )
+        normalizeText(field).includes(cleanQuery),
+      ),
     );
     // ===== SEMANA 04 · FIN =====
   }, [plays, query]);
@@ -136,13 +136,10 @@ export function HomeScreen(): React.JSX.Element {
         onToggleSave={handleToggleSave}
       />
     ),
-    [handleItemPress, savedIdSet, handleToggleSave]
+    [handleItemPress, savedIdSet, handleToggleSave],
   );
 
-  const renderSeparator = useCallback(
-    () => <View style={styles.separator} />,
-    []
-  );
+  const renderSeparator = useCallback(() => <View style={styles.separator} />, []);
   // ===== SEMANA 02 · FIN =====
 
   const renderEmpty = useCallback(() => {
@@ -166,8 +163,8 @@ export function HomeScreen(): React.JSX.Element {
         <Text style={styles.emptyIcon}>🎭</Text>
         <Text style={styles.emptyTitle}>Sin obras encontradas</Text>
         <Text style={styles.emptySubtitle}>
-          No hay funciones que coincidan con "{query}". Prueba buscando por otro
-          título, director o género teatral.
+          No hay funciones que coincidan con "{query}". Prueba buscando por otro título, director o
+          género teatral.
         </Text>
         {/* ===== SEMANA 02 · FIN ===== */}
         {/* ===== SEMANA 05 · INICIO ===== */}
@@ -242,11 +239,7 @@ export function HomeScreen(): React.JSX.Element {
                 accessibilityRole="button"
                 accessibilityLabel="Crear una obra nueva"
               >
-                <Ionicons
-                  name="add"
-                  size={SIZES.iconSm}
-                  color={COLORS.background}
-                />
+                <Ionicons name="add" size={SIZES.iconSm} color={COLORS.background} />
                 <Text style={styles.createButtonText}>Nueva</Text>
               </Pressable>
             </View>
@@ -291,16 +284,11 @@ export function HomeScreen(): React.JSX.Element {
                 {filteredItems.length}{' '}
                 {filteredItems.length === 1 ? 'obra disponible' : 'obras disponibles'}
               </Text>
-              {query.length > 0 && (
-                <Text style={styles.activeFilterBadge}>Filtro activo</Text>
-              )}
+              {query.length > 0 && <Text style={styles.activeFilterBadge}>Filtro activo</Text>}
             </View>
           </View>
 
-          <TouchableWithoutFeedback
-            onPress={Keyboard.dismiss}
-            accessible={false}
-          >
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
             <View style={styles.listWrapper}>
               <FlatList
                 data={filteredItems}

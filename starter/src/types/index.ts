@@ -1,21 +1,11 @@
 // ===== SEMANA 02 · INICIO =====
 export type TheatreGenre =
-  | 'Drama'
-  | 'Tragedia'
-  | 'Musical'
-  | 'Comedia'
-  | 'Ópera'
-  | 'Monólogo'
-  | 'Clásico'
-  | 'Infantil';
-  // ===== SEMANA 02 · FIN =====
+  'Drama' | 'Tragedia' | 'Musical' | 'Comedia' | 'Ópera' | 'Monólogo' | 'Clásico' | 'Infantil';
+// ===== SEMANA 02 · FIN =====
 
 // ===== SEMANA 05 · INICIO =====
-export type TheatreHall =
-  | 'Sala Principal'
-  | 'Sala de Cámara'
-  | 'Teatro Experimental';
-  // ===== SEMANA 05 · FIN =====
+export type TheatreHall = 'Sala Principal' | 'Sala de Cámara' | 'Teatro Experimental';
+// ===== SEMANA 05 · FIN =====
 
 // ===== SEMANA 01 · INICIO =====
 export interface Item {
