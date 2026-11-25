@@ -14,11 +14,7 @@ interface ProgressBarProps {
 const TRACK_HEIGHT = 10;
 const ANIMATION_DURATION = 900;
 
-export function ProgressBar({
-  progress,
-  label,
-  caption,
-}: ProgressBarProps): React.JSX.Element {
+export function ProgressBar({ progress, label, caption }: ProgressBarProps): React.JSX.Element {
   const clampedProgress = Math.min(1, Math.max(0, progress));
   const animatedProgress = useRef(new Animated.Value(0)).current;
   const [trackWidth, setTrackWidth] = useState(0);
@@ -62,9 +58,7 @@ export function ProgressBar({
         accessibilityLabel={label}
         accessibilityValue={{ min: 0, max: 100, now: percent }}
       >
-        <Animated.View
-          style={[styles.fill, { width, backgroundColor }]}
-        />
+        <Animated.View style={[styles.fill, { width, backgroundColor }]} />
       </View>
 
       {caption ? <Text style={styles.caption}>{caption}</Text> : null}

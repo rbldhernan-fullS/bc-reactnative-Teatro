@@ -1,25 +1,13 @@
+import axios from 'axios';
+import { logger } from '../utils/logger';
 // ===== SEMANA 05 · INICIO =====
-import {
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import {
-  createPlay,
-  fetchPlayById,
-  fetchPlays,
-  updatePlay,
-} from '../services/theatreApi';
+import { createPlay, fetchPlayById, fetchPlays, updatePlay } from '../services/theatreApi';
 // ===== SEMANA 05 · FIN =====
 // ===== SEMANA 07 · INICIO =====
 import { readPlaysCache, writePlaysCache } from '../storage/playsCache';
-import type {
-  CreatePlayPayload,
-  Item,
-  PlaysWithSource,
-  UpdatePlayPayload,
-} from '../types';
+import type { CreatePlayPayload, Item, PlaysWithSource, UpdatePlayPayload } from '../types';
 // ===== SEMANA 07 · FIN =====
 
 // ===== SEMANA 05 · INICIO =====
@@ -28,13 +16,16 @@ export const PLAYS_QUERY_KEY = ['plays'] as const;
 export function usePlays() {
   return useQuery<PlaysWithSource>({
     queryKey: PLAYS_QUERY_KEY,
+    networkMode: 'always',
     queryFn: async (): Promise<PlaysWithSource> => {
       try {
         const plays = await fetchPlays();
 
         try {
           await writePlaysCache(plays);
-        } catch {}
+        } catch {
+          logger.warn('No se pudo actualizar la caché de cartelera.');
+        }
 
         return { plays, source: 'network' };
       } catch (error) {
@@ -53,7 +44,17 @@ export function usePlays() {
 export function usePlayById(id: string) {
   return useQuery<Item>({
     queryKey: [...PLAYS_QUERY_KEY, id],
-    queryFn: () => fetchPlayById(id),
+    networkMode: 'always',
+    queryFn: async () => {
+      try {
+        return await fetchPlayById(id);
+      } catch (error) {
+        if (!axios.isAxiosError(error) || error.response) throw error;
+        const cached = (await readPlaysCache())?.find((play) => play.id === id);
+        if (cached) return cached;
+        throw error;
+      }
+    },
     enabled: id.length > 0,
   });
 }

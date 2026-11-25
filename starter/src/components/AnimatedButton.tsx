@@ -1,3 +1,4 @@
+import { USE_NATIVE_DRIVER } from '../utils/animation';
 // ===== SEMANA 01 · INICIO =====
 import React, { useRef } from 'react';
 import { Animated, Pressable, StyleSheet, Text } from 'react-native';
@@ -23,14 +24,14 @@ interface AnimatedButtonProps {
 const PRESS_IN_CONFIG = {
   toValue: 0.95,
   duration: 90,
-  useNativeDriver: true,
+  useNativeDriver: USE_NATIVE_DRIVER,
 } as const;
 
 const PRESS_OUT_CONFIG = {
   toValue: 1,
   tension: 220,
   friction: 9,
-  useNativeDriver: true,
+  useNativeDriver: USE_NATIVE_DRIVER,
 } as const;
 
 export function AnimatedButton({

@@ -34,39 +34,21 @@ export type AuthStackParamList = {
 // ===== SEMANA 08 · FIN =====
 
 // ===== SEMANA 04 · INICIO =====
-export type DetailScreenProps = NativeStackScreenProps<
-  HomeStackParamList,
-  'HomeDetail'
->;
+export type DetailScreenProps = NativeStackScreenProps<HomeStackParamList, 'HomeDetail'>;
 // ===== SEMANA 04 · FIN =====
 
 // ===== SEMANA 06 · INICIO =====
-export type EditScreenProps = NativeStackScreenProps<
-  HomeStackParamList,
-  'Edit'
->;
+export type EditScreenProps = NativeStackScreenProps<HomeStackParamList, 'Edit'>;
 // ===== SEMANA 06 · FIN =====
 
 // ===== SEMANA 03 · INICIO =====
-export type SavedScreenNavigationProp = BottomTabNavigationProp<
-  RootTabParamList,
-  'Saved'
->;
+export type SavedScreenNavigationProp = BottomTabNavigationProp<RootTabParamList, 'Saved'>;
 // ===== SEMANA 03 · FIN =====
 
 // ===== SEMANA 08 · INICIO =====
-export type ProfileScreenNavigationProp = BottomTabNavigationProp<
-  RootTabParamList,
-  'Profile'
->;
+export type ProfileScreenNavigationProp = BottomTabNavigationProp<RootTabParamList, 'Profile'>;
 
-export type LoginScreenProps = NativeStackScreenProps<
-  AuthStackParamList,
-  'Login'
->;
+export type LoginScreenProps = NativeStackScreenProps<AuthStackParamList, 'Login'>;
 
-export type RegisterScreenProps = NativeStackScreenProps<
-  AuthStackParamList,
-  'Register'
->;
+export type RegisterScreenProps = NativeStackScreenProps<AuthStackParamList, 'Register'>;
 // ===== SEMANA 08 · FIN =====

@@ -1,15 +1,8 @@
+import { confirm, notify } from '../platform/notify';
+import { USE_NATIVE_DRIVER } from '../utils/animation';
 // ===== SEMANA 01 · INICIO =====
 import React, { useEffect, useRef } from 'react';
-import {
-  View,
-  Text,
-  Image,
-  Animated,
-  StyleSheet,
-  Pressable,
-  Alert,
-  Platform,
-} from 'react-native';
+import { View, Text, Image, Animated, StyleSheet, Pressable } from 'react-native';
 // ===== SEMANA 01 · FIN =====
 // ===== SEMANA 03 · INICIO =====
 import { useRoute, useNavigation } from '@react-navigation/native';
@@ -71,12 +64,12 @@ export function DetailScreen(): React.JSX.Element {
       Animated.timing(contentOpacity, {
         toValue: 1,
         duration: 500,
-        useNativeDriver: true,
+        useNativeDriver: USE_NATIVE_DRIVER,
       }),
       Animated.timing(contentOffset, {
         toValue: 0,
         duration: 500,
-        useNativeDriver: true,
+        useNativeDriver: USE_NATIVE_DRIVER,
       }),
     ]);
 
@@ -133,9 +126,7 @@ export function DetailScreen(): React.JSX.Element {
     return (
       <View style={[styles.screenWrapper, styles.notFoundContainer]}>
         <Text style={styles.notFoundTitle}>Obra no encontrada</Text>
-        <Text style={styles.notFoundSubtitle}>
-          La obra que buscas ya no está en cartelera.
-        </Text>
+        <Text style={styles.notFoundSubtitle}>La obra que buscas ya no está en cartelera.</Text>
         <Pressable
           style={styles.bookButton}
           onPress={() => navigation.goBack()}
@@ -170,21 +161,10 @@ export function DetailScreen(): React.JSX.Element {
   const occupancy = getHallOccupancy(hall, availableSeats);
   // ===== SEMANA 09 · FIN =====
 
-  function handleBookingPress(): void {
+  async function handleBookingPress(): Promise<void> {
     const message = `¿Deseas iniciar la selección de butacas para "${name}" en la ${hall} (${date} · ${time})?`;
-    if (Platform.OS === 'web') {
-      window.alert(
-        `Reserva iniciada:\n${message}\nValor: $${price.toLocaleString('es-CO')} COP`
-      );
-    } else {
-      Alert.alert('Reservar Butacas', message, [
-        { text: 'Cancelar', style: 'cancel' },
-        {
-          text: 'Continuar',
-          onPress: () =>
-            Alert.alert('Reserva iniciada', `Obra: ${name}\nID: ${id}`),
-        },
-      ]);
+    if (await confirm({ title: 'Reservar butacas', message, confirmText: 'Continuar' })) {
+      notify('Reserva iniciada', name);
     }
   }
 
@@ -205,11 +185,7 @@ export function DetailScreen(): React.JSX.Element {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.imageContainer}>
-          <Image
-            source={{ uri: imageUri }}
-            style={styles.image}
-            resizeMode="cover"
-          />
+          <Image source={{ uri: imageUri }} style={styles.image} resizeMode="cover" />
           <View style={styles.imageOverlay} />
 
           <View style={styles.badgesRow}>
@@ -232,9 +208,7 @@ export function DetailScreen(): React.JSX.Element {
             accessibilityRole="button"
             accessibilityState={{ selected: isSaved }}
             accessibilityLabel={
-              isSaved
-                ? `Quitar ${name} de guardados`
-                : `Guardar ${name} en guardados`
+              isSaved ? `Quitar ${name} de guardados` : `Guardar ${name} en guardados`
             }
           >
             <Ionicons
@@ -242,12 +216,7 @@ export function DetailScreen(): React.JSX.Element {
               size={SIZES.iconSm}
               color={isSaved ? COLORS.accent : COLORS.textPrimary}
             />
-            <Text
-              style={[
-                styles.savePillText,
-                isSaved && styles.savePillTextActive,
-              ]}
-            >
+            <Text style={[styles.savePillText, isSaved && styles.savePillTextActive]}>
               {isSaved ? 'Guardada' : 'Guardar'}
             </Text>
           </Pressable>
@@ -289,9 +258,7 @@ export function DetailScreen(): React.JSX.Element {
           <View style={styles.availabilityBanner}>
             <Text style={styles.availabilityIcon}>🎭</Text>
             <View style={styles.availabilityTextWrapper}>
-              <Text style={styles.availabilityTitle}>
-                Aforo y Disponibilidad
-              </Text>
+              <Text style={styles.availabilityTitle}>Aforo y Disponibilidad</Text>
               <Text style={styles.availabilitySubtitle}>
                 {availableSeats > 10
                   ? `${availableSeats} butacas disponibles en esta función`
@@ -340,17 +307,11 @@ export function DetailScreen(): React.JSX.Element {
         </View>
       </Animated.ScrollView>
 
-      <View
-        style={[
-          styles.bottomBar,
-          { paddingBottom: SPACING.md + insets.bottom },
-        ]}
-      >
+      <View style={[styles.bottomBar, { paddingBottom: SPACING.md + insets.bottom }]}>
         <View style={styles.priceColumn}>
           <Text style={styles.priceCaption}>Entrada General</Text>
           <Text style={styles.priceNumber}>
-            ${price.toLocaleString('es-CO')}{' '}
-            <Text style={styles.priceCurrency}>COP</Text>
+            ${price.toLocaleString('es-CO')} <Text style={styles.priceCurrency}>COP</Text>
           </Text>
         </View>
 

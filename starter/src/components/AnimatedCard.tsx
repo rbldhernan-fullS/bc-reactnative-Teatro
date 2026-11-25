@@ -1,11 +1,12 @@
+import { USE_NATIVE_DRIVER } from '../utils/animation';
 // ===== SEMANA 01 · INICIO =====
 import React, { useRef } from 'react';
-import { Animated, Pressable } from 'react-native';
+import { Animated } from 'react-native';
 // ===== SEMANA 01 · FIN =====
 // ===== SEMANA 09 · INICIO =====
 import type { Item } from '../types';
 import { SIZES } from '../theme';
-import { ItemCard } from './ItemCard';
+import { PressableCard } from './PressableCard';
 
 interface AnimatedCardProps {
   item: Item;
@@ -19,14 +20,14 @@ const PRESS_IN_SPRING = {
   toValue: SIZES.pressedScale,
   tension: 400,
   friction: 28,
-  useNativeDriver: true,
+  useNativeDriver: USE_NATIVE_DRIVER,
 } as const;
 
 const PRESS_OUT_SPRING = {
   toValue: 1,
   tension: 200,
   friction: 8,
-  useNativeDriver: true,
+  useNativeDriver: USE_NATIVE_DRIVER,
 } as const;
 
 export const AnimatedCard = React.memo(function AnimatedCard({
@@ -48,20 +49,15 @@ export const AnimatedCard = React.memo(function AnimatedCard({
 
   return (
     <Animated.View style={{ transform: [{ scale }] }}>
-      <Pressable
-        onPress={() => onPress(item)}
+      <PressableCard
+        item={item}
+        saved={saved}
+        onPress={onPress}
+        onToggleSave={onToggleSave}
+        compact={compact}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
-        accessibilityRole="button"
-        accessibilityLabel={`Obra ${item.name}, género ${item.genre}, precio ${item.price} pesos`}
-      >
-        <ItemCard
-          item={item}
-          saved={saved}
-          onToggleSave={onToggleSave}
-          compact={compact}
-        />
-      </Pressable>
+      />
     </Animated.View>
   );
 });
