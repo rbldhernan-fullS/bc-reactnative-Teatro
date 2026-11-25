@@ -1,14 +1,7 @@
 // ===== SEMANA 01 · INICIO =====
 import React, { useCallback } from 'react';
-import {
-  View,
-  Text,
-  FlatList,
-  Image,
-  Pressable,
-  StyleSheet,
-} from 'react-native';
-import type { GestureResponderEvent, ListRenderItem } from 'react-native';
+import { View, Text, FlatList, Image, Pressable, StyleSheet } from 'react-native';
+import type { ListRenderItem } from 'react-native';
 // ===== SEMANA 01 · FIN =====
 // ===== SEMANA 03 · INICIO =====
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -19,12 +12,19 @@ import { Ionicons } from '@expo/vector-icons';
 import type { Item } from '../types';
 import { COLORS, TYPOGRAPHY, SPACING, RADIUS, SIZES } from '../theme';
 import type { SavedScreenNavigationProp } from '../navigation/types';
+import { PressableCard } from '../components/PressableCard';
+import { SaveButton } from '../components/SaveButton';
+import { ITEMS } from '../data/mockData';
 import { useSavedStore } from '../stores/savedStore';
 
 export function SavedScreen(): React.JSX.Element {
   const navigation = useNavigation<SavedScreenNavigationProp>();
 
-  const savedItems = useSavedStore((state) => state.savedItems);
+  const savedIds = useSavedStore((state) => state.savedIds);
+  const savedItems = savedIds.flatMap((id) => {
+    const item = ITEMS.find((play) => play.id === id);
+    return item ? [item] : [];
+  });
   const removeItem = useSavedStore((state) => state.removeItem);
   const clearSaved = useSavedStore((state) => state.clearSaved);
 
@@ -38,53 +38,32 @@ export function SavedScreen(): React.JSX.Element {
         },
       });
     },
-    [navigation]
-  );
-
-  const handleRemovePress = useCallback(
-    (event: GestureResponderEvent, id: string): void => {
-      event.stopPropagation();
-      removeItem(id);
-    },
-    [removeItem]
+    [navigation],
   );
 
   const renderSavedItem: ListRenderItem<Item> = useCallback(
     ({ item }) => (
-      <Pressable
-        style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
+      <PressableCard
+        cardStyle={styles.card}
+        pressedStyle={styles.cardPressed}
         onPress={() => handleItemPress(item)}
-        accessibilityRole="button"
-        accessibilityLabel={`Ver detalles de ${item.name}`}
+        label={`Ver detalles de ${item.name}`}
+        action={
+          <SaveButton
+            name={item.name}
+            saved
+            onPress={() => removeItem(item.id)}
+            style={styles.removeOverlay}
+          />
+        }
       >
-        <Image
-          source={{ uri: item.imageUri }}
-          style={styles.cardImage}
-          resizeMode="cover"
-        />
+        <Image source={{ uri: item.imageUri }} style={styles.cardImage} resizeMode="cover" />
 
         <View style={styles.cardContent}>
           <View style={styles.cardHeaderRow}>
             <View style={styles.genreBadge}>
               <Text style={styles.genreBadgeText}>{item.genre}</Text>
             </View>
-
-            <Pressable
-              onPress={(event) => handleRemovePress(event, item.id)}
-              style={({ pressed }) => [
-                styles.removeButton,
-                pressed && styles.removeButtonPressed,
-              ]}
-              hitSlop={8}
-              accessibilityRole="button"
-              accessibilityLabel={`Quitar ${item.name} de guardados`}
-            >
-              <Ionicons
-                name="bookmark"
-                size={SIZES.iconMd}
-                color={COLORS.tabActive}
-              />
-            </Pressable>
           </View>
 
           <Text style={styles.itemName} numberOfLines={1}>
@@ -102,37 +81,27 @@ export function SavedScreen(): React.JSX.Element {
 
           <View style={styles.cardFooter}>
             <Text style={styles.ratingText}>★ {item.rating.toFixed(1)}</Text>
-            <Text style={styles.priceText}>
-              ${item.price.toLocaleString('es-CO')} COP
-            </Text>
+            <Text style={styles.priceText}>${item.price.toLocaleString('es-CO')} COP</Text>
           </View>
         </View>
-      </Pressable>
+      </PressableCard>
     ),
-    [handleItemPress, handleRemovePress]
+    [handleItemPress, removeItem],
   );
 
-  const renderSeparator = useCallback(
-    () => <View style={styles.separator} />,
-    []
-  );
+  const renderSeparator = useCallback(() => <View style={styles.separator} />, []);
 
   const renderEmpty = useCallback(
     () => (
       <View style={styles.emptyContainer}>
-        <Ionicons
-          name="bookmark-outline"
-          size={SIZES.iconXl}
-          color={COLORS.textMuted}
-        />
+        <Ionicons name="bookmark-outline" size={SIZES.iconXl} color={COLORS.textMuted} />
         <Text style={styles.emptyTitle}>Sin obras guardadas</Text>
         <Text style={styles.emptySubtitle}>
-          Usa el bookmark de la cartelera o del detalle para guardar una obra y
-          encontrarla aquí.
+          Usa el bookmark de la cartelera o del detalle para guardar una obra y encontrarla aquí.
         </Text>
       </View>
     ),
-    []
+    [],
   );
 
   return (
@@ -152,10 +121,7 @@ export function SavedScreen(): React.JSX.Element {
 
             {savedItems.length > 0 && (
               <Pressable
-                style={({ pressed }) => [
-                  styles.clearButton,
-                  pressed && styles.clearButtonPressed,
-                ]}
+                style={({ pressed }) => [styles.clearButton, pressed && styles.clearButtonPressed]}
                 onPress={clearSaved}
                 accessibilityRole="button"
                 accessibilityLabel="Vaciar la lista de obras guardadas"
@@ -278,14 +244,7 @@ const styles = StyleSheet.create({
     fontSize: TYPOGRAPHY.size.xs,
     fontWeight: TYPOGRAPHY.weight.semibold,
   },
-  removeButton: {
-    padding: SPACING.xxs,
-    borderRadius: RADIUS.full,
-  },
-  removeButtonPressed: {
-    backgroundColor: COLORS.surfaceAlt,
-    opacity: 0.7,
-  },
+  removeOverlay: { position: 'absolute', right: SPACING.base, top: SPACING.sm },
   itemName: {
     fontSize: TYPOGRAPHY.size.md,
     fontWeight: TYPOGRAPHY.weight.bold,

@@ -59,13 +59,9 @@ export function HomeScreen(): React.JSX.Element {
   // ===== SEMANA 03 · FIN =====
 
   // ===== SEMANA 04 · INICIO =====
-  const savedItems = useSavedStore((state) => state.savedItems);
+  const savedIds = useSavedStore((state) => state.savedIds);
   const toggleItem = useSavedStore((state) => state.toggleItem);
 
-  const savedIds = useMemo(
-    () => new Set(savedItems.map((saved) => saved.id)),
-    [savedItems]
-  );
   // ===== SEMANA 04 · FIN =====
 
   // ===== SEMANA 02 · INICIO =====
@@ -102,7 +98,7 @@ export function HomeScreen(): React.JSX.Element {
         name: item.name,
       });
     },
-    [navigation]
+    [navigation],
   );
   // ===== SEMANA 03 · FIN =====
 
@@ -118,8 +114,8 @@ export function HomeScreen(): React.JSX.Element {
     // ===== SEMANA 04 · INICIO =====
     return ITEMS.filter((item) =>
       [item.name, item.subtitle, item.genre, item.hall].some((field) =>
-        normalizeText(field).includes(cleanQuery)
-      )
+        normalizeText(field).includes(cleanQuery),
+      ),
     );
     // ===== SEMANA 04 · FIN =====
   }, [query]);
@@ -136,17 +132,14 @@ export function HomeScreen(): React.JSX.Element {
       <ItemCard
         item={item}
         onPress={handleItemPress}
-        saved={savedIds.has(item.id)}
+        saved={savedIds.includes(item.id)}
         onToggleSave={toggleItem}
       />
     ),
-    [handleItemPress, savedIds, toggleItem]
+    [handleItemPress, savedIds, toggleItem],
   );
 
-  const renderSeparator = useCallback(
-    () => <View style={styles.separator} />,
-    []
-  );
+  const renderSeparator = useCallback(() => <View style={styles.separator} />, []);
   // ===== SEMANA 02 · FIN =====
 
   const renderEmpty = useCallback(() => {
@@ -155,8 +148,8 @@ export function HomeScreen(): React.JSX.Element {
         <Text style={styles.emptyIcon}>🎭</Text>
         <Text style={styles.emptyTitle}>Sin obras encontradas</Text>
         <Text style={styles.emptySubtitle}>
-          No hay funciones que coincidan con "{query}". Prueba buscando por otro
-          título, director o género teatral.
+          No hay funciones que coincidan con "{query}". Prueba buscando por otro título, director o
+          género teatral.
         </Text>
         {query.length > 0 && (
           <Pressable
@@ -230,16 +223,11 @@ export function HomeScreen(): React.JSX.Element {
                 {filteredItems.length}{' '}
                 {filteredItems.length === 1 ? 'obra disponible' : 'obras disponibles'}
               </Text>
-              {query.length > 0 && (
-                <Text style={styles.activeFilterBadge}>Filtro activo</Text>
-              )}
+              {query.length > 0 && <Text style={styles.activeFilterBadge}>Filtro activo</Text>}
             </View>
           </View>
 
-          <TouchableWithoutFeedback
-            onPress={Keyboard.dismiss}
-            accessible={false}
-          >
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
             <View style={styles.listWrapper}>
               <FlatList
                 data={filteredItems}

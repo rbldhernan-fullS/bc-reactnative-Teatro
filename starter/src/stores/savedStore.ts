@@ -1,65 +1,36 @@
 // ===== SEMANA 04 · INICIO =====
 import { create } from 'zustand';
-import { ITEMS } from '../data/mockData';
-import type { Item } from '../types';
 
-export interface SavedStore {
-  savedItems: Item[];
-
-  saveItem: (item: Item) => void;
-
+interface SavedStore {
+  savedIds: string[];
+  saveItem: (id: string) => void;
   removeItem: (id: string) => void;
-
-  toggleItem: (item: Item) => void;
-
+  toggleItem: (id: string) => void;
   clearSaved: () => void;
 }
 
-const INITIAL_SAVED_IDS = ['3', '1', '6', '8'];
-
-const initialSavedItems: Item[] = ITEMS.filter((item) =>
-  INITIAL_SAVED_IDS.includes(item.id)
-);
-
 export const useSavedStore = create<SavedStore>()((set, get) => ({
-  savedItems: initialSavedItems,
-
-  saveItem: (item) => {
-    const { savedItems } = get();
-    if (savedItems.some((saved) => saved.id === item.id)) {
-      return;
-    }
-
-    set((state) => ({ savedItems: [...state.savedItems, item] }));
-  },
-
+  savedIds: [],
+  saveItem: (id) =>
+    set((state) => (state.savedIds.includes(id) ? state : { savedIds: [...state.savedIds, id] })),
   removeItem: (id) =>
     set((state) => ({
-      savedItems: state.savedItems.filter((item) => item.id !== id),
+      savedIds: state.savedIds.filter((savedId) => savedId !== id),
     })),
-
-  toggleItem: (item) => {
-    const { savedItems } = get();
-    const isSaved = savedItems.some((saved) => saved.id === item.id);
-
-    if (isSaved) {
-      set((state) => ({
-        savedItems: state.savedItems.filter((saved) => saved.id !== item.id),
-      }));
-      return;
+  toggleItem: (id) => {
+    const { savedIds, saveItem, removeItem } = get();
+    if (savedIds.includes(id)) {
+      removeItem(id);
+    } else {
+      saveItem(id);
     }
-
-    set((state) => ({ savedItems: [...state.savedItems, item] }));
   },
-
-  clearSaved: () => set({ savedItems: [] }),
+  clearSaved: () => set({ savedIds: [] }),
 }));
 
-export const selectSavedCount = (state: SavedStore): number =>
-  state.savedItems.length;
-
+export const selectSavedCount = (state: SavedStore): number => state.savedIds.length;
 export const selectIsSaved =
   (id: string) =>
   (state: SavedStore): boolean =>
-    state.savedItems.some((item) => item.id === id);
-    // ===== SEMANA 04 · FIN =====
+    state.savedIds.includes(id);
+// ===== SEMANA 04 · FIN =====

@@ -8,7 +8,8 @@ export const ITEMS: Item[] = [
     id: '1',
     name: 'Hamlet',
     subtitle: 'Dir. Laura Gómez · Compañía Real de Arte',
-    imageUri: 'https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?w=800&auto=format&fit=crop&q=80',
+    imageUri:
+      'https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?w=800&auto=format&fit=crop&q=80',
     genre: 'Drama',
     date: '2026-11-14',
     time: '20:00',
@@ -24,7 +25,8 @@ export const ITEMS: Item[] = [
     id: '2',
     name: 'La Casa de Bernarda Alba',
     subtitle: 'Dir. Andrés Rojas · Teatro del Silencio',
-    imageUri: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&auto=format&fit=crop&q=80',
+    imageUri:
+      'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&auto=format&fit=crop&q=80',
     genre: 'Tragedia',
     date: '2026-11-21',
     time: '19:30',
@@ -40,7 +42,8 @@ export const ITEMS: Item[] = [
     id: '3',
     name: 'El Fantasma de la Ópera',
     subtitle: 'Dir. Camila Ortiz · Ensamble Lírico Nacional',
-    imageUri: 'https://images.unsplash.com/photo-1465847899084-d164df4dedc6?w=800&auto=format&fit=crop&q=80',
+    imageUri:
+      'https://images.unsplash.com/photo-1465847899084-d164df4dedc6?w=800&auto=format&fit=crop&q=80',
     genre: 'Musical',
     date: '2026-12-05',
     time: '20:30',
@@ -56,7 +59,8 @@ export const ITEMS: Item[] = [
     id: '4',
     name: 'Noche de Reyes',
     subtitle: 'Dir. Julián Pardo · Elenco Clásico',
-    imageUri: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=800&auto=format&fit=crop&q=80',
+    imageUri:
+      'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=800&auto=format&fit=crop&q=80',
     genre: 'Comedia',
     date: '2026-12-12',
     time: '18:00',
@@ -72,7 +76,8 @@ export const ITEMS: Item[] = [
     id: '5',
     name: 'Bodas de Sangre',
     subtitle: 'Dir. Federico Manrique · Compañía Andaluza',
-    imageUri: 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=800&auto=format&fit=crop&q=80',
+    imageUri:
+      'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=800&auto=format&fit=crop&q=80',
     genre: 'Tragedia',
     date: '2026-12-18',
     time: '20:00',
@@ -88,7 +93,8 @@ export const ITEMS: Item[] = [
     id: '6',
     name: 'Los Miserables',
     subtitle: 'Dir. Mariana Restrepo · Gran Compañía Musical',
-    imageUri: 'https://images.unsplash.com/photo-1460723237483-7a6dc9d0b212?w=800&auto=format&fit=crop&q=80',
+    imageUri:
+      'https://images.unsplash.com/photo-1460723237483-7a6dc9d0b212?w=800&auto=format&fit=crop&q=80',
     genre: 'Musical',
     date: '2026-12-22',
     time: '19:00',
@@ -104,7 +110,8 @@ export const ITEMS: Item[] = [
     id: '7',
     name: 'La Vida es Sueño',
     subtitle: 'Dir. Salvador Echeverri · Calderón Teatro',
-    imageUri: 'https://images.unsplash.com/photo-1478147427282-58a87a120781?w=800&auto=format&fit=crop&q=80',
+    imageUri:
+      'https://images.unsplash.com/photo-1478147427282-58a87a120781?w=800&auto=format&fit=crop&q=80',
     genre: 'Clásico',
     date: '2027-01-09',
     time: '19:30',
@@ -120,7 +127,8 @@ export const ITEMS: Item[] = [
     id: '8',
     name: 'Romeo y Julieta',
     subtitle: 'Dir. Sofía Valenzuela · Verona Producciones',
-    imageUri: 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=800&auto=format&fit=crop&q=80',
+    imageUri:
+      'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=800&auto=format&fit=crop&q=80',
     genre: 'Drama',
     date: '2027-01-16',
     time: '20:00',
@@ -136,7 +144,8 @@ export const ITEMS: Item[] = [
     id: '9',
     name: 'Esperando a Godot',
     subtitle: 'Dir. Tomás Beltrán · Laboratorio Absurdo',
-    imageUri: 'https://images.unsplash.com/photo-1503095396549-807759245b35?w=800&auto=format&fit=crop&q=80',
+    imageUri:
+      'https://images.unsplash.com/photo-1503095396549-807759245b35?w=800&auto=format&fit=crop&q=80',
     genre: 'Drama',
     date: '2027-01-23',
     time: '18:30',
@@ -152,7 +161,8 @@ export const ITEMS: Item[] = [
     id: '10',
     name: 'Don Juan Tenorio',
     subtitle: 'Dir. Ignacio Cardona · Grupo de Teatro Romántico',
-    imageUri: 'https://images.unsplash.com/photo-1518834107812-67b0b7c58434?w=800&auto=format&fit=crop&q=80',
+    imageUri:
+      'https://images.unsplash.com/photo-1518834107812-67b0b7c58434?w=800&auto=format&fit=crop&q=80',
     genre: 'Clásico',
     date: '2027-01-30',
     time: '20:00',
@@ -168,7 +178,8 @@ export const ITEMS: Item[] = [
     id: '11',
     name: 'Cyrano de Bergerac',
     subtitle: 'Dir. Gabriel Morales · Teatro de Espada y Verso',
-    imageUri: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800&auto=format&fit=crop&q=80',
+    imageUri:
+      'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800&auto=format&fit=crop&q=80',
     genre: 'Comedia',
     date: '2027-02-06',
     time: '19:00',
@@ -184,7 +195,8 @@ export const ITEMS: Item[] = [
     id: '12',
     name: 'El Principito sobre las Tablas',
     subtitle: 'Dir. Valentina Cruz · Teatro Infantil Mágico',
-    imageUri: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=800&auto=format&fit=crop&q=80',
+    imageUri:
+      'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=800&auto=format&fit=crop&q=80',
     genre: 'Infantil',
     date: '2027-02-13',
     time: '16:00',

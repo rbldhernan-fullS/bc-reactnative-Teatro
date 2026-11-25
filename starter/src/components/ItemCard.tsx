@@ -1,10 +1,10 @@
 // ===== SEMANA 01 · INICIO =====
 import React from 'react';
-import { View, Text, Image, Pressable, StyleSheet } from 'react-native';
-import type { GestureResponderEvent } from 'react-native';
+import { View, Text, Image, StyleSheet } from 'react-native';
 // ===== SEMANA 01 · FIN =====
 // ===== SEMANA 03 · INICIO =====
-import { Ionicons } from '@expo/vector-icons';
+import { SaveButton } from './SaveButton';
+import { PressableCard } from './PressableCard';
 // ===== SEMANA 03 · FIN =====
 // ===== SEMANA 04 · INICIO =====
 import type { Item } from '../types';
@@ -16,7 +16,7 @@ interface ItemCardProps {
   item: Item;
   onPress: (item: Item) => void;
   saved: boolean;
-  onToggleSave: (item: Item) => void;
+  onToggleSave: (id: string) => void;
 }
 
 export const ItemCard = React.memo(function ItemCard({
@@ -25,30 +25,25 @@ export const ItemCard = React.memo(function ItemCard({
   saved,
   onToggleSave,
 }: ItemCardProps): React.JSX.Element {
-  // ===== SEMANA 04 · INICIO =====
-  function handleSavePress(event: GestureResponderEvent): void {
-    event.stopPropagation();
-    onToggleSave(item);
-  }
-  // ===== SEMANA 04 · FIN =====
-
   return (
-    <Pressable
-      style={({ pressed }) => [
-        styles.card,
-        pressed && styles.cardPressed,
-      ]}
+    <PressableCard
+      layoutStyle={styles.cardLayout}
+      cardStyle={styles.card}
+      pressedStyle={styles.cardPressed}
       onPress={() => onPress(item)}
-      accessibilityRole="button"
-      accessibilityLabel={`Obra ${item.name}, género ${item.genre}, precio ${item.price} pesos`}
+      label={`Obra ${item.name}, género ${item.genre}, precio ${item.price} pesos`}
+      action={
+        <SaveButton
+          name={item.name}
+          saved={saved}
+          onPress={() => onToggleSave(item.id)}
+          style={styles.saveOverlay}
+        />
+      }
     >
       {/* ===== SEMANA 02 · INICIO ===== */}
       <View style={styles.imageWrapper}>
-        <Image
-          source={{ uri: item.imageUri }}
-          style={styles.cardImage}
-          resizeMode="cover"
-        />
+        <Image source={{ uri: item.imageUri }} style={styles.cardImage} resizeMode="cover" />
         <View style={styles.genreBadge}>
           <Text style={styles.genreBadgeText}>{item.genre}</Text>
         </View>
@@ -56,30 +51,6 @@ export const ItemCard = React.memo(function ItemCard({
         <View style={styles.ratingBadge}>
           <Text style={styles.ratingBadgeText}>★ {item.rating.toFixed(1)}</Text>
         </View>
-
-        {/* ===== SEMANA 04 · INICIO ===== */}
-        <Pressable
-          onPress={handleSavePress}
-          style={({ pressed }) => [
-            styles.saveButton,
-            saved && styles.saveButtonActive,
-            pressed && styles.saveButtonPressed,
-          ]}
-          hitSlop={8}
-          accessibilityRole="button"
-          accessibilityLabel={
-            saved
-              ? `Quitar ${item.name} de guardados`
-              : `Guardar ${item.name} en guardados`
-          }
-        >
-          <Ionicons
-            name={saved ? 'bookmark' : 'bookmark-outline'}
-            size={SIZES.iconMd}
-            color={saved ? COLORS.tabActive : COLORS.textPrimary}
-          />
-        </Pressable>
-        {/* ===== SEMANA 04 · FIN ===== */}
       </View>
       {/* ===== SEMANA 02 · FIN ===== */}
 
@@ -116,22 +87,19 @@ export const ItemCard = React.memo(function ItemCard({
 
           <View style={styles.priceContainer}>
             <Text style={styles.priceLabel}>Entrada general</Text>
-            <Text style={styles.priceValue}>
-              ${item.price.toLocaleString('es-CO')} COP
-            </Text>
+            <Text style={styles.priceValue}>${item.price.toLocaleString('es-CO')} COP</Text>
           </View>
         </View>
       </View>
-    </Pressable>
+    </PressableCard>
   );
 });
 
 const styles = StyleSheet.create({
+  cardLayout: { marginHorizontal: SPACING.base, marginVertical: SPACING.xs },
   card: {
     backgroundColor: COLORS.surface,
     borderRadius: RADIUS.lg,
-    marginHorizontal: SPACING.base,
-    marginVertical: SPACING.xs,
     borderWidth: 1,
     borderColor: COLORS.border,
     overflow: 'hidden',
@@ -183,22 +151,7 @@ const styles = StyleSheet.create({
     fontWeight: TYPOGRAPHY.weight.bold,
     color: COLORS.accent,
   },
-  saveButton: {
-    position: 'absolute',
-    right: SPACING.sm,
-    bottom: SPACING.sm,
-    padding: SPACING.sm,
-    borderRadius: RADIUS.full,
-    backgroundColor: COLORS.overlay,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-  },
-  saveButtonActive: {
-    borderColor: COLORS.tabActive,
-  },
-  saveButtonPressed: {
-    opacity: 0.7,
-  },
+  saveOverlay: { position: 'absolute', right: SPACING.sm, top: SIZES.cardImageHeight - 48 },
   cardBody: {
     padding: SPACING.base,
     gap: SPACING.xs,

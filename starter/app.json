@@ -17,9 +17,7 @@
     "android": {
       "package": "com.hernan.teatro"
     },
-    "plugins": [
-      "expo-status-bar"
-    ],
+    "plugins": ["expo-status-bar"],
     "web": {
       "bundler": "metro"
     }
