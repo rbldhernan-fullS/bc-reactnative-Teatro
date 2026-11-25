@@ -126,13 +126,13 @@ Flujo manual sugerido:
 | React | 19.2.3 | Componentes |
 | TypeScript | 6.0.3 | Tipado estricto (sin `any`) |
 | React Hook Form | 7.81.0 | Estado de formularios |
-| Zod | 4.4.3 | Validación y tipos inferidos |
+| Zod | 4.6.6 | Validación y tipos inferidos |
 | Zustand | 5.0 | Estado de sesión y guardados |
 | TanStack Query | 5.105 | Estado del servidor |
 | Axios | 1.21 | Cliente HTTP e interceptor 401 |
 | Expo SecureStore | 57.0.4 | Tokens cifrados |
 | React Native MMKV | 4.3.2 | Preferencias locales |
-| AsyncStorage | 2.2.0 | Perfil persistido y caché offline |
+| AsyncStorage | 2.2.0 | Guardados y caché offline |
 | Animated API | React Native | Animaciones de la Semana 09 |
 
 ---
@@ -168,7 +168,7 @@ starter/
     │   ├── AppNavigator.tsx        # Cartelera / Guardados / Perfil / Ajustes
     │   └── types.ts                # Parámetros tipados de navegación
     ├── stores/
-    │   ├── authStore.ts            # Zustand + persist + bootstrap
+    │   ├── authStore.ts            # Zustand y restauración de sesión
     │   └── savedStore.ts           # Ids de obras guardadas
     ├── services/
     │   ├── authClient.ts           # Axios auth + interceptor 401
@@ -200,3 +200,11 @@ pnpm web
 La app también corre en el navegador con `react-native-web` y Metro. Los módulos exclusivos de nativo
 se sustituyen por implementaciones web mediante archivos `.web.ts`: **MMKV** y **SecureStore** usan
 `localStorage`, y las notificaciones quedan deshabilitadas en web sin romper el arranque.
+
+## Verificación web y mapa de archivos
+
+Desde `starter` ejecuta `pnpm install --frozen-lockfile`, `pnpm verify` y `pnpm export:web`. Inicia `pnpm api` y `pnpm web` en terminales separadas. La exportación para producción requiere `EXPO_PUBLIC_API_URL` con la URL HTTPS antes de compilar.
+
+- Semana 09: animaciones en `src/components/AnimatedCard.tsx`, `AnimatedButton.tsx` y pantallas de cartelera y detalle.
+
+[Video de la semana](https://github.com/rbldhernan-fullS/bc-reactnative-Teatro/blob/main/docs/Week-09/video_week_09.mp4)
