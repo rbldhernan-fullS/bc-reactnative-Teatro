@@ -29,8 +29,8 @@ La app administra la cartelera y la cuenta de los socios del **Club Teatro Coló
 
 | Requisito | Archivo | Implementación |
 |---|---|---|
-| `SwipeableCard` con `Gesture.Pan` | `SwipeableCard` | Umbral ±120 px, rotación interpolada y `withSpring(0)` para el snap-back. |
-| Acción de dominio al superar el umbral | `SwipeableCard` + `HomeScreen` | Derecha: guardar/quitar de la lista. Izquierda: descartar de la cartelera de la sesión. |
+| `SwipeableCard` con `Gesture.Pan` | `SwipeableCard` | Umbral ±110 px, rotación interpolada y `withSpring(0)` para el snap-back. |
+| Acción de dominio al superar el umbral | `SwipeableCard` + `HomeScreen` | Izquierda: guardar/quitar de la lista. Derecha: descartar de la cartelera de la sesión. |
 | `AnimatedButton` con `Gesture.Tap` | `AnimatedButton` | `withTiming` al presionar y `withSpring` al soltar; reemplaza el `Pressable` de la Semana 09. |
 | Entrada escalonada | `HomeScreen` | `withDelay(index * 80, withTiming(...))` y `useAnimatedStyle`. |
 | Transición del detalle | `DetailScreen` | Fade + slide con `useSharedValue`, `withTiming` e `interpolate`. |
@@ -69,7 +69,7 @@ La rúbrica de la Semana 10 menciona `'react-native-reanimated/plugin'`, que era
 |---|:---:|---|
 | `SwipeableCard` funcional con `Gesture.Pan` | 8 | Arrastre horizontal con rotación, umbral y acción de dominio. |
 | Snap-back correcto sin superar el umbral | 6 | `withSpring(0)` en `translateX` y `translateY`. |
-| Umbral detectado y acción ejecutada | 6 | ±120 px: guardar/quitar o descartar, con `runOnJS`. |
+| Umbral detectado y acción ejecutada | 6 | ±110 px: guardar/quitar o descartar, con `runOnJS`. |
 | Entrada animada con `useAnimatedStyle` | 5 | `StaggeredItem` y transición del detalle. |
 | App compila correctamente | 3 | `pnpm typecheck` con 0 errores y bundle Android correcto. |
 | Dominio coherente | 2 | Obras, salas, butacas, ocupación y reserva. |
@@ -129,12 +129,12 @@ npx expo export --platform android          # bundle correcto
 Flujo manual sugerido:
 
 1. Entrar con `emilys` / `emilyspass`.
-2. En la cartelera, deslizar una tarjeta a la derecha: se guarda o se quita de Guardados.
-3. Deslizar a la izquierda: la obra se descarta y aparece el aviso **Restaurar**.
+2. En la cartelera, deslizar una tarjeta a la izquierda: se guarda o se quita de Guardados.
+3. Deslizar a la derecha: la obra se descarta y aparece el aviso **Restaurar**.
 4. Tocar **Mostrar más**: las tarjetas nuevas entran con `withDelay`.
 5. Abrir una obra: el detalle entra con fade + slide y muestra la ocupación.
 6. Tocar **Reservar Butacas**: se abre el mapa de la sala.
-7. Hacer pinch para zoom y arrastrar con dos dedos para recorrer el mapa.
+7. En nativo, pellizcar para zoom y arrastrar con dos dedos. En web, desplazar el mapa y usar +/−.
 8. Seleccionar butacas disponibles (máximo 8) y confirmar la reserva.
 
 > Las capturas del simulador deben generarse en un equipo con Android Studio + JDK 17 o con EAS Build. En este entorno no hay JDK, Android SDK ni `adb`.
@@ -154,10 +154,10 @@ Flujo manual sugerido:
 | React Native Worklets | 0.10.1 | Plugin de Babel para worklets |
 | TanStack Query | 5.105 | Estado del servidor |
 | Zustand | 5.0 | Sesión y obras guardadas |
-| React Hook Form + Zod | 7.81 / 4.4.3 | Formularios y validación |
+| React Hook Form + Zod | 7.81 / 4.6.6 | Formularios y validación |
 | Expo SecureStore | 57.0.4 | Tokens cifrados |
 | React Native MMKV | 4.3.2 | Preferencias locales |
-| AsyncStorage | 2.2.0 | Perfil persistido y caché offline |
+| AsyncStorage | 2.2.0 | Guardados y caché offline |
 | Axios | 1.21 | Cliente HTTP e interceptor 401 |
 
 ---
@@ -196,7 +196,7 @@ starter/
     │   ├── AppNavigator.tsx        # Stack con SeatMap
     │   └── types.ts                # Parámetros tipados de navegación
     ├── stores/
-    │   ├── authStore.ts            # Zustand + persist + bootstrap
+    │   ├── authStore.ts            # Zustand y restauración de sesión
     │   └── savedStore.ts           # Ids de obras guardadas
     ├── services/
     │   ├── authClient.ts           # Axios auth + interceptor 401
@@ -228,3 +228,12 @@ pnpm web
 La app también corre en el navegador con `react-native-web` y Metro. Los módulos exclusivos de nativo
 se sustituyen por implementaciones web mediante archivos `.web.ts`: **MMKV** y **SecureStore** usan
 `localStorage`, y las notificaciones quedan deshabilitadas en web sin romper el arranque.
+
+## Verificación web y mapa de archivos
+
+Desde `starter` ejecuta `pnpm install --frozen-lockfile`, `pnpm verify` y `pnpm export:web`. Inicia `pnpm api` y `pnpm web` en terminales separadas. La exportación para producción requiere `EXPO_PUBLIC_API_URL` con la URL HTTPS antes de compilar.
+
+- Semana 09: animaciones en `src/components/AnimatedCard.tsx`, `AnimatedButton.tsx` y pantallas de cartelera y detalle.
+- Semana 10: gestos en `src/components/SwipeableCard.tsx` y su variante web, mapa en `src/screens/SeatMapScreen.tsx`. Desliza a la izquierda para guardar y a la derecha para descartar.
+
+[Video de la semana](https://github.com/rbldhernan-fullS/bc-reactnative-Teatro/blob/main/docs/Week-10/video_week_10.mp4)
