@@ -113,7 +113,7 @@ El valor completo nunca se pinta en pantalla. Al entrar a la pantalla se comprue
 
 ```bash
 cd starter
-pnpm install
+pnpm install --frozen-lockfile
 
 # 1. API local de la cartelera (terminal 1)
 pnpm api
@@ -243,7 +243,7 @@ starter/
 
 ```bash
 cd starter
-pnpm install
+pnpm install --frozen-lockfile
 pnpm web
 ```
 
@@ -259,7 +259,9 @@ En web el sustituto de SecureStore usa localStorage en claro. Usa solo datos de 
 
 [Video de la semana](https://github.com/rbldhernan-fullS/bc-reactnative-Teatro/blob/main/docs/Week-07/video_week_07.mp4)
 
-## Mapa por semana
+## Mapa de archivos por semana
+
+Rutas desde `starter/`.
 
 | Semana | Archivos principales |
 | --- | --- |
