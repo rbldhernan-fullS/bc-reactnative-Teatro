@@ -51,7 +51,7 @@ api/db.json  →  json-server :3001  →  axios (services/api.ts)
 
 ```bash
 cd starter
-pnpm install
+pnpm install --frozen-lockfile
 ```
 
 ### 2. Levantar la API y la app
@@ -198,7 +198,7 @@ Prueba manual sugerida:
 
 ```bash
 cd starter
-pnpm install
+pnpm install --frozen-lockfile
 pnpm web
 ```
 
@@ -210,7 +210,9 @@ Desde `starter`, ejecuta `pnpm install --frozen-lockfile`, `pnpm verify` y `pnpm
 
 [Video de la semana](https://github.com/rbldhernan-fullS/bc-reactnative-Teatro/blob/main/docs/Week-05/video_week_05.mp4)
 
-## Mapa por semana
+## Mapa de archivos por semana
+
+Rutas desde `starter/`.
 
 | Semana | Archivos principales |
 | --- | --- |
