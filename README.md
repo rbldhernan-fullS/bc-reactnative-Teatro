@@ -214,11 +214,11 @@ Flujo manual sugerido:
 | React | 19.2.3 | Componentes |
 | TypeScript | 6.0.3 | Tipado estricto (sin `any`) |
 | React Hook Form | 7.81.0 | Estado de formularios |
-| Zod | 4.4.3 | Validación y tipos inferidos |
+| Zod | 4.6.6 | Validación y tipos inferidos |
 | Zustand | 5.0 | Estado de sesión y guardados |
 | TanStack Query | 5.105 | Estado del servidor |
 | Axios | 1.21 | Cliente HTTP e interceptor 401 |
-| Expo SecureStore | 57.0.4 | Tokens cifrados |
+| Expo SecureStore | 57.0.4 | Tokens de la sesión (cifrados en nativo) |
 | React Native MMKV | 4.3.2 | Preferencias locales |
 | AsyncStorage | 2.2.0 | Perfil persistido y caché offline |
 
@@ -238,7 +238,7 @@ starter/
     │   ├── authClient.ts           # Axios auth + interceptor 401 single-flight
     │   ├── authService.ts          # login / register / getProfile / errores
     │   ├── tokenService.ts         # SecureStore: save/get/clear tokens
-    │   ├── api.ts                  # Axios de la cartelera
+    │   ├── api.ts                  # Exporta el cliente y el manejo de errores
     │   └── theatreApi.ts           # Adaptador de dominio
     ├── stores/
     │   ├── authStore.ts            # Zustand + persist + bootstrap
@@ -283,3 +283,24 @@ pnpm web
 La app también corre en el navegador con `react-native-web` y Metro. Los módulos exclusivos de nativo
 se sustituyen por implementaciones web mediante archivos `.web.ts`: **MMKV** y **SecureStore** usan
 `localStorage`, y las notificaciones quedan deshabilitadas en web sin romper el arranque.
+
+## Verificación web
+
+Desde `starter`, ejecuta `pnpm install --frozen-lockfile`, `pnpm verify` y `pnpm export:web`. Abre dos terminales para `pnpm api` y `pnpm web`. La API demo habilita CORS y escucha en `0.0.0.0:3001`. Una exportación destinada a ejecutarse en producción requiere la variable `EXPO_PUBLIC_API_URL` con la URL HTTPS antes de exportar.
+
+En web el sustituto de SecureStore usa localStorage en claro. Usa solo datos de demostración.
+
+[Video de la semana](https://github.com/rbldhernan-fullS/bc-reactnative-Teatro/blob/main/docs/Week-08/video_week_08.mp4)
+
+La sesión se valida en DummyJSON y la app exige iniciar sesión para enviar escrituras. El json-server local es una API de demostración sin autorización en el servidor.
+
+## Mapa por semana
+
+| Semana | Archivos principales |
+| --- | --- |
+| 01–02 | `src/components/ItemCard.tsx`, `src/screens/HomeScreen.tsx` |
+| 03–04 | `src/navigation/`, `src/screens/SavedScreen.tsx`, `src/stores/savedStore.ts` |
+| 05 | `src/config/env.ts`, `src/services/http.ts`, `src/hooks/usePlays.ts`, `src/components/ScreenState.tsx` |
+| 06 | `src/schemas/playSchema.ts`, `src/components/PlayForm.tsx`, `src/screens/EditScreen.tsx` |
+| 07 | `src/storage/`, `src/hooks/usePreferences.ts`, `src/screens/SettingsScreen.tsx` |
+| 08 | `src/stores/authStore.ts`, `src/services/authClient.ts`, `src/schemas/authSchema.ts` |
