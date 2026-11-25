@@ -134,7 +134,7 @@ starter/
 ├── env.d.ts                        # Tipado de variables de entorno de Expo
 └── src/
     ├── services/
-    │   ├── api.ts                  # Instancia Axios, host de desarrollo y errores
+    │   ├── api.ts                  # Exporta el cliente y el manejo de errores
     │   └── theatreApi.ts           # GET/POST/PUT adaptados al dominio Teatro
     ├── hooks/
     │   └── usePlays.ts             # usePlays, usePlayById, useCreatePlay, useUpdatePlay
@@ -164,7 +164,7 @@ starter/
 | Criterio | Puntos | Implementación |
 |---|:---:|---|
 | `QueryClientProvider` en la raíz | 3 | `App.tsx` envuelve `SafeAreaProvider` y `NavigationContainer` |
-| Instancia Axios con `baseURL` | 4 | `src/services/api.ts` + detección automática del host de Expo |
+| Instancia Axios con `baseURL` | 4 | `src/services/http.ts` + detección automática del host de Expo |
 | `useQuery` con `queryKey` semántico | 6 | `PLAYS_QUERY_KEY = ['plays']` en `usePlays` |
 | `useMutation` + `invalidateQueries` | 7 | `useCreatePlay` invalida `['plays']` en `onSuccess` |
 | Loading, error y vacío | 5 | `ScreenState` + `ListEmptyComponent` |
@@ -203,3 +203,17 @@ pnpm web
 ```
 
 La app también corre en el navegador con `react-native-web` y Metro.
+
+## Verificación web
+
+Desde `starter`, ejecuta `pnpm install --frozen-lockfile`, `pnpm verify` y `pnpm export:web`. Abre dos terminales para `pnpm api` y `pnpm web`. La API demo habilita CORS y escucha en `0.0.0.0:3001`. Una exportación destinada a ejecutarse en producción requiere la variable `EXPO_PUBLIC_API_URL` con la URL HTTPS antes de exportar.
+
+[Video de la semana](https://github.com/rbldhernan-fullS/bc-reactnative-Teatro/blob/main/docs/Week-05/video_week_05.mp4)
+
+## Mapa por semana
+
+| Semana | Archivos principales |
+| --- | --- |
+| 01–02 | `src/components/ItemCard.tsx`, `src/screens/HomeScreen.tsx` |
+| 03–04 | `src/navigation/`, `src/screens/SavedScreen.tsx`, `src/stores/savedStore.ts` |
+| 05 | `src/config/env.ts`, `src/services/http.ts`, `src/hooks/usePlays.ts`, `src/components/ScreenState.tsx` |
