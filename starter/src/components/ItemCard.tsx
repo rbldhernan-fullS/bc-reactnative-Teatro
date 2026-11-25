@@ -19,21 +19,14 @@ export const ItemCard = React.memo(function ItemCard({
 }: ItemCardProps): React.JSX.Element {
   return (
     <Pressable
-      style={({ pressed }) => [
-        styles.card,
-        pressed && styles.cardPressed,
-      ]}
+      style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
       onPress={() => onPress(item)}
       accessibilityRole="button"
       accessibilityLabel={`Obra ${item.name}, género ${item.genre}, precio ${item.price} pesos`}
     >
       {/* ===== SEMANA 02 · INICIO ===== */}
       <View style={styles.imageWrapper}>
-        <Image
-          source={{ uri: item.imageUri }}
-          style={styles.cardImage}
-          resizeMode="cover"
-        />
+        <Image source={{ uri: item.imageUri }} style={styles.cardImage} resizeMode="cover" />
         <View style={styles.genreBadge}>
           <Text style={styles.genreBadgeText}>{item.genre}</Text>
         </View>
@@ -77,9 +70,7 @@ export const ItemCard = React.memo(function ItemCard({
 
           <View style={styles.priceContainer}>
             <Text style={styles.priceLabel}>Entrada general</Text>
-            <Text style={styles.priceValue}>
-              ${item.price.toLocaleString('es-CO')} COP
-            </Text>
+            <Text style={styles.priceValue}>${item.price.toLocaleString('es-CO')} COP</Text>
           </View>
         </View>
       </View>
