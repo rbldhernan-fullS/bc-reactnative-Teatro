@@ -1,0 +1,11 @@
+node_modules
+dist
+web-build
+.expo
+android
+ios
+pnpm-lock.yaml
+*.mp4
+*.png
+*.jpg
+*.jpeg
