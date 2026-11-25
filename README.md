@@ -139,7 +139,7 @@ El plugin `expo-notifications` se configura con el color dorado del tema y el ca
 - `addNotificationReceivedListener` y `addNotificationResponseReceivedListener` con cleanup.
 - Navegación al detalle al tocar el banner, incluso desde app cerrada.
 - Cancelación individual y masiva de recordatorios.
-- Sin `TODO`, placeholders ni `as any`.
+- TypeScript valida los payloads usados para navegar desde las notificaciones.
 
 ---
 
@@ -147,7 +147,7 @@ El plugin `expo-notifications` se configura con el color dorado del tema y el ca
 
 ```bash
 cd starter
-pnpm install
+pnpm install --frozen-lockfile
 
 # 1. API local de la cartelera (terminal 1)
 pnpm api
@@ -201,7 +201,7 @@ Flujo manual sugerido:
 8. Crear o editar una obra con permiso concedido y ver el aviso de cartelera.
 9. Desactivar **Recordatorios de función** y confirmar que se cancelan los avisos activos.
 
-> Las capturas y el push real deben generarse en un equipo con Android Studio + JDK 17 o con EAS Build. En este entorno no hay JDK, Android SDK ni `adb`, y el repositorio no incluye un `projectId` de EAS.
+> Las capturas y el push real deben generarse en un equipo con Android Studio + JDK 17 o con EAS Build. La configuración de EAS debe incluir un `projectId` válido para probar el push remoto.
 
 ---
 
@@ -217,7 +217,7 @@ Flujo manual sugerido:
 | Expo Device | 57.0.2 | Diferenciar dispositivo físico de simulador |
 | Expo Camera | 57.0.6 | Captura del afiche |
 | Expo Image Picker | 57.0.20 | Selección desde la galería |
-| Expo Location | 57.0.22 | Ubicación, geocodificación inversa y seguimiento |
+| Expo Location | 57.0.22 | Ubicación y seguimiento; referencia escrita por el usuario |
 | React Native Reanimated | 4.5.1 | Animaciones en el hilo de UI |
 | React Native Gesture Handler | 2.32.0 | Pan, pinch y tap |
 | TanStack Query | 5.105 | Estado del servidor |
@@ -232,82 +232,40 @@ Flujo manual sugerido:
 
 ## 📂 Estructura del código
 
-```
-api/
-└── db.json                         # Semilla de las 12 obras
-
-starter/
-├── App.tsx                         # setNotificationHandler + providers + nav
-├── app.json                        # Plugins de cámara, fotos, ubicación y notificaciones
-├── babel.config.js                 # react-native-worklets/plugin
-└── src/
-    ├── components/
-    │   ├── NotificationCenter.tsx  # Listeners globales + reconciliación
-    │   ├── PermissionGate.tsx      # Estados de permiso + ajustes del sistema
-    │   ├── PhotoPicker.tsx         # Cámara o galería para el afiche
-    │   ├── VenueCard.tsx           # Sede, dirección, distancia y seguimiento
-    │   ├── SwipeableCard.tsx       # Gesture.Pan + umbral + snap-back
-    │   ├── AnimatedCard.tsx        # Tap + escala con Reanimated
-    │   ├── AnimatedButton.tsx      # Gesture.Tap + withSpring
-    │   ├── ProgressBar.tsx         # Ocupación con Reanimated
-    │   ├── ItemCard.tsx            # Cuerpo visual de la tarjeta
-    │   ├── PlayForm.tsx            # Formulario + afiche local
-    │   └── ScreenState.tsx         # Loading / error / vacío
-    ├── screens/
-    │   ├── HomeScreen.tsx          # Cascada + swipe + descartadas
-    │   ├── DetailScreen.tsx        # Ficha, afiche, sede y recordatorio
-    │   ├── SeatMapScreen.tsx       # Zoom, pan y selección de butacas
-    │   ├── CameraScreen.tsx        # Cámara fullscreen
-    │   ├── CreateScreen.tsx        # Alta + afiche + aviso de cartelera
-    │   ├── EditScreen.tsx          # Edición + afiche + aviso de cartelera
-    │   ├── LoginScreen.tsx         # RHF + Zod + credenciales demo
-    │   ├── RegisterScreen.tsx      # Registro simulado
-    │   ├── SavedScreen.tsx         # Obras guardadas
-    │   ├── ProfileScreen.tsx       # Perfil y logout
-    │   └── SettingsScreen.tsx      # MMKV, SecureStore, token y recordatorios
-    ├── hooks/
-    │   ├── useNotifications.ts     # Fachada de notificaciones del dominio
-    │   ├── useLocation.ts          # Permiso, posición, dirección y watch
-    │   ├── usePlays.ts             # TanStack Query
-    │   └── usePreferences.ts       # Preferencias MMKV (incl. recordatorios)
-    ├── navigation/
-    │   ├── RootNavigator.tsx       # Auth ↔ App + tap pendiente
-    │   ├── AuthNavigator.tsx       # Login / Registro
-    │   ├── AppNavigator.tsx        # Stack con SeatMap y Camera
-    │   ├── navigationRef.ts        # Navegación desde listeners
-    │   └── types.ts                # Parámetros tipados de navegación
-    ├── stores/
-    │   ├── authStore.ts            # Zustand + persist + bootstrap
-    │   ├── savedStore.ts           # Ids de obras guardadas
-    │   ├── posterStore.ts          # Afiche local por obra
-    │   ├── notificationStore.ts    # Permiso, token y última recibida
-    │   └── reminderStore.ts        # Recordatorios persistidos en MMKV
-    ├── services/
-    │   ├── notifications.ts        # Permisos, token, triggers y payloads
-    │   ├── api.ts                  # Axios e interceptor 401
-    │   ├── authService.ts          # dummyjson
-    │   ├── authClient.ts           # Refresh de tokens
-    │   ├── tokenService.ts         # SecureStore
-    │   └── theatreApi.ts           # Adaptador del dominio
-    ├── storage/                    # MMKV y caché offline
-    ├── utils/
-    │   └── theatre.ts              # Aforo, butacas, sede y distancia
-    ├── types/
-    │   └── index.ts                # Item, Seat, Auth..., notificaciones
-    └── theme/
-        └── index.ts                # Paleta vino y oro
-```
+| Ruta | Responsabilidad |
+| --- | --- |
+| `api/db.json` | Semilla de la cartelera para json-server |
+| `starter/App.tsx` y `starter/src/app/providers.tsx` | Arranque y proveedores de la aplicación |
+| `starter/src/features/` | Autenticación, cartelera, guardados, ajustes y sede |
+| `starter/src/components/ui/` | Componentes compartidos y escucha de notificaciones |
+| `starter/src/services/`, `starter/src/storage/` y `starter/src/stores/` | API, caché, almacenamiento y estado |
+| `starter/src/navigation/` | Rutas, tipos y navegación desde notificaciones |
 
 ---
 
 ## 🌐 Ejecutar en web
 
-```bash
-cd starter
-pnpm install
-pnpm web
-```
+Desde `starter`, ejecuta `pnpm install --frozen-lockfile` y `pnpm verify`. Inicia `pnpm api` en una terminal y `pnpm web` en otra. Abre la dirección que indique Expo.
 
-La app también corre en el navegador con `react-native-web` y Metro. Los módulos exclusivos de nativo
-se sustituyen por implementaciones web mediante archivos `.web.ts`: **MMKV** y **SecureStore** usan
-`localStorage`, y las notificaciones quedan deshabilitadas en web sin romper el arranque.
+Ejecuta `pnpm export:web` para compilar. Configura `EXPO_PUBLIC_API_URL` con la URL HTTPS de la API antes de exportar si vas a servir `dist`. En web, MMKV y SecureStore usan `localStorage` y las notificaciones quedan deshabilitadas. El afiche personalizado vive en memoria y se pierde al recargar.
+
+[Video de la Semana 12](https://github.com/rbldhernan-fullS/bc-reactnative-Teatro/blob/main/docs/Week-12/video_week_12.mp4)
+
+## Mapa de archivos por semana
+
+Rutas desde `starter/`. Un archivo puede reunir cambios de varias semanas.
+
+| Semana | Archivos principales |
+| --- | --- |
+| 01 | `App.tsx`, `src/features/plays/components/cards/ItemCard.tsx`, `src/types/index.ts` |
+| 02 | `src/features/plays/components/home/HomeSearchBar.tsx`, `src/features/plays/hooks/useHomeFilters.ts`, `src/theme/index.ts` |
+| 03 | `src/navigation/`, `src/features/plays/screens/DetailScreen.tsx`, `src/platform/notify.ts` |
+| 04 | `src/stores/savedStore.ts`, `src/features/saved/screens/SavedScreen.tsx`, `src/features/plays/components/cards/SaveButton.tsx` |
+| 05 | `src/config/env.ts`, `src/services/http.ts`, `src/features/plays/api/playsApi.ts`, `src/features/plays/hooks/usePlays.ts` |
+| 06 | `src/features/plays/schemas/playSchema.ts`, `src/features/plays/components/forms/PlayForm.tsx`, `src/features/plays/screens/EditScreen.tsx` |
+| 07 | `src/storage/`, `src/hooks/usePreferences.ts`, `src/features/settings/components/PreferencesSection.tsx` |
+| 08 | `src/stores/authStore.ts`, `src/services/authApi.ts`, `src/features/auth/` |
+| 09 | `src/features/plays/components/cards/AnimatedCard.tsx`, `src/components/ui/AnimatedButton.tsx`, `src/components/ui/ProgressBar.tsx` |
+| 10 | `src/features/plays/components/cards/SwipeableCard.tsx`, `src/features/plays/components/cards/SwipeableCard.web.tsx`, `src/features/plays/screens/SeatMapScreen.tsx`, `src/features/plays/components/seatmap/SeatMapViewport.web.tsx` |
+| 11 | `src/features/venue/hooks/useLocation.ts`, `src/features/venue/components/VenueCard.tsx`, `src/features/venue/components/PhotoPicker.tsx`, `src/features/venue/screens/CameraScreen.tsx` |
+| 12 | `src/hooks/useNotifications.ts`, `src/components/ui/NotificationCenter.tsx`, `src/services/notifications.ts`, `src/stores/reminderStore.ts` |
