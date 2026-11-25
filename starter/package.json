@@ -1,14 +1,24 @@
 {
   "name": "teatro-app",
   "version": "1.0.0",
-  "main": "expo/AppEntry",
+  "main": "index.js",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "verify": "pnpm typecheck && pnpm lint && pnpm format:check",
+    "export:web": "expo export --platform web"
   },
+  "engines": {
+    "node": ">=22"
+  },
+  "packageManager": "pnpm@12.14.0",
   "dependencies": {
     "@expo/metro-runtime": "57.0.17",
     "expo": "57.0.31",
@@ -19,7 +29,13 @@
   },
   "devDependencies": {
     "@babel/core": "7.29.7",
+    "@eslint/js": "^10.0.1",
     "@types/react": "19.2.17",
-    "typescript": "6.0.3"
+    "eslint": "^10.14.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "prettier": "^3.10.1",
+    "typescript": "6.0.3",
+    "typescript-eslint": "^8.72.2"
   }
 }
