@@ -1,16 +1,22 @@
 {
   "name": "teatro-app",
   "version": "1.0.0",
-  "main": "expo/AppEntry",
+  "main": "index.js",
   "scripts": {
     "start": "expo start",
     "prebuild": "expo prebuild",
-    "android": "expo run:android",
-    "ios": "expo run:ios",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
     "api": "json-server --watch ../api/db.json --port 3001 --host 0.0.0.0",
     "dev": "concurrently -n api,expo -c yellow,cyan \"pnpm api\" \"pnpm start\"",
     "typecheck": "tsc --noEmit",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "verify": "pnpm typecheck && pnpm lint && pnpm format:check",
+    "export:web": "expo export --platform web"
   },
   "dependencies": {
     "@expo/metro-runtime": "57.0.17",
@@ -35,7 +41,7 @@
     "react-native-safe-area-context": "5.7.0",
     "react-native-screens": "4.26.2",
     "react-native-web": "0.21.4",
-    "zod": "4.4.3",
+    "zod": "4.6.6",
     "zustand": "5.0.16"
   },
   "devDependencies": {
@@ -43,6 +49,16 @@
     "@types/react": "19.2.17",
     "concurrently": "10.0.6",
     "json-server": "0.17.4",
-    "typescript": "6.0.3"
-  }
+    "typescript": "6.0.3",
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.14.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "prettier": "^3.10.1",
+    "typescript-eslint": "^8.72.2"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "packageManager": "pnpm@12.14.0"
 }
