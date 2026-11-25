@@ -1,12 +1,11 @@
 // ===== SEMANA 05 · INICIO =====
 import { env } from '../config/env';
-import { createHttpClient, toApiError } from './http';
+import { ApiError, createHttpClient, toApiError } from './http';
 // ===== SEMANA 05 · FIN =====
 
 // ===== SEMANA 08 · INICIO =====
 import type { AuthSession, AuthTokens, AuthUser, LoginCredentials, RegisterData } from '../types';
-import { logger } from '../utils/logger';
-import { clearTokens, getAccessToken, getRefreshToken, saveTokens } from './tokenService';
+import { getAccessToken, getRefreshToken, saveTokens } from './tokenService';
 
 const AUTH_TIMEOUT_MS = 15_000;
 
@@ -17,17 +16,22 @@ interface AuthErrorBody {
 }
 
 type TokenRefreshListener = (tokens: AuthTokens) => void;
-type AuthFailureListener = () => void;
 
 let tokenRefreshListener: TokenRefreshListener | null = null;
-let authFailureListener: AuthFailureListener | null = null;
+let sessionVersion = 0;
+let pendingRefresh: Promise<AuthTokens> | null = null;
 
 export function setTokenRefreshListener(listener: TokenRefreshListener | null): void {
   tokenRefreshListener = listener;
 }
 
-export function setAuthFailureListener(listener: AuthFailureListener | null): void {
-  authFailureListener = listener;
+export function getSessionVersion(): number {
+  return sessionVersion;
+}
+
+export function beginSessionChange(): number {
+  pendingRefresh = null;
+  return ++sessionVersion;
 }
 
 /** Cliente sin token: solo login y refresco, que aún no tienen sesión. */
@@ -37,28 +41,54 @@ const publicAuthClient = createHttpClient({
   label: 'auth',
 });
 
-export async function refreshAuthTokens(): Promise<AuthTokens> {
+async function renewSession(version: number): Promise<AuthTokens> {
   const refreshToken = await getRefreshToken();
 
   if (!refreshToken) {
-    throw new Error('No hay refresh token guardado.');
+    throw new ApiError('Falta la credencial de renovación.', { kind: 'http', status: 401 });
   }
 
-  const { data } = await publicAuthClient.post<AuthTokens>('/auth/refresh', {
-    refreshToken,
-    expiresInMins: 30,
-  });
+  let data: AuthTokens;
+  try {
+    const response = await publicAuthClient.post<AuthTokens>('/auth/refresh', {
+      refreshToken,
+      expiresInMins: 30,
+    });
+    data = response.data;
+  } catch (error) {
+    // El proveedor también responde 400 ante un token de renovación inválido.
+    if (toApiError(error).status === 400) {
+      throw new ApiError('Credencial de renovación rechazada.', {
+        kind: 'http',
+        status: 401,
+        cause: error,
+      });
+    }
+    throw error;
+  }
 
+  if ((await getRefreshToken()) !== refreshToken || version !== sessionVersion) {
+    throw new Error('La sesión cambió durante la renovación.');
+  }
   await saveTokens(data);
+  if (version !== sessionVersion) throw new Error('La sesión cambió durante la renovación.');
   tokenRefreshListener?.(data);
 
   return data;
 }
 
+export function refreshAuthTokens(): Promise<AuthTokens> {
+  const version = sessionVersion;
+  pendingRefresh ??= renewSession(version).finally(() => {
+    if (version === sessionVersion) pendingRefresh = null;
+  });
+  return pendingRefresh;
+}
+
 /**
  * Cliente con token: añade la cabecera `Authorization` y, si el servidor
  * responde 401, refresca la sesión una sola vez y reintenta la petición. Si el
- * refresco falla, borra los tokens y avisa al store para que cierre sesión.
+ * proveedor rechaza la sesión, el store gestiona su cierre.
  */
 const authClient = createHttpClient({
   baseURL: env.authUrl,
@@ -66,18 +96,10 @@ const authClient = createHttpClient({
   label: 'auth',
   auth: {
     getAccessToken,
+    getSessionVersion,
     refreshAccessToken: async (): Promise<string> => {
       const tokens = await refreshAuthTokens();
       return tokens.accessToken;
-    },
-    onAuthFailure: async (): Promise<void> => {
-      try {
-        await clearTokens();
-      } catch (error) {
-        logger.debug('No se pudieron borrar los tokens caducados', error);
-      }
-
-      authFailureListener?.();
     },
   },
 });
@@ -123,7 +145,8 @@ export function extractAuthUser(session: AuthSession): AuthUser {
 }
 
 export function isUnauthorizedError(error: unknown): boolean {
-  return toApiError(error).status === 401;
+  const { status } = toApiError(error);
+  return status === 401 || status === 403;
 }
 
 export function getAuthErrorMessage(error: unknown): string {

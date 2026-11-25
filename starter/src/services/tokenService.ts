@@ -10,25 +10,41 @@ const TOKEN_KEYS = {
   REFRESH: 'teatro_refresh_token',
 } as const;
 
-export async function saveTokens(tokens: AuthTokens): Promise<void> {
-  await Promise.all([
-    SecureStore.setItemAsync(TOKEN_KEYS.ACCESS, tokens.accessToken),
-    SecureStore.setItemAsync(TOKEN_KEYS.REFRESH, tokens.refreshToken),
-  ]);
+// Las escrituras asíncronas de una sesión anterior deben terminar antes del
+// borrado o la escritura del siguiente socio, también en SecureStore nativo.
+let pendingWrite = Promise.resolve();
+
+function writeInOrder(operation: () => Promise<void>): Promise<void> {
+  const result = pendingWrite.then(operation);
+  pendingWrite = result.catch(() => undefined);
+  return result;
+}
+
+export function saveTokens(tokens: AuthTokens): Promise<void> {
+  return writeInOrder(async () => {
+    await Promise.all([
+      SecureStore.setItemAsync(TOKEN_KEYS.ACCESS, tokens.accessToken),
+      SecureStore.setItemAsync(TOKEN_KEYS.REFRESH, tokens.refreshToken),
+    ]);
+  });
 }
 
 export async function getAccessToken(): Promise<string | null> {
+  await pendingWrite;
   return SecureStore.getItemAsync(TOKEN_KEYS.ACCESS);
 }
 
 export async function getRefreshToken(): Promise<string | null> {
+  await pendingWrite;
   return SecureStore.getItemAsync(TOKEN_KEYS.REFRESH);
 }
 
-export async function clearTokens(): Promise<void> {
-  await Promise.all([
-    SecureStore.deleteItemAsync(TOKEN_KEYS.ACCESS),
-    SecureStore.deleteItemAsync(TOKEN_KEYS.REFRESH),
-  ]);
+export function clearTokens(): Promise<void> {
+  return writeInOrder(async () => {
+    await Promise.all([
+      SecureStore.deleteItemAsync(TOKEN_KEYS.ACCESS),
+      SecureStore.deleteItemAsync(TOKEN_KEYS.REFRESH),
+    ]);
+  });
 }
 // ===== SEMANA 08 · FIN =====

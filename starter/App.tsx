@@ -6,8 +6,8 @@ import './src/platform/devConsole';
 // ===== SEMANA 12 · FIN =====
 
 // ===== SEMANA 01 · INICIO =====
-import React, { useEffect } from 'react';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 // ===== SEMANA 01 · FIN =====
 // ===== SEMANA 03 · INICIO =====
 import { NavigationContainer } from '@react-navigation/native';
@@ -46,18 +46,29 @@ Notifications.setNotificationHandler({
 function BootstrapGate(): React.JSX.Element {
   const isBootstrapping = useAuthStore((state) => state.isBootstrapping);
   const bootstrap = useAuthStore((state) => state.bootstrap);
+  const restoreError = useAuthStore((state) => state.restoreError);
+  const [retrying, setRetrying] = useState(false);
 
   useEffect(() => {
-    const unsubscribe = useAuthStore.persist.onFinishHydration(() => {
-      void bootstrap();
+    let active = true;
+    // Zustand también resuelve rehydrate cuando el perfil guardado es ilegible.
+    // En ambos casos se comprueban las credenciales del almacenamiento seguro.
+    void Promise.resolve(useAuthStore.persist.rehydrate()).then(() => {
+      if (active) void bootstrap();
     });
-
-    if (useAuthStore.persist.hasHydrated()) {
-      void bootstrap();
-    }
-
-    return unsubscribe;
+    return () => {
+      active = false;
+    };
   }, [bootstrap]);
+
+  async function retrySession(): Promise<void> {
+    setRetrying(true);
+    try {
+      await bootstrap();
+    } finally {
+      setRetrying(false);
+    }
+  }
 
   if (isBootstrapping) {
     return (
@@ -71,13 +82,31 @@ function BootstrapGate(): React.JSX.Element {
   }
 
   return (
-    <NavigationContainer
-      ref={navigationRef}
-      linking={linking}
-      onReady={flushPendingNotificationNavigation}
-    >
-      <RootNavigator />
-    </NavigationContainer>
+    <>
+      {restoreError && (
+        <View style={styles.retryBanner}>
+          <Text accessibilityLiveRegion="polite" style={styles.retryMessage}>
+            {restoreError}
+          </Text>
+          <Pressable
+            accessibilityRole="button"
+            disabled={retrying}
+            onPress={() => void retrySession()}
+          >
+            <Text style={styles.retryAction}>
+              {retrying ? 'Reintentando…' : 'Reintentar sesión'}
+            </Text>
+          </Pressable>
+        </View>
+      )}
+      <NavigationContainer
+        ref={navigationRef}
+        linking={linking}
+        onReady={flushPendingNotificationNavigation}
+      >
+        <RootNavigator />
+      </NavigationContainer>
+    </>
   );
 }
 // ===== SEMANA 08 · FIN =====
@@ -94,6 +123,13 @@ export default function App(): React.JSX.Element {
 
 // ===== SEMANA 08 · INICIO =====
 const styles = StyleSheet.create({
+  retryBanner: {
+    backgroundColor: COLORS.surfaceWarm,
+    padding: SPACING.md,
+    gap: SPACING.xs,
+  },
+  retryMessage: { color: COLORS.textPrimary },
+  retryAction: { color: COLORS.accent, fontWeight: TYPOGRAPHY.weight.bold },
   splash: {
     flex: 1,
     alignItems: 'center',

@@ -111,12 +111,11 @@ export function getApiErrorMessage(error: unknown): string {
 }
 
 export interface HttpAuthOptions {
+  getSessionVersion: () => number;
   /** Token guardado; devuelve `null` mientras no haya sesión. */
   getAccessToken: () => Promise<string | null>;
   /** Renueva la sesión y devuelve el token nuevo (una sola vez por ráfaga). */
   refreshAccessToken: () => Promise<string>;
-  /** Se llama cuando el refresco falla: hay que cerrar sesión. */
-  onAuthFailure: () => Promise<void> | void;
 }
 
 export interface HttpClientOptions {
@@ -129,6 +128,7 @@ export interface HttpClientOptions {
 
 interface RetryableRequestConfig extends InternalAxiosRequestConfig {
   _retry?: boolean;
+  sessionVersion?: number;
 }
 
 const DEFAULT_TIMEOUT_MS = 10_000;
@@ -171,24 +171,14 @@ export function createHttpClient({
     return client;
   }
 
-  const { getAccessToken, refreshAccessToken, onAuthFailure } = auth;
+  const { getAccessToken, refreshAccessToken, getSessionVersion } = auth;
 
-  // Varias peticiones pueden recibir 401 a la vez: se refresca una sola vez y
-  // todas esperan el mismo token (se conserva el comportamiento anterior).
-  let activeRefresh: Promise<string> | null = null;
-
-  const requestSingleRefresh = (): Promise<string> => {
-    if (!activeRefresh) {
-      activeRefresh = refreshAccessToken().finally(() => {
-        activeRefresh = null;
-      });
-    }
-
-    return activeRefresh;
-  };
-
-  client.interceptors.request.use(async (config) => {
+  client.interceptors.request.use(async (config: RetryableRequestConfig) => {
+    config.sessionVersion ??= getSessionVersion();
     const accessToken = await getAccessToken();
+    if (config.sessionVersion !== getSessionVersion()) {
+      throw new Error('La sesión cambió durante la petición.');
+    }
 
     if (accessToken) {
       config.headers.set('Authorization', `Bearer ${accessToken}`);
@@ -205,22 +195,19 @@ export function createHttpClient({
         ? (error.config as RetryableRequestConfig | undefined)
         : undefined;
 
-      if (apiError.status !== 401 || !originalRequest || originalRequest._retry) {
+      if (
+        apiError.status !== 401 ||
+        !originalRequest ||
+        originalRequest._retry ||
+        originalRequest.sessionVersion !== getSessionVersion()
+      ) {
         return reject(apiError);
       }
 
       originalRequest._retry = true;
 
-      try {
-        const accessToken = await requestSingleRefresh();
-        originalRequest.headers.set('Authorization', `Bearer ${accessToken}`);
-
-        return await client(originalRequest);
-      } catch (refreshError) {
-        await onAuthFailure();
-
-        return reject(refreshError);
-      }
+      await refreshAccessToken();
+      return client(originalRequest);
     },
   );
 
