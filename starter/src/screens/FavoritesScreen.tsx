@@ -1,13 +1,6 @@
 // ===== SEMANA 01 · INICIO =====
 import React, { useCallback } from 'react';
-import {
-  View,
-  Text,
-  FlatList,
-  Image,
-  Pressable,
-  StyleSheet,
-} from 'react-native';
+import { View, Text, FlatList, Image, Pressable, StyleSheet } from 'react-native';
 import type { ListRenderItem } from 'react-native';
 // ===== SEMANA 01 · FIN =====
 // ===== SEMANA 03 · INICIO =====
@@ -31,7 +24,7 @@ export function FavoritesScreen(): React.JSX.Element {
         },
       });
     },
-    [navigation]
+    [navigation],
   );
 
   const renderFavorite: ListRenderItem<Item> = useCallback(
@@ -42,11 +35,7 @@ export function FavoritesScreen(): React.JSX.Element {
         accessibilityRole="button"
         accessibilityLabel={`Ver detalles de ${item.name}`}
       >
-        <Image
-          source={{ uri: item.imageUri }}
-          style={styles.cardImage}
-          resizeMode="cover"
-        />
+        <Image source={{ uri: item.imageUri }} style={styles.cardImage} resizeMode="cover" />
 
         <View style={styles.cardContent}>
           <View style={styles.cardHeaderRow}>
@@ -71,20 +60,15 @@ export function FavoritesScreen(): React.JSX.Element {
 
           <View style={styles.cardFooter}>
             <Text style={styles.ratingText}>★ {item.rating.toFixed(1)}</Text>
-            <Text style={styles.priceText}>
-              ${item.price.toLocaleString('es-CO')} COP
-            </Text>
+            <Text style={styles.priceText}>${item.price.toLocaleString('es-CO')} COP</Text>
           </View>
         </View>
       </Pressable>
     ),
-    [handleFavoritePress]
+    [handleFavoritePress],
   );
 
-  const renderSeparator = useCallback(
-    () => <View style={styles.separator} />,
-    []
-  );
+  const renderSeparator = useCallback(() => <View style={styles.separator} />, []);
 
   const renderEmpty = useCallback(
     () => (
@@ -92,12 +76,11 @@ export function FavoritesScreen(): React.JSX.Element {
         <Text style={styles.emptyHeartIcon}>♡</Text>
         <Text style={styles.emptyTitle}>Sin obras favoritas</Text>
         <Text style={styles.emptySubtitle}>
-          Guarda tus obras favoritas desde la cartelera para encontrarlas y
-          reservar rápidamente.
+          Guarda tus obras favoritas desde la cartelera para encontrarlas y reservar rápidamente.
         </Text>
       </View>
     ),
-    []
+    [],
   );
 
   return (

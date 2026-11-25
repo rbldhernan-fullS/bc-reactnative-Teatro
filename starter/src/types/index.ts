@@ -8,7 +8,7 @@ export type TheatreGenre =
   | 'Monólogo'
   | 'Clásico'
   | 'Infantil';
-  // ===== SEMANA 02 · FIN =====
+// ===== SEMANA 02 · FIN =====
 
 // ===== SEMANA 01 · INICIO =====
 export interface Item {

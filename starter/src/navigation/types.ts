@@ -17,13 +17,7 @@ export type RootTabParamList = {
   Favorites: undefined;
 };
 
-export type DetailScreenProps = NativeStackScreenProps<
-  HomeStackParamList,
-  'HomeDetail'
->;
+export type DetailScreenProps = NativeStackScreenProps<HomeStackParamList, 'HomeDetail'>;
 
-export type FavoritesScreenNavigationProp = BottomTabNavigationProp<
-  RootTabParamList,
-  'Favorites'
->;
+export type FavoritesScreenNavigationProp = BottomTabNavigationProp<RootTabParamList, 'Favorites'>;
 // ===== SEMANA 03 · FIN =====

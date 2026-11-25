@@ -79,7 +79,7 @@ export function HomeScreen(): React.JSX.Element {
         name: item.name,
       });
     },
-    [navigation]
+    [navigation],
   );
   // ===== SEMANA 03 · FIN =====
 
@@ -91,8 +91,8 @@ export function HomeScreen(): React.JSX.Element {
 
     return ITEMS.filter((item) =>
       [item.name, item.subtitle, item.genre, item.hall].some((field) =>
-        normalizeText(field).includes(cleanQuery)
-      )
+        normalizeText(field).includes(cleanQuery),
+      ),
     );
   }, [query]);
 
@@ -106,13 +106,10 @@ export function HomeScreen(): React.JSX.Element {
 
   const renderItem: ListRenderItem<Item> = useCallback(
     ({ item }) => <ItemCard item={item} onPress={handleItemPress} />,
-    [handleItemPress]
+    [handleItemPress],
   );
 
-  const renderSeparator = useCallback(
-    () => <View style={styles.separator} />,
-    []
-  );
+  const renderSeparator = useCallback(() => <View style={styles.separator} />, []);
   // ===== SEMANA 02 · FIN =====
 
   const renderEmpty = useCallback(() => {
@@ -121,8 +118,8 @@ export function HomeScreen(): React.JSX.Element {
         <Text style={styles.emptyIcon}>🎭</Text>
         <Text style={styles.emptyTitle}>Sin obras encontradas</Text>
         <Text style={styles.emptySubtitle}>
-          No hay funciones que coincidan con "{query}". Prueba buscando por otro
-          título, director o género teatral.
+          No hay funciones que coincidan con "{query}". Prueba buscando por otro título, director o
+          género teatral.
         </Text>
         {query.length > 0 && (
           <Pressable
@@ -198,17 +195,12 @@ export function HomeScreen(): React.JSX.Element {
                 {filteredItems.length}{' '}
                 {filteredItems.length === 1 ? 'obra disponible' : 'obras disponibles'}
               </Text>
-              {query.length > 0 && (
-                <Text style={styles.activeFilterBadge}>Filtro activo</Text>
-              )}
+              {query.length > 0 && <Text style={styles.activeFilterBadge}>Filtro activo</Text>}
             </View>
           </View>
 
           {/* ===== SEMANA 03 · INICIO ===== */}
-          <TouchableWithoutFeedback
-            onPress={Keyboard.dismiss}
-            accessible={false}
-          >
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
             <View style={styles.listWrapper}>
               <FlatList
                 data={filteredItems}
