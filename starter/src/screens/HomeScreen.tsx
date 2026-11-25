@@ -44,8 +44,9 @@ export function HomeScreen(): React.JSX.Element {
 
   const [refreshing, setRefreshing] = useState<boolean>(false);
 
-  const handleItemPress = useCallback((item: Item): void => {
-    console.log('Obra seleccionada:', item.name);
+  const handleItemPress = useCallback((_item: Item): void => {
+    // En la Semana 02 el feedback visual es el estado `pressed` de la tarjeta.
+    // La navegación hacia la pantalla de detalle se introduce en la Semana 03.
   }, []);
 
   const filteredItems = useMemo(() => {
