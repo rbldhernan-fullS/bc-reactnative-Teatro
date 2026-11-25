@@ -19,7 +19,7 @@ La app administra la cartelera y las funciones del Teatro Colón:
 2. **Detalle (`HomeDetail`)**: ficha artística, sinopsis, sala, duración, aforo, precio, guardado y edición.
 3. **Nueva obra (`Create`)** y **Editar obra (`Edit`)**: formularios validados con Zod.
 4. **Guardados (`Saved`)**: favoritos por `id` resueltos desde la caché de TanStack Query, también disponibles sin red.
-5. **Ajustes (`Settings`)**: preferencias persistentes con MMKV y código de acceso de taquilla cifrado con SecureStore.
+5. **Ajustes (`Settings`)**: preferencias persistentes con MMKV y código de acceso de taquilla en SecureStore nativo, con almacenamiento de demostración en web.
 
 ---
 
@@ -189,9 +189,9 @@ Flujo manual sugerido:
 | React Native MMKV | 4.3.2 | Preferencias sincrónicas (Nitro/JSI) |
 | react-native-nitro-modules | 0.36.1 | Runtime nativo requerido por MMKV 4 |
 | AsyncStorage | 2.2.0 | Caché offline de la cartelera |
-| Expo SecureStore | 57.0.4 | Código sensible cifrado |
+| Expo SecureStore | 57.0.4 | Código de demostración (cifrado en nativo) |
 | TanStack Query | 5.105 | Estado del servidor y caché en memoria |
-| React Hook Form + Zod | 7.81 / 4.4.3 | Formularios y validación |
+| React Hook Form + Zod | 7.81 / 4.6.6 | Formularios y validación |
 | Zustand | 5.0 | Ids de obras guardadas |
 | React Navigation | 7.x | Tabs + Stack anidado |
 
@@ -227,7 +227,7 @@ starter/
     ├── schemas/
     │   └── playSchema.ts           # Zod reutilizado por la caché
     ├── services/
-    │   ├── api.ts                  # Axios y errores legibles
+    │   ├── api.ts                  # Exporta el cliente y el manejo de errores
     │   └── theatreApi.ts           # Adaptador de dominio
     ├── stores/
     │   └── savedStore.ts           # Zustand: savedIds
@@ -250,3 +250,21 @@ pnpm web
 La app también corre en el navegador con `react-native-web` y Metro. Los módulos exclusivos de nativo
 se sustituyen por implementaciones web mediante archivos `.web.ts`: **MMKV** y **SecureStore** usan
 `localStorage`, y las notificaciones quedan deshabilitadas en web sin romper el arranque.
+
+## Verificación web
+
+Desde `starter`, ejecuta `pnpm install --frozen-lockfile`, `pnpm verify` y `pnpm export:web`. Abre dos terminales para `pnpm api` y `pnpm web`. La API demo habilita CORS y escucha en `0.0.0.0:3001`. Una exportación destinada a ejecutarse en producción requiere la variable `EXPO_PUBLIC_API_URL` con la URL HTTPS antes de exportar.
+
+En web el sustituto de SecureStore usa localStorage en claro. Usa solo datos de demostración.
+
+[Video de la semana](https://github.com/rbldhernan-fullS/bc-reactnative-Teatro/blob/main/docs/Week-07/video_week_07.mp4)
+
+## Mapa por semana
+
+| Semana | Archivos principales |
+| --- | --- |
+| 01–02 | `src/components/ItemCard.tsx`, `src/screens/HomeScreen.tsx` |
+| 03–04 | `src/navigation/`, `src/screens/SavedScreen.tsx`, `src/stores/savedStore.ts` |
+| 05 | `src/config/env.ts`, `src/services/http.ts`, `src/hooks/usePlays.ts`, `src/components/ScreenState.tsx` |
+| 06 | `src/schemas/playSchema.ts`, `src/components/PlayForm.tsx`, `src/screens/EditScreen.tsx` |
+| 07 | `src/storage/`, `src/hooks/usePreferences.ts`, `src/screens/SettingsScreen.tsx` |
