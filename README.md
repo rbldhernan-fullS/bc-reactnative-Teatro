@@ -144,7 +144,7 @@ EXPO_PUBLIC_API_URL=http://192.168.1.50:3001
 | React | 19.2.3 | Componentes |
 | TypeScript | 6.0.3 | Tipado estricto (sin `any`) |
 | React Hook Form | 7.81.0 | Estado y envío de formularios |
-| Zod | 4.4.3 | Validación y tipos inferidos |
+| Zod | 4.6.6 | Validación y tipos inferidos |
 | @hookform/resolvers | 5.4.0 | `zodResolver` |
 | TanStack Query | 5.105 | Estado del servidor |
 | Axios | 1.21 | Cliente HTTP |
@@ -186,7 +186,7 @@ starter/
     │   ├── EditScreen.tsx          # Formulario con defaultValues
     │   └── SavedScreen.tsx         # Guardados por id
     ├── services/
-    │   ├── api.ts                  # Axios y errores legibles
+    │   ├── api.ts                  # Exporta el cliente y el manejo de errores
     │   └── theatreApi.ts           # Adaptador de dominio
     ├── stores/
     │   └── savedStore.ts           # Zustand: savedIds
@@ -246,3 +246,18 @@ pnpm web
 ```
 
 La app también corre en el navegador con `react-native-web` y Metro.
+
+## Verificación web
+
+Desde `starter`, ejecuta `pnpm install --frozen-lockfile`, `pnpm verify` y `pnpm export:web`. Abre dos terminales para `pnpm api` y `pnpm web`. La API demo habilita CORS y escucha en `0.0.0.0:3001`. Una exportación destinada a ejecutarse en producción requiere la variable `EXPO_PUBLIC_API_URL` con la URL HTTPS antes de exportar.
+
+[Video de la semana](https://github.com/rbldhernan-fullS/bc-reactnative-Teatro/blob/main/docs/Week-06/video_week_06.mp4)
+
+## Mapa por semana
+
+| Semana | Archivos principales |
+| --- | --- |
+| 01–02 | `src/components/ItemCard.tsx`, `src/screens/HomeScreen.tsx` |
+| 03–04 | `src/navigation/`, `src/screens/SavedScreen.tsx`, `src/stores/savedStore.ts` |
+| 05 | `src/config/env.ts`, `src/services/http.ts`, `src/hooks/usePlays.ts`, `src/components/ScreenState.tsx` |
+| 06 | `src/schemas/playSchema.ts`, `src/components/PlayForm.tsx`, `src/screens/EditScreen.tsx` |
